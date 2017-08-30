@@ -4,7 +4,9 @@ version '0.0.1'
 apply plugin: 'java'
 apply plugin: 'maven'
 
-apply from: 'publish.gradle'
+if (file('publish.gradle').exists()) {
+    apply from: 'publish.gradle'
+}
 
 sourceCompatibility = 1.8
 
