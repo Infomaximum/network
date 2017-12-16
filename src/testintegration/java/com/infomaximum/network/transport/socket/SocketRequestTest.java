@@ -3,7 +3,6 @@ package com.infomaximum.network.transport.socket;
 import com.infomaximum.network.Network;
 import com.infomaximum.network.Session;
 import com.infomaximum.network.builder.BuilderNetwork;
-import com.infomaximum.network.exception.ResponseException;
 import com.infomaximum.network.external.IExecutePacket;
 import com.infomaximum.network.packet.*;
 import com.infomaximum.network.transport.socket.builder.SocketBuilderTransport;
@@ -31,7 +30,7 @@ public class SocketRequestTest {
         network = new BuilderNetwork()
                 .withExecutePacket(new IExecutePacket() {
                     @Override
-                    public CompletableFuture<ResponsePacket> exec(Session session, TargetPacket packet) throws ResponseException {
+                    public CompletableFuture<ResponsePacket> exec(Session session, TargetPacket packet) {
                         CompletableFuture<ResponsePacket> completableFuture = new CompletableFuture<>();
                         completableFuture.complete(null);
                         return completableFuture;

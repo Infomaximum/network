@@ -1,7 +1,5 @@
 package com.infomaximum.network;
 
-import com.infomaximum.network.exception.HandshakeException;
-import com.infomaximum.network.exception.ResponseException;
 import com.infomaximum.network.external.IExecutePacket;
 import com.infomaximum.network.packet.ResponsePacket;
 import com.infomaximum.network.struct.ISessionData;
@@ -59,6 +57,13 @@ public class TransportSession {
 
     public void completedPhaseHandshake(){
         isPhaseHandshake = false;
+    }
+
+    public void failPhaseHandshake(){
+        try {
+            transport.close(channel);
+        } catch (Throwable ignore) {}
+        destroyed();
     }
 
     public Session getSession() {
