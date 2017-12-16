@@ -59,8 +59,11 @@ public class TransportSession {
         isPhaseHandshake = false;
     }
 
-    public void failPhaseHandshake(){
+    public void failPhaseHandshake(ResponsePacket responsePacket){
         try {
+            if (responsePacket!=null) {
+                transport.send(channel, responsePacket).get();
+            }
             transport.close(channel);
         } catch (Throwable ignore) {}
         destroyed();
@@ -84,28 +87,31 @@ public class TransportSession {
                 }
             } else {
                 CompletableFuture<ResponsePacket> response = getExecutePacket().exec(session, (com.infomaximum.network.packet.TargetPacket) packet);
-                response.thenAccept(responsePacket -> {
-                    if (packet.getType() == com.infomaximum.network.packet.TypePacket.REQUEST) {//Требуется ответ
-                        if (responsePacket == null) {
-                            log.error("Response packet is null");
-                            try {
-                                transport.close(channel);
-                            } catch (Throwable ignore) {}
-                            destroyed();
-                        }
-                        try {
-                            transport.send(channel, responsePacket);
-                        } catch (Throwable e) {
-                            if (!(e instanceof IOException)) {
-                                log.error("Exception", e);
+                if (response!=null) {
+                    response.thenAccept(responsePacket -> {
+                        if (packet.getType() == com.infomaximum.network.packet.TypePacket.REQUEST) {//Требуется ответ
+                            if (responsePacket == null) {
+                                log.error("Response packet is null");
+                                try {
+                                    transport.close(channel);
+                                } catch (Throwable ignore) {}
+                                destroyed();
                             }
                             try {
-                                transport.close(channel);
-                            } catch (Throwable ignore) {}
-                            destroyed();
+                                transport.send(channel, responsePacket);
+                            } catch (Throwable e) {
+                                if (!(e instanceof IOException)) {
+                                    log.error("Exception", e);
+                                }
+                                try {
+                                    transport.close(channel);
+                                } catch (Throwable ignore) {}
+                                destroyed();
+                            }
                         }
-                    }
-                });
+                    });
+                }
+
 
 //                response.handle((jsonObject, throwable) -> {
 //                    if (throwable == null) {
