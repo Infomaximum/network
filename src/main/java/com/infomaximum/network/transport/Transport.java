@@ -4,6 +4,7 @@ import com.infomaximum.network.packet.Packet;
 import java.io.IOException;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.concurrent.Future;
 
 /**
  * Created by kris on 26.08.16.
@@ -44,7 +45,7 @@ public abstract class Transport<Channel> {
         }
     }
 
-    public abstract void send(Channel channel, Packet packet) throws IOException;
+    public abstract Future<Void> send(Channel channel, Packet packet) throws IOException;
 
     public abstract void destroy() throws Exception;
 

@@ -2,6 +2,7 @@ package com.infomaximum.network.external.handshake;
 
 import com.infomaximum.network.Session;
 import com.infomaximum.network.external.IExecutePacket;
+import com.infomaximum.network.packet.ResponsePacket;
 
 /**
  * Created by kris on 01.09.16.
@@ -22,7 +23,7 @@ public abstract class Handshake implements IExecutePacket {
      * Ошибка фазы рукопожатия - разрываем соединение
      * @param session
      */
-    public void failPhaseHandshake(Session session){
-        session.getTransportSession().failPhaseHandshake();
+    public void failPhaseHandshake(Session session, ResponsePacket responsePacket){
+        session.getTransportSession().failPhaseHandshake(responsePacket);
     }
 }

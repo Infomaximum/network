@@ -21,6 +21,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Future;
 
 /**
  * Created with IntelliJ IDEA.
@@ -89,8 +91,12 @@ public class SocketTransport extends Transport<ChannelHandlerContext> {
     }
 
     @Override
-    public void send(ChannelHandlerContext channelHandlerContext, Packet packet) throws IOException {
+    public Future<Void> send(ChannelHandlerContext channelHandlerContext, Packet packet) throws IOException {
         channelHandlerContext.writeAndFlush(packet);
+
+        CompletableFuture<Void> completableFuture = new CompletableFuture<>();
+        completableFuture.complete(null);
+        return completableFuture;
     }
 
     @Override

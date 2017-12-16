@@ -26,6 +26,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.concurrent.Future;
 
 /**
  * Created with IntelliJ IDEA.
@@ -100,8 +101,8 @@ public class HttpTransport extends Transport<Session> {
     }
 
     @Override
-    public void send(Session session, Packet packet) throws IOException {
-        session.getRemote().sendStringByFuture(packet.serialize());
+    public Future<Void> send(Session session, Packet packet) throws IOException {
+        return session.getRemote().sendStringByFuture(packet.serialize());
     }
 
     @Override
