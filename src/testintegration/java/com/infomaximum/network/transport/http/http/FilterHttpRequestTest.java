@@ -3,7 +3,6 @@ package com.infomaximum.network.transport.http.http;
 import com.infomaximum.network.Network;
 import com.infomaximum.network.builder.BuilderNetwork;
 import com.infomaximum.network.controller.filter.AuthFilter;
-import com.infomaximum.network.struct.TestCodeResponse;
 import com.infomaximum.network.transport.http.SpringConfigurationMvc;
 import com.infomaximum.network.transport.http.builder.HttpBuilderTransport;
 import com.infomaximum.network.transport.http.builder.filter.BuilderFilter;
@@ -34,7 +33,6 @@ public class FilterHttpRequestTest {
                                 .withJspPath("webapp/views")
                                 .withAddFilter(new BuilderFilter(AuthFilter.class, "/jsp/*"))
                 )
-                .withCodeResponse(new TestCodeResponse())
                 .build();
     }
 

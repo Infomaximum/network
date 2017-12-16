@@ -6,15 +6,14 @@ import com.infomaximum.network.builder.BuilderNetwork;
 import com.infomaximum.network.exception.ResponseException;
 import com.infomaximum.network.external.IExecutePacket;
 import com.infomaximum.network.packet.*;
-import com.infomaximum.network.struct.TestCodeResponse;
 import com.infomaximum.network.transport.socket.builder.SocketBuilderTransport;
-import net.minidev.json.JSONObject;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.io.*;
 import java.net.Socket;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * Created by kris on 26.08.16.
@@ -32,12 +31,13 @@ public class SocketRequestTest {
         network = new BuilderNetwork()
                 .withExecutePacket(new IExecutePacket() {
                     @Override
-                    public JSONObject exec(Session session, TargetPacket packet) throws ResponseException {
-                        return null;
+                    public CompletableFuture<ResponsePacket> exec(Session session, TargetPacket packet) throws ResponseException {
+                        CompletableFuture<ResponsePacket> completableFuture = new CompletableFuture<>();
+                        completableFuture.complete(null);
+                        return completableFuture;
                     }
                 })
                 .withTransport(new SocketBuilderTransport(randomPort))
-                .withCodeResponse(new TestCodeResponse())
                 .build();
     }
 

@@ -78,22 +78,71 @@ public class TransportSession {
                     future.complete(responsePacket);
                 }
             } else {
-                try {
-                    JSONObject response = getExecutePacket().exec(session, (com.infomaximum.network.packet.TargetPacket) packet);
+                CompletableFuture<ResponsePacket> response = getExecutePacket().exec(session, (com.infomaximum.network.packet.TargetPacket) packet);
+                response.thenAccept(responsePacket -> {
                     if (packet.getType() == com.infomaximum.network.packet.TypePacket.REQUEST) {//Требуется ответ
-                        transport.send(channel, com.infomaximum.network.packet.ResponsePacket.response((com.infomaximum.network.packet.RequestPacket) packet, network.getCodeResponse().SUCCESS(), response));
+                        if (responsePacket == null) {
+                            log.error("Response packet is null");
+                            try {
+                                transport.close(channel);
+                            } catch (Throwable ignore) {}
+                            destroyed();
+                        }
+                        try {
+                            transport.send(channel, responsePacket);
+                        } catch (Throwable e) {
+                            if (!(e instanceof IOException)) {
+                                log.error("Exception", e);
+                            }
+                            try {
+                                transport.close(channel);
+                            } catch (Throwable ignore) {}
+                            destroyed();
+                        }
                     }
-                } catch (ResponseException responseException) {
-                    if (packet.getType() == com.infomaximum.network.packet.TypePacket.REQUEST) {//Требуется ответ
-                        transport.send(channel, com.infomaximum.network.packet.ResponsePacket.response((com.infomaximum.network.packet.RequestPacket) packet, responseException.getCode(), responseException.getDate()));
-                    }
+                });
 
-                    //Если это ошибка рукопожатия, то надо рвать соединение
-                    if (responseException instanceof HandshakeException) {
-                        transport.close(channel);
-                        destroyed();
-                    }
-                }
+//                response.handle((jsonObject, throwable) -> {
+//                    if (throwable == null) {
+//                        if (packet.getType() == com.infomaximum.network.packet.TypePacket.REQUEST) {//Требуется ответ
+//                            transport.send(channel, com.infomaximum.network.packet.ResponsePacket.response((com.infomaximum.network.packet.RequestPacket) packet, network.getCodeResponse().SUCCESS(), response));
+//                        }
+//                    } else {
+//                        if (throwable instanceof ResponseException)
+//
+//                        if (packet.getType() == com.infomaximum.network.packet.TypePacket.REQUEST) {//Требуется ответ
+//                            transport.send(channel, com.infomaximum.network.packet.ResponsePacket.response((com.infomaximum.network.packet.RequestPacket) packet, responseException.getCode(), responseException.getDate()));
+//                        }
+//
+//                        //Если это ошибка рукопожатия, то надо рвать соединение
+//                        if (throwable instanceof HandshakeException) {
+//                            try {
+//                                transport.close(channel);
+//                            } catch (Throwable ignore) {}
+//                            destroyed();
+//                        }
+//                    }
+//
+//                    return null;
+//                });
+//
+//                response.thenAccept(jsonObject -> {
+//                    if (packet.getType() == com.infomaximum.network.packet.TypePacket.REQUEST) {//Требуется ответ
+//                        transport.send(channel, com.infomaximum.network.packet.ResponsePacket.response((com.infomaximum.network.packet.RequestPacket) packet, network.getCodeResponse().SUCCESS(), response));
+//                    }
+//                }).exceptionally(throwable -> {
+//                    if (packet.getType() == com.infomaximum.network.packet.TypePacket.REQUEST) {//Требуется ответ
+//                        transport.send(channel, com.infomaximum.network.packet.ResponsePacket.response((com.infomaximum.network.packet.RequestPacket) packet, responseException.getCode(), responseException.getDate()));
+//                    }
+//
+//                    //Если это ошибка рукопожатия, то надо рвать соединение
+//                    if (throwable instanceof HandshakeException) {
+//                        try {
+//                            transport.close(channel);
+//                        } catch (Throwable ignore) {}
+//                        destroyed();
+//                    }
+//                });
             }
         } catch (Exception e) {
             log.error("{} Ошибка обработки входящего пакета: ", session, e);
@@ -141,6 +190,6 @@ public class TransportSession {
     }
 
     protected void destroyed() {
-        try { transport.close(channel); } catch (IOException ignore) {}
+        try { transport.close(channel); } catch (Throwable ignore) {}
     }
 }

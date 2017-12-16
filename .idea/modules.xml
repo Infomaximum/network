@@ -6,6 +6,7 @@
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/network_main.iml" filepath="$PROJECT_DIR$/.idea/modules/network_main.iml" group="network" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/network_test.iml" filepath="$PROJECT_DIR$/.idea/modules/network_test.iml" group="network" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/network_testintegration.iml" filepath="$PROJECT_DIR$/.idea/modules/network_testintegration.iml" group="network" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/network_testperformance.iml" filepath="$PROJECT_DIR$/.idea/modules/network_testperformance.iml" group="network" />
     </modules>
   </component>
 </project>

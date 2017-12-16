@@ -78,7 +78,7 @@ public class CoreWSPerformanceTest {
                         log.info("connected: " + countConnected.get());
 
 
-                        //TODO в это месте есть возмодный баг, порой все сависает
+                        //TODO в это месте есть возможный баг, порой все зависает
                         //Теперь ждем что-бы все подключились
                         while (true) {
                             if (fullConnect.get() || countConnected.get() == threads) {

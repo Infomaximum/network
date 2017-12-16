@@ -1,5 +1,5 @@
 group 'com.infomaximum'
-version '0.0.1'
+version '0.0.2'
 
 apply plugin: 'java'
 apply plugin: 'maven'
@@ -25,16 +25,34 @@ sourceSets {
             srcDir file('src/testintegration/resources')
         }
     }
+    testperformance {
+        java {
+            compileClasspath += main.output + test.output + testintegration.output
+            runtimeClasspath += main.output + test.output + testintegration.output
+            srcDir file('src/testperformance/java')
+        }
+        resources {
+            srcDir file('src/testperformance/resources')
+        }
+    }
 }
 
 configurations {
     testintegrationCompile.extendsFrom testCompile
     testintegrationRuntime.extendsFrom testRuntime
+    testperformanceCompile.extendsFrom testintegrationCompile
+    testperformanceRuntime.extendsFrom testintegrationRuntime
 }
 
 task testintegration(type: Test) {
     testClassesDir = sourceSets.testintegration.output.classesDir
     classpath = sourceSets.testintegration.runtimeClasspath
+    outputs.upToDateWhen { false }
+}
+
+task testperformance(type: Test) {
+    testClassesDir = sourceSets.testperformance.output.classesDir
+    classpath = sourceSets.testperformance.runtimeClasspath
     outputs.upToDateWhen { false }
 }
 
