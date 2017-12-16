@@ -17,4 +17,12 @@ public abstract class Handshake implements IExecutePacket {
     public void completedPhaseHandshake(Session session){
         session.getTransportSession().completedPhaseHandshake();
     }
+
+    /**
+     * Ошибка фазы рукопожатия - разрываем соединение
+     * @param session
+     */
+    public void failPhaseHandshake(Session session){
+        session.getTransportSession().failPhaseHandshake();
+    }
 }

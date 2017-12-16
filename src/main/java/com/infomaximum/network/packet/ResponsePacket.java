@@ -1,6 +1,5 @@
 package com.infomaximum.network.packet;
 
-import com.infomaximum.network.exception.ResponseException;
 import net.minidev.json.JSONAware;
 import net.minidev.json.JSONObject;
 
@@ -44,7 +43,7 @@ public class ResponsePacket extends Packet implements IPacketId {
         return new ResponsePacket(request.getId(), data, null);
     }
 
-    public static ResponsePacket response(IPacketId request, JSONAware dataException) {
+    public static ResponsePacket responseException(IPacketId request, JSONAware dataException) {
         return new ResponsePacket(request.getId(), null, dataException);
     }
 }

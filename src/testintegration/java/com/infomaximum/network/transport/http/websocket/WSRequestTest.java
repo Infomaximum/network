@@ -3,7 +3,6 @@ package com.infomaximum.network.transport.http.websocket;
 import com.infomaximum.network.Session;
 import com.infomaximum.network.Network;
 import com.infomaximum.network.builder.BuilderNetwork;
-import com.infomaximum.network.exception.ResponseException;
 import com.infomaximum.network.external.IExecutePacket;
 import com.infomaximum.network.packet.RequestPacket;
 import com.infomaximum.network.packet.ResponsePacket;
@@ -34,7 +33,7 @@ public class WSRequestTest {
         network = new BuilderNetwork()
                 .withExecutePacket(new IExecutePacket() {
                     @Override
-                    public CompletableFuture<ResponsePacket> exec(Session session, TargetPacket packet) throws ResponseException {
+                    public CompletableFuture<ResponsePacket> exec(Session session, TargetPacket packet) {
                         if (packet instanceof RequestPacket) {
                             CompletableFuture<ResponsePacket> completableFuture = new CompletableFuture<ResponsePacket>();
                             completableFuture.complete(ResponsePacket.responseAccept((RequestPacket)packet, new JSONObject()));

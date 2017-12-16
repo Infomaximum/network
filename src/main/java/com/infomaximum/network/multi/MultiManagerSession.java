@@ -1,4 +1,4 @@
-package com.infomaximum.network.manager.multi;
+package com.infomaximum.network.multi;
 
 import com.infomaximum.network.Session;
 import com.infomaximum.network.ManagerSession;
