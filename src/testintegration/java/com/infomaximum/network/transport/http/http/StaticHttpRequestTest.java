@@ -2,7 +2,6 @@ package com.infomaximum.network.transport.http.http;
 
 import com.infomaximum.network.Network;
 import com.infomaximum.network.builder.BuilderNetwork;
-import com.infomaximum.network.struct.TestCodeResponse;
 import com.infomaximum.network.transport.http.SpringConfigurationMvc;
 import com.infomaximum.network.transport.http.builder.HttpBuilderTransport;
 import com.infomaximum.network.transport.http.http.utils.TestContentUtils;
@@ -28,7 +27,6 @@ public class StaticHttpRequestTest {
                         new HttpBuilderTransport(port, SpringConfigurationMvc.class)
                                 .withJspPath("webapp/views")
                 )
-                .withCodeResponse(new TestCodeResponse())
                 .build();
     }
 

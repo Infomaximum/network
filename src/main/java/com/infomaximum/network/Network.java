@@ -1,15 +1,13 @@
 package com.infomaximum.network;
 
-import com.infomaximum.network.Session;
-import com.infomaximum.network.TransportSession;
 import com.infomaximum.network.event.NetworkListener;
 import com.infomaximum.network.external.IExecutePacket;
 import com.infomaximum.network.external.handshake.Handshake;
 import com.infomaximum.network.packet.*;
-import com.infomaximum.network.struct.ICodeResponse;
 import com.infomaximum.network.struct.ISessionData;
 import com.infomaximum.network.transport.Transport;
 import com.infomaximum.network.transport.TransportListener;
+import net.minidev.json.JSONAware;
 import net.minidev.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,7 +37,6 @@ public class Network implements TransportListener {
     public static Network instance;
 
     private final Handshake handshake;
-    private final ICodeResponse codeResponse;
 
     private final Class<? extends ISessionData> sessionDataClass;
     private final IExecutePacket executePacket;
@@ -54,13 +51,12 @@ public class Network implements TransportListener {
     private final ManagerSession managerSession;
 
     public Network(ManagerSession managerSession,
-                   Handshake handshake, ICodeResponse codeResponse,
+                   Handshake handshake,
                    Class<? extends ISessionData> sessionDataClass,
                    Class<? extends RequestPacket> extensionRequestPacket,
                    IExecutePacket executePacket
     ) throws Exception {
         this.handshake=handshake;
-        this.codeResponse=codeResponse;
 
         this.sessionDataClass=sessionDataClass;
         this.executePacket=executePacket;
@@ -85,10 +81,6 @@ public class Network implements TransportListener {
 
     protected Handshake getHandshake() {
         return handshake;
-    }
-
-    public ICodeResponse getCodeResponse() {
-        return codeResponse;
     }
 
     protected IExecutePacket getExecutePacket() {
@@ -197,9 +189,9 @@ public class Network implements TransportListener {
             }
         } else if (type == TypePacket.RESPONSE) {
             long id = parse.getAsNumber("id").longValue();
-            String code = parse.getAsString("code");
             JSONObject data = (JSONObject) parse.get("data");
-            return new ResponsePacket(id, code, data);
+            JSONAware dataException = (JSONAware) parse.get("error");
+            return new ResponsePacket(id, data, dataException);
         } else {
             throw new RuntimeException("Not support type packet: " + type);
         }

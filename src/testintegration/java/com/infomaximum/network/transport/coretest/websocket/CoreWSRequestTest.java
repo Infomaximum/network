@@ -64,7 +64,6 @@ public class CoreWSRequestTest {
         ResponsePacket responsePacket = responseFuture.get(1, TimeUnit.MINUTES);
 
         Assert.assertEquals(requestPacket.getId(), responsePacket.getId());
-        Assert.assertEquals(network.getCodeResponse().SUCCESS(), responsePacket.getCode());
 
         session.close();//Закрываем соединение
     }

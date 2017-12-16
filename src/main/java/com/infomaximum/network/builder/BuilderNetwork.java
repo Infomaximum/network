@@ -1,6 +1,5 @@
 package com.infomaximum.network.builder;
 
-import com.infomaximum.network.struct.ICodeResponse;
 import com.infomaximum.network.struct.ISessionData;
 import com.infomaximum.network.Network;
 import com.infomaximum.network.external.IExecutePacket;
@@ -22,7 +21,6 @@ import java.util.HashSet;
 public class BuilderNetwork {
 
     private Handshake handshake=null;
-    private ICodeResponse codeResponse=null;
     private IExecutePacket executePacket=null;
     private Class<? extends ISessionData> sessionDataClass=null;
 
@@ -36,11 +34,6 @@ public class BuilderNetwork {
 
     public BuilderNetwork withHandshake(Handshake handshake) {
         this.handshake=handshake;
-        return this;
-    }
-
-    public BuilderNetwork withCodeResponse(ICodeResponse codeResponse) {
-        this.codeResponse=codeResponse;
         return this;
     }
 
@@ -73,7 +66,7 @@ public class BuilderNetwork {
     public Network build() throws Exception {
         Network network = new Network(
                 managerSession,
-                handshake, codeResponse,
+                handshake,
                 sessionDataClass,
                 extensionRequestPacket,
                 executePacket
