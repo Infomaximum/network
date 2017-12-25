@@ -47,6 +47,7 @@ public class HttpTransport extends Transport<Session> {
         server = new Server(new QueuedThreadPool(10000));
         ServerConnector connector = new ServerConnector(server);
         connector.setPort(httpBuilderTransport.getPort());
+        connector.setIdleTimeout(httpBuilderTransport.getIdleTimeout());
         server.setConnectors(new Connector[]{connector});
 
         ServletContextHandler context = new ServletContextHandler();

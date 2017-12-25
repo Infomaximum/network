@@ -23,6 +23,8 @@ public class HttpBuilderTransport extends BuilderTransport {
     private String jspPath;
     private Set<BuilderFilter> filters;
 
+    private long idleTimeout = 1L * 60L * 1000L;
+
     public HttpBuilderTransport(int port, Class classWebMvcConfig) {
         this.classWebMvcConfig = classWebMvcConfig;
         this.host = new InetSocketAddress(0).getAddress();
@@ -53,6 +55,11 @@ public class HttpBuilderTransport extends BuilderTransport {
         return this;
     }
 
+    public HttpBuilderTransport withIdleTimeout(long idleTimeout) {
+        this.idleTimeout = idleTimeout;
+        return this;
+    }
+
     public InetAddress getHost() {
         return host;
     }
@@ -73,5 +80,8 @@ public class HttpBuilderTransport extends BuilderTransport {
     }
     public Set<BuilderFilter> getFilters() {
         return filters;
+    }
+    public long getIdleTimeout() {
+        return idleTimeout;
     }
 }
