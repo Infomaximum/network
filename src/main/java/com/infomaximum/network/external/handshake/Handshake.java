@@ -1,6 +1,6 @@
 package com.infomaximum.network.external.handshake;
 
-import com.infomaximum.network.Session;
+import com.infomaximum.network.session.Session;
 import com.infomaximum.network.external.IExecutePacket;
 import com.infomaximum.network.packet.ResponsePacket;
 

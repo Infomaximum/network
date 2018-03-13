@@ -35,7 +35,7 @@ public class WSBadRequestTest {
 
     @AfterClass
     public static void destroy() throws Exception {
-        network.destroy();
+        network.close();
         network=null;
     }
 }

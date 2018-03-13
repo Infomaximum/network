@@ -1,5 +1,7 @@
-package com.infomaximum.network;
+package com.infomaximum.network.session;
 
+import com.infomaximum.network.Network;
+import com.infomaximum.network.NetworkImpl;
 import com.infomaximum.network.struct.ISessionData;
 
 import java.io.Serializable;
@@ -11,7 +13,7 @@ import java.util.UUID;
  */
 public class Session {
 
-    private final Network network;
+    private final NetworkImpl network;
     private final TransportSession transportSession;
 
     public final String uuid;
@@ -19,7 +21,7 @@ public class Session {
     private Serializable user;
     private ISessionData sessionData;
 
-    protected Session(Network network, TransportSession transportSession, Class<? extends ISessionData> sessionDataClass) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
+    protected Session(NetworkImpl network, TransportSession transportSession, Class<? extends ISessionData> sessionDataClass) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
         this.network=network;
         this.transportSession=transportSession;
 

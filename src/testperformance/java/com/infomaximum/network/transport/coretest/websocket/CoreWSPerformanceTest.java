@@ -1,6 +1,7 @@
 package com.infomaximum.network.transport.coretest.websocket;
 
 import com.infomaximum.network.Network;
+import com.infomaximum.network.NetworkImpl;
 import com.infomaximum.network.packet.RequestPacket;
 import com.infomaximum.network.packet.ResponsePacket;
 import net.minidev.json.JSONObject;
@@ -52,7 +53,7 @@ public class CoreWSPerformanceTest {
                             public void onWebSocketText(String message) {
                                 super.onWebSocketText(message);
                                 try {
-                                    ResponsePacket responsePacket = (ResponsePacket)network.parsePacket((JSONObject) new JSONParser(JSONParser.DEFAULT_PERMISSIVE_MODE).parse(message));
+                                    ResponsePacket responsePacket = (ResponsePacket)((NetworkImpl)network).parsePacket((JSONObject) new JSONParser(JSONParser.DEFAULT_PERMISSIVE_MODE).parse(message));
                                     responseFuture.complete(responsePacket);
                                 } catch (Exception e) {
                                     Assert.fail();

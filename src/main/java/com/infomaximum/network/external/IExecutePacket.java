@@ -1,6 +1,6 @@
 package com.infomaximum.network.external;
 
-import com.infomaximum.network.Session;
+import com.infomaximum.network.session.Session;
 import com.infomaximum.network.packet.ResponsePacket;
 import com.infomaximum.network.packet.TargetPacket;
 

@@ -49,7 +49,7 @@ public class FilterHttpRequestTest {
 
     @After
     public void destroy() throws Exception {
-        network.destroy();
+        network.close();
         network=null;
     }
 }

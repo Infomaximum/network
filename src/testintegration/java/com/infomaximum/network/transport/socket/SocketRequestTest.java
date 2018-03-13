@@ -1,7 +1,7 @@
 package com.infomaximum.network.transport.socket;
 
 import com.infomaximum.network.Network;
-import com.infomaximum.network.Session;
+import com.infomaximum.network.session.Session;
 import com.infomaximum.network.builder.BuilderNetwork;
 import com.infomaximum.network.external.IExecutePacket;
 import com.infomaximum.network.packet.*;
@@ -84,7 +84,7 @@ public class SocketRequestTest {
 
     @AfterClass
     public static void destroy() throws Exception {
-        network.destroy();
+        network.close();
         network=null;
     }
 }

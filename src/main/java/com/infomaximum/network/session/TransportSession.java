@@ -1,5 +1,7 @@
-package com.infomaximum.network;
+package com.infomaximum.network.session;
 
+import com.infomaximum.network.Network;
+import com.infomaximum.network.NetworkImpl;
 import com.infomaximum.network.external.IExecutePacket;
 import com.infomaximum.network.packet.ResponsePacket;
 import com.infomaximum.network.struct.ISessionData;
@@ -29,7 +31,7 @@ public class TransportSession {
 
     private final Session session;
 
-    private final Network network;
+    private final NetworkImpl network;
     private final Transport transport;
     private final Object channel;
 
@@ -40,7 +42,7 @@ public class TransportSession {
     //Флаг определяеющий что мы в фазе рукопожатия
     private boolean isPhaseHandshake;
 
-    public TransportSession(final Network network, final Transport transport, final Object channel, Class<? extends ISessionData> sessionDataClass) throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
+    public TransportSession(final NetworkImpl network, final Transport transport, final Object channel, Class<? extends ISessionData> sessionDataClass) throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
         this.network=network;
         this.transport=transport;
         this.channel=channel;
@@ -200,7 +202,7 @@ public class TransportSession {
         }
     }
 
-    protected void destroyed() {
+    public void destroyed() {
         try { transport.close(channel); } catch (Throwable ignore) {}
     }
 }

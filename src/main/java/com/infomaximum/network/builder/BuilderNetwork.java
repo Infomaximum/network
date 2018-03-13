@@ -1,9 +1,11 @@
 package com.infomaximum.network.builder;
 
+import com.infomaximum.network.NetworkImpl;
+import com.infomaximum.network.session.manager.MultiManagerSession;
 import com.infomaximum.network.struct.ISessionData;
 import com.infomaximum.network.Network;
 import com.infomaximum.network.external.IExecutePacket;
-import com.infomaximum.network.ManagerSession;
+import com.infomaximum.network.session.manager.ManagerSessionImpl;
 import com.infomaximum.network.external.handshake.Handshake;
 import com.infomaximum.network.packet.RequestPacket;
 import com.infomaximum.network.transport.Transport;
@@ -20,15 +22,18 @@ import java.util.HashSet;
  */
 public class BuilderNetwork {
 
-    private Handshake handshake=null;
-    private IExecutePacket executePacket=null;
-    private Class<? extends ISessionData> sessionDataClass=null;
+    public enum TypeSessionManager{
+        SINGLE, MULTI
+    }
 
-    private Class<? extends RequestPacket> extensionRequestPacket=null;
+    private Handshake handshake = null;
+    private IExecutePacket executePacket = null;
+    private Class<? extends ISessionData> sessionDataClass = null;
 
+    private Class<? extends RequestPacket> extensionRequestPacket = null;
 
-    private Collection<BuilderTransport> builderTransports=null;
-    private ManagerSession managerSession=null;
+    private Collection<BuilderTransport> builderTransports = null;
+    private TypeSessionManager typeSessionManager = null;
 
     public BuilderNetwork() {}
 
@@ -48,8 +53,8 @@ public class BuilderNetwork {
         return this;
     }
 
-    public BuilderNetwork withManagerSession(ManagerSession managerSession){
-        this.managerSession = managerSession;
+    public BuilderNetwork withManagerSession(TypeSessionManager type){
+        this.typeSessionManager = type;
         return this;
     }
 
@@ -64,7 +69,18 @@ public class BuilderNetwork {
     }
 
     public Network build() throws Exception {
-        Network network = new Network(
+        ManagerSessionImpl managerSession = null;
+        if (typeSessionManager!=null) {
+            switch (typeSessionManager) {
+                case SINGLE:
+                    throw new RuntimeException("Not implemented");
+                case MULTI:
+                    managerSession = new MultiManagerSession();
+                    break;
+            }
+        }
+
+        NetworkImpl network = new NetworkImpl(
                 managerSession,
                 handshake,
                 sessionDataClass,

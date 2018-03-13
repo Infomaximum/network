@@ -1,6 +1,6 @@
 package com.infomaximum.network.transport.http.websocket;
 
-import com.infomaximum.network.Session;
+import com.infomaximum.network.session.Session;
 import com.infomaximum.network.Network;
 import com.infomaximum.network.builder.BuilderNetwork;
 import com.infomaximum.network.external.IExecutePacket;
@@ -56,7 +56,7 @@ public class WSPerformanceTest {
 
     @AfterClass
     public static void destroy() throws Exception {
-        network.destroy();
+        network.close();
         network=null;
     }
 }

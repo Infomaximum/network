@@ -1,6 +1,7 @@
 package com.infomaximum.network.transport.http;
 
 import com.infomaximum.network.Network;
+import com.infomaximum.network.NetworkImpl;
 import com.infomaximum.network.packet.Packet;
 import com.infomaximum.network.utils.ExecutorUtil;
 import net.minidev.json.JSONObject;
@@ -36,7 +37,7 @@ public class PacketWebSocketHandler {
             public void run() {
                 try {
                     JSONObject incoming = (JSONObject) new JSONParser(JSONParser.DEFAULT_PERMISSIVE_MODE).parse(message);
-                    Packet packet = Network.instance.parsePacket(incoming);
+                    Packet packet = NetworkImpl.instance.parsePacket(incoming);
                     HttpTransport.instance.fireIncomingPacket(session, packet);
                 } catch (Exception e) {
                     log.error("Ошибка обработки входящего пакета, игнорим. packet: " + message, e);
