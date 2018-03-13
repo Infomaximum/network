@@ -1,6 +1,7 @@
 package com.infomaximum.network.transport.socket.handler;
 
 import com.infomaximum.network.Network;
+import com.infomaximum.network.NetworkImpl;
 import com.infomaximum.network.packet.Packet;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
@@ -28,7 +29,7 @@ public class PacketDecoder extends MessageToMessageDecoder<ByteBuf> {
         str = str.substring(str.indexOf('{'));//TODO хак от protobuff
 
         JSONObject incoming = (JSONObject) new JSONParser(JSONParser.DEFAULT_PERMISSIVE_MODE).parse(str);
-        Packet packet = Network.instance.parsePacket(incoming);
+        Packet packet = NetworkImpl.instance.parsePacket(incoming);
         out.add(packet);
     }
 }

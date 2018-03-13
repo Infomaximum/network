@@ -43,7 +43,7 @@ public class JspHttpRequestTest {
 
     @After
     public void destroy() throws Exception {
-        network.destroy();
+        network.close();
         network=null;
     }
 }

@@ -1,6 +1,6 @@
 package com.infomaximum.network.event;
 
-import com.infomaximum.network.Session;
+import com.infomaximum.network.session.Session;
 
 import java.io.Serializable;
 

@@ -38,7 +38,7 @@ public class MVCHttpRequestTest {
 
     @After
     public void destroy() throws Exception {
-        network.destroy();
+        network.close();
         network=null;
     }
 }
