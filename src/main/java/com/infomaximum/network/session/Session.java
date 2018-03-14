@@ -18,7 +18,7 @@ public class Session {
 
     public final String uuid;
 
-    private Serializable user;
+    private Serializable auth;
     private SessionData sessionData;
 
     protected Session(NetworkImpl network, TransportSession transportSession) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
@@ -33,25 +33,25 @@ public class Session {
         }
     }
 
-    public Serializable getUser() {
-        return user;
+    public <T extends Serializable> T getAuth() {
+        return (T) auth;
     }
 
     public boolean isLogin() {
-        return (user!=null);
+        return (auth!=null);
     }
 
-    public void login(Serializable user) {
-        if (this.user!=null) throw new RuntimeException("Repeated auth");
-        this.user=user;
+    public <T extends Serializable> void login(T auth) {
+        if (this.auth != null) throw new RuntimeException("Repeated auth");
+        this.auth = auth;
 
-        network.onLogin(this, user);
+        network.onLogin(this, auth);
     }
 
     public void logout(){
-        if (this.user==null) throw new RuntimeException("Not auth");
-        this.user = null;
-        network.onLogout(this, user);
+        if (this.auth == null) throw new RuntimeException("Not auth");
+        this.auth = null;
+        network.onLogout(this, auth);
     }
 
     public SessionData getSessionData() {
@@ -66,7 +66,7 @@ public class Session {
     public String toString() {
         StringBuilder str = new StringBuilder("Session(");
         str.append("uuid='").append(uuid).append('\'');
-        if (isLogin()) str.append(", user='").append(user).append('\'');
+        if (isLogin()) str.append(", auth='").append(auth).append('\'');
         str.append(')');
         return str.toString();
     }
