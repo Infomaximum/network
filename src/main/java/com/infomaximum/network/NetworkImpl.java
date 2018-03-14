@@ -7,7 +7,6 @@ import com.infomaximum.network.packet.*;
 import com.infomaximum.network.session.manager.ManagerSessionImpl;
 import com.infomaximum.network.session.Session;
 import com.infomaximum.network.session.TransportSession;
-import com.infomaximum.network.struct.ISessionData;
 import com.infomaximum.network.transport.Transport;
 import com.infomaximum.network.transport.TransportListener;
 import net.minidev.json.JSONAware;
@@ -31,7 +30,7 @@ public class NetworkImpl implements Network, TransportListener {
 
     private final Handshake handshake;
 
-    private final Class<? extends ISessionData> sessionDataClass;
+    private final SessionDataBuilder sessionDataBuilder;
     private final IExecutePacket executePacket;
 
     private final Class<? extends RequestPacket> extensionRequestPacket;
@@ -45,13 +44,13 @@ public class NetworkImpl implements Network, TransportListener {
 
     public NetworkImpl(ManagerSessionImpl managerSession,
                        Handshake handshake,
-                       Class<? extends ISessionData> sessionDataClass,
+                       SessionDataBuilder sessionDataBuilder,
                        Class<? extends RequestPacket> extensionRequestPacket,
                        IExecutePacket executePacket
     ) throws Exception {
         this.handshake=handshake;
 
-        this.sessionDataClass=sessionDataClass;
+        this.sessionDataBuilder = sessionDataBuilder;
         this.executePacket=executePacket;
 
         this.extensionRequestPacket=extensionRequestPacket;
@@ -76,6 +75,10 @@ public class NetworkImpl implements Network, TransportListener {
         return handshake;
     }
 
+    public SessionDataBuilder getSessionDataBuilder() {
+        return sessionDataBuilder;
+    }
+
     public IExecutePacket getExecutePacket() {
         return executePacket;
     }
@@ -91,7 +94,7 @@ public class NetworkImpl implements Network, TransportListener {
             TransportSession transportSession = transportSessions.get(channel);
             if (transportSession != null) return;//Странное это дело...
 
-            transportSession = new TransportSession(this, transport, channel, sessionDataClass);
+            transportSession = new TransportSession(this, transport, channel);
             transportSessions.put(channel, transportSession);
 
             log.info("{} onConnect, ip: {}", transportSession.getSession(), remoteIpAddress);

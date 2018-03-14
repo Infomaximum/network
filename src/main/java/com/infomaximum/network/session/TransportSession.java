@@ -1,10 +1,9 @@
 package com.infomaximum.network.session;
 
-import com.infomaximum.network.Network;
 import com.infomaximum.network.NetworkImpl;
 import com.infomaximum.network.external.IExecutePacket;
 import com.infomaximum.network.packet.ResponsePacket;
-import com.infomaximum.network.struct.ISessionData;
+import com.infomaximum.network.struct.SessionData;
 import com.infomaximum.network.transport.Transport;
 import net.minidev.json.JSONObject;
 import org.slf4j.Logger;
@@ -42,12 +41,12 @@ public class TransportSession {
     //Флаг определяеющий что мы в фазе рукопожатия
     private boolean isPhaseHandshake;
 
-    public TransportSession(final NetworkImpl network, final Transport transport, final Object channel, Class<? extends ISessionData> sessionDataClass) throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
+    public TransportSession(final NetworkImpl network, final Transport transport, final Object channel) throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
         this.network=network;
         this.transport=transport;
         this.channel=channel;
 
-        this.session = new Session(network, this, sessionDataClass);
+        this.session = new Session(network, this);
 
         //Если есть обработчик рукопожатия, то ставим флаг
         isPhaseHandshake = (network.getHandshake()!=null);

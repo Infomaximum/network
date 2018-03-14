@@ -1,8 +1,8 @@
 package com.infomaximum.network.session;
 
-import com.infomaximum.network.Network;
 import com.infomaximum.network.NetworkImpl;
-import com.infomaximum.network.struct.ISessionData;
+import com.infomaximum.network.SessionDataBuilder;
+import com.infomaximum.network.struct.SessionData;
 
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
@@ -19,15 +19,17 @@ public class Session {
     public final String uuid;
 
     private Serializable user;
-    private ISessionData sessionData;
+    private SessionData sessionData;
 
-    protected Session(NetworkImpl network, TransportSession transportSession, Class<? extends ISessionData> sessionDataClass) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
+    protected Session(NetworkImpl network, TransportSession transportSession) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
         this.network=network;
         this.transportSession=transportSession;
 
         this.uuid = UUID.randomUUID().toString();
-        if (sessionDataClass!=null) {
-            sessionData=sessionDataClass.getConstructor().newInstance();
+
+        SessionDataBuilder sessionDataBuilder = network.getSessionDataBuilder();
+        if (sessionDataBuilder != null) {
+            sessionData = sessionDataBuilder.build();
         }
     }
 
@@ -52,7 +54,7 @@ public class Session {
         network.onLogout(this, user);
     }
 
-    public ISessionData getSessionData() {
+    public SessionData getSessionData() {
         return sessionData;
     }
 

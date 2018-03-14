@@ -1,8 +1,8 @@
 package com.infomaximum.network.builder;
 
+import com.infomaximum.network.SessionDataBuilder;
 import com.infomaximum.network.NetworkImpl;
 import com.infomaximum.network.session.manager.MultiManagerSession;
-import com.infomaximum.network.struct.ISessionData;
 import com.infomaximum.network.Network;
 import com.infomaximum.network.external.IExecutePacket;
 import com.infomaximum.network.session.manager.ManagerSessionImpl;
@@ -28,7 +28,8 @@ public class BuilderNetwork {
 
     private Handshake handshake = null;
     private IExecutePacket executePacket = null;
-    private Class<? extends ISessionData> sessionDataClass = null;
+
+    private SessionDataBuilder sessionDataBuilder = null;
 
     private Class<? extends RequestPacket> extensionRequestPacket = null;
 
@@ -58,8 +59,8 @@ public class BuilderNetwork {
         return this;
     }
 
-    public BuilderNetwork withSessionData(Class<? extends ISessionData> sessionDataClass){
-        this.sessionDataClass=sessionDataClass;
+    public BuilderNetwork withSessionDataBuilder(SessionDataBuilder sessionDataBuilder){
+        this.sessionDataBuilder = sessionDataBuilder;
         return this;
     }
 
@@ -83,7 +84,7 @@ public class BuilderNetwork {
         NetworkImpl network = new NetworkImpl(
                 managerSession,
                 handshake,
-                sessionDataClass,
+                sessionDataBuilder,
                 extensionRequestPacket,
                 executePacket
         );
