@@ -123,7 +123,7 @@ public class NetworkImpl implements Network, TransportListener {
         threadSession.incomingPacket(packet);
     }
 
-    protected void onHandshake(Session session) {
+    public void onHandshake(Session session) {
         //Оповещаем подписчиков
         for (NetworkListener listener: listeners) {
             listener.onHandshake(session);

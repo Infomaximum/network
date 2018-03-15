@@ -48,8 +48,13 @@ public class TransportSession {
 
         this.session = new Session(network, this);
 
-        //Если есть обработчик рукопожатия, то ставим флаг
-        isPhaseHandshake = (network.getHandshake()!=null);
+        //Проверяем наличие фазы рукопожатия
+        if (network.getHandshake()!=null) {
+            isPhaseHandshake = true;
+        } else {
+            isPhaseHandshake = false;
+            network.onHandshake(session);
+        }
     }
 
     protected boolean isPhaseHandshake() {
@@ -58,6 +63,7 @@ public class TransportSession {
 
     public void completedPhaseHandshake(){
         isPhaseHandshake = false;
+        network.onHandshake(session);
     }
 
     public void failPhaseHandshake(ResponsePacket responsePacket){
