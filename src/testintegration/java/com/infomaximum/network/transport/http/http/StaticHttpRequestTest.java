@@ -4,6 +4,7 @@ import com.infomaximum.network.Network;
 import com.infomaximum.network.builder.BuilderNetwork;
 import com.infomaximum.network.transport.http.SpringConfigurationMvc;
 import com.infomaximum.network.transport.http.builder.HttpBuilderTransport;
+import com.infomaximum.network.transport.http.builder.connector.BuilderHttpConnector;
 import com.infomaximum.network.transport.http.http.utils.TestContentUtils;
 import org.junit.After;
 import org.junit.Before;
@@ -24,7 +25,8 @@ public class StaticHttpRequestTest {
     public void init() throws Exception {
         network = new BuilderNetwork()
                 .withTransport(
-                        new HttpBuilderTransport(port, SpringConfigurationMvc.class)
+                        new HttpBuilderTransport(SpringConfigurationMvc.class)
+                                .withConnector(new BuilderHttpConnector(port))
                                 .withJspPath("webapp/views")
                 )
                 .build();

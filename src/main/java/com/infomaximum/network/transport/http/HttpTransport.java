@@ -1,9 +1,11 @@
 package com.infomaximum.network.transport.http;
 
+import com.infomaximum.network.exception.NetworkException;
 import com.infomaximum.network.packet.Packet;
 import com.infomaximum.network.transport.Transport;
 import com.infomaximum.network.transport.TypeTransport;
 import com.infomaximum.network.transport.http.builder.HttpBuilderTransport;
+import com.infomaximum.network.transport.http.builder.connector.BuilderHttpConnector;
 import com.infomaximum.network.transport.http.builder.filter.BuilderFilter;
 import com.infomaximum.network.transport.http.jsp.JspStarter;
 import org.apache.jasper.servlet.JspServlet;
@@ -15,6 +17,7 @@ import org.eclipse.jetty.server.handler.DefaultHandler;
 import org.eclipse.jetty.server.handler.HandlerCollection;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
+import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.eclipse.jetty.websocket.api.Session;
 import org.slf4j.Logger;
@@ -26,6 +29,8 @@ import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.Future;
 
 /**
@@ -43,11 +48,17 @@ public class HttpTransport extends Transport<Session> {
 
     private final Server server;
 
-    public HttpTransport(final HttpBuilderTransport httpBuilderTransport) throws Exception {
+    public HttpTransport(final HttpBuilderTransport httpBuilderTransport) throws NetworkException {
         server = new Server(new QueuedThreadPool(10000));
-        ServerConnector connector = new ServerConnector(server);
-        connector.setPort(httpBuilderTransport.getPort());
-        server.setConnectors(new Connector[]{connector});
+
+        if (httpBuilderTransport.getBuilderConnectors() == null || httpBuilderTransport.getBuilderConnectors().isEmpty()) {
+            throw new NetworkException("Not found connectors");
+        }
+        List<Connector> connectors = new ArrayList<>();
+        for (BuilderHttpConnector builderHttpConnector: httpBuilderTransport.getBuilderConnectors()) {
+            connectors.add(builderHttpConnector.build(server));
+        }
+        server.setConnectors(connectors.toArray(new Connector[connectors.size()]));
 
         ServletContextHandler context = new ServletContextHandler();
         context.setContextPath("/");
@@ -59,10 +70,19 @@ public class HttpTransport extends Transport<Session> {
         context.addServlet(new ServletHolder("default", new DispatcherServlet(applicationContext)), "/");
 
 
+        SslContextFactory sslContextFactory = new SslContextFactory();
+        sslContextFactory.setKeyStorePath("/home/kris/tmp/1/key/myKeystore.p12");
+        sslContextFactory.setKeyStorePassword("MY_PASSWORD");
+
 
         if (httpBuilderTransport.isSupportJsp()) {
             //Устанавливаем каталог для сборки jsp файлов
-            Path scratchDirectory = Files.createTempDirectory(null);
+            Path scratchDirectory;
+            try {
+                scratchDirectory = Files.createTempDirectory(null);
+            } catch (IOException e) {
+                throw new NetworkException(e);
+            }
             scratchDirectory.toFile().deleteOnExit();
             context.setAttribute("javax.servlet.context.tempdir", scratchDirectory.toFile());
 
@@ -90,7 +110,11 @@ public class HttpTransport extends Transport<Session> {
 
         if (httpBuilderTransport.getErrorHandler()!=null) server.setErrorHandler(httpBuilderTransport.getErrorHandler());
 
-        server.start();
+        try {
+            server.start();
+        } catch (Exception e) {
+            throw new NetworkException(e);
+        }
 
         instance = this;
     }

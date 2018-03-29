@@ -5,6 +5,7 @@ import com.infomaximum.network.builder.BuilderNetwork;
 import com.infomaximum.network.transport.coretest.websocket.CoreWSBadRequestTest;
 import com.infomaximum.network.transport.http.SpringConfigurationMvc;
 import com.infomaximum.network.transport.http.builder.HttpBuilderTransport;
+import com.infomaximum.network.transport.http.builder.connector.BuilderHttpConnector;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -23,7 +24,10 @@ public class WSBadRequestTest {
     @BeforeClass
     public static void init() throws Exception {
         network = new BuilderNetwork()
-                .withTransport(new HttpBuilderTransport(port, SpringConfigurationMvc.class))
+                .withTransport(
+                        new HttpBuilderTransport(SpringConfigurationMvc.class)
+                                .withConnector(new BuilderHttpConnector(port))
+                )
                 .build();
     }
 
