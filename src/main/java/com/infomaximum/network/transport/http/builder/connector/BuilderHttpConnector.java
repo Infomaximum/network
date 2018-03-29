@@ -1,5 +1,6 @@
 package com.infomaximum.network.transport.http.builder.connector;
 
+import com.infomaximum.network.exception.NetworkException;
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
@@ -20,7 +21,7 @@ public class BuilderHttpConnector {
     }
 
 
-    public Connector build(Server server) {
+    public Connector build(Server server) throws NetworkException {
         ServerConnector connector = new ServerConnector(server);
         connector.setPort(port);
         connector.setHost(host);

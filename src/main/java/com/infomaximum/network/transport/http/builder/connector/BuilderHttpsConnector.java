@@ -1,5 +1,6 @@
 package com.infomaximum.network.transport.http.builder.connector;
 
+import com.infomaximum.network.exception.NetworkException;
 import org.eclipse.jetty.server.*;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 
@@ -7,7 +8,7 @@ public class BuilderHttpsConnector extends BuilderHttpConnector {
 
     private SslContextFactory sslContextFactory;
 
-    public BuilderHttpsConnector(int port, String keyStorePath, String keyStorePassword) {
+    public BuilderHttpsConnector(int port) {
         super(port);
     }
 
@@ -35,7 +36,8 @@ public class BuilderHttpsConnector extends BuilderHttpConnector {
     }
 
     @Override
-    public Connector build(Server server) {
+    public Connector build(Server server) throws NetworkException {
+        if (sslContextFactory == null) throw new NetworkException("Not init ssl key");
 
         HttpConfiguration httpsConfig = new HttpConfiguration();
         httpsConfig.setSecureScheme( "https" );
