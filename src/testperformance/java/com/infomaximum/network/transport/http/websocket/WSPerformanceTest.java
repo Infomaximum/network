@@ -10,6 +10,7 @@ import com.infomaximum.network.packet.TargetPacket;
 import com.infomaximum.network.transport.coretest.websocket.CoreWSPerformanceTest;
 import com.infomaximum.network.transport.http.SpringConfigurationMvc;
 import com.infomaximum.network.transport.http.builder.HttpBuilderTransport;
+import com.infomaximum.network.transport.http.builder.connector.BuilderHttpConnector;
 import net.minidev.json.JSONObject;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -44,7 +45,10 @@ public class WSPerformanceTest {
                 }
             }
         })
-                .withTransport(new HttpBuilderTransport(port, SpringConfigurationMvc.class))
+                .withTransport(
+                        new HttpBuilderTransport(SpringConfigurationMvc.class)
+                                .withConnector(new BuilderHttpConnector(port))
+                )
                 .build();
     }
 
