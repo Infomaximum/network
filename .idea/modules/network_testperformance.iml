@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<module external.linked.project.id="network:testperformance" external.linked.project.path="$MODULE_DIR$/../.." external.root.project.path="$MODULE_DIR$/../.." external.system.id="GRADLE" external.system.module.group="com.infomaximum" external.system.module.type="sourceSet" external.system.module.version="0.0.10" type="JAVA_MODULE" version="4">
+<module external.linked.project.id="network:testperformance" external.linked.project.path="$MODULE_DIR$/../.." external.root.project.path="$MODULE_DIR$/../.." external.system.id="GRADLE" external.system.module.group="com.infomaximum" external.system.module.type="sourceSet" external.system.module.version="0.0.11" type="JAVA_MODULE" version="4">
   <component name="FacetManager">
     <facet type="Spring" name="Spring">
       <configuration />
@@ -16,8 +16,8 @@
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module" module-name="network_main" />
     <orderEntry type="module" module-name="network_test" production-on-test="" />
-    <orderEntry type="module" module-name="network_testintegration" />
     <orderEntry type="library" name="Gradle: io.netty:netty-all:4.1.12.Final" level="project" />
+    <orderEntry type="module" module-name="network_testintegration" />
     <orderEntry type="library" name="Gradle: org.eclipse.jetty:jetty-server:9.4.6.v20170531" level="project" />
     <orderEntry type="library" name="Gradle: org.eclipse.jetty:jetty-servlet:9.4.6.v20170531" level="project" />
     <orderEntry type="library" name="Gradle: org.eclipse.jetty:jetty-webapp:9.4.6.v20170531" level="project" />

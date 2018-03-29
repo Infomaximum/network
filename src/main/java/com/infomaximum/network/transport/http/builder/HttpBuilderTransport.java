@@ -1,6 +1,7 @@
 package com.infomaximum.network.transport.http.builder;
 
 import com.infomaximum.network.builder.BuilderTransport;
+import com.infomaximum.network.transport.http.builder.connector.BuilderHttpConnector;
 import com.infomaximum.network.transport.http.builder.filter.BuilderFilter;
 import org.eclipse.jetty.server.handler.ErrorHandler;
 
@@ -14,8 +15,7 @@ import java.util.Set;
  */
 public class HttpBuilderTransport extends BuilderTransport {
 
-    private InetAddress host;
-    private int port;
+    private Set<BuilderHttpConnector> builderConnectors;
 
     private Class classWebMvcConfig;
     private ErrorHandler errorHandler;
@@ -23,14 +23,15 @@ public class HttpBuilderTransport extends BuilderTransport {
     private String jspPath;
     private Set<BuilderFilter> filters;
 
-    public HttpBuilderTransport(int port, Class classWebMvcConfig) {
+    public HttpBuilderTransport(Class classWebMvcConfig) {
         this.classWebMvcConfig = classWebMvcConfig;
-        this.host = new InetSocketAddress(0).getAddress();
-        this.port = port;
     }
 
-    public HttpBuilderTransport withHost(InetAddress host){
-        this.host=host;
+    public HttpBuilderTransport withConnector(BuilderHttpConnector builderConnector){
+        if (builderConnectors==null) {
+            builderConnectors = new HashSet<BuilderHttpConnector>();
+        }
+        builderConnectors.add(builderConnector);
         return this;
     }
 
@@ -52,11 +53,8 @@ public class HttpBuilderTransport extends BuilderTransport {
         return this;
     }
 
-    public InetAddress getHost() {
-        return host;
-    }
-    public int getPort() {
-        return port;
+    public Set<BuilderHttpConnector> getBuilderConnectors() {
+        return builderConnectors;
     }
     public Class getClassWebMvcConfig() {
         return classWebMvcConfig;
