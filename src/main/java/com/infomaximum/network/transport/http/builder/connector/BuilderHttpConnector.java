@@ -7,7 +7,7 @@ import org.eclipse.jetty.server.ServerConnector;
 public class BuilderHttpConnector {
 
     private String host;
-    private int port;
+    protected int port;
 
     public BuilderHttpConnector(int port) {
         this.port = port;

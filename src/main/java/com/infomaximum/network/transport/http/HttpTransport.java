@@ -69,12 +69,6 @@ public class HttpTransport extends Transport<Session> {
         applicationContext.register(httpBuilderTransport.getClassWebMvcConfig());
         context.addServlet(new ServletHolder("default", new DispatcherServlet(applicationContext)), "/");
 
-
-        SslContextFactory sslContextFactory = new SslContextFactory();
-        sslContextFactory.setKeyStorePath("/home/kris/tmp/1/key/myKeystore.p12");
-        sslContextFactory.setKeyStorePassword("MY_PASSWORD");
-
-
         if (httpBuilderTransport.isSupportJsp()) {
             //Устанавливаем каталог для сборки jsp файлов
             Path scratchDirectory;
