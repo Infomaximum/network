@@ -31,9 +31,9 @@ public class FilterHttpRequestTest {
         network = new BuilderNetwork()
                 .withTransport(
                         new HttpBuilderTransport(SpringConfigurationMvc.class)
-                                .withConnector(new BuilderHttpConnector(port))
+                                .addConnector(new BuilderHttpConnector(port))
                                 .withJspPath("webapp/views")
-                                .withAddFilter(new BuilderFilter(AuthFilter.class, "/jsp/*"))
+                                .addFilter(new BuilderFilter(AuthFilter.class, "/jsp/*"))
                 )
                 .build();
     }
