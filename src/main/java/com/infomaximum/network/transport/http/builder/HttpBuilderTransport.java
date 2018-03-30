@@ -27,7 +27,7 @@ public class HttpBuilderTransport extends BuilderTransport {
         this.classWebMvcConfig = classWebMvcConfig;
     }
 
-    public HttpBuilderTransport withConnector(BuilderHttpConnector builderConnector){
+    public HttpBuilderTransport addConnector(BuilderHttpConnector builderConnector){
         if (builderConnectors==null) {
             builderConnectors = new HashSet<BuilderHttpConnector>();
         }
@@ -45,7 +45,7 @@ public class HttpBuilderTransport extends BuilderTransport {
         return this;
     }
 
-    public HttpBuilderTransport withAddFilter(BuilderFilter filterItem){
+    public HttpBuilderTransport addFilter(BuilderFilter filterItem){
         if (filters==null) {
             filters = new HashSet<BuilderFilter>();
         }

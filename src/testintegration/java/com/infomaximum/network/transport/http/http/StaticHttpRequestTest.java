@@ -26,7 +26,7 @@ public class StaticHttpRequestTest {
         network = new BuilderNetwork()
                 .withTransport(
                         new HttpBuilderTransport(SpringConfigurationMvc.class)
-                                .withConnector(new BuilderHttpConnector(port))
+                                .addConnector(new BuilderHttpConnector(port))
                                 .withJspPath("webapp/views")
                 )
                 .build();

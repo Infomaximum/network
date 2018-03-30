@@ -26,7 +26,7 @@ public class WSBadRequestTest {
         network = new BuilderNetwork()
                 .withTransport(
                         new HttpBuilderTransport(SpringConfigurationMvc.class)
-                                .withConnector(new BuilderHttpConnector(port))
+                                .addConnector(new BuilderHttpConnector(port))
                 )
                 .build();
     }

@@ -47,7 +47,7 @@ public class WSPerformanceTest {
         })
                 .withTransport(
                         new HttpBuilderTransport(SpringConfigurationMvc.class)
-                                .withConnector(new BuilderHttpConnector(port))
+                                .addConnector(new BuilderHttpConnector(port))
                 )
                 .build();
     }

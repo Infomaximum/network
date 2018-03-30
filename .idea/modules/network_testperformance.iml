@@ -16,8 +16,8 @@
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module" module-name="network_main" />
     <orderEntry type="module" module-name="network_test" production-on-test="" />
-    <orderEntry type="library" name="Gradle: io.netty:netty-all:4.1.12.Final" level="project" />
     <orderEntry type="module" module-name="network_testintegration" />
+    <orderEntry type="library" name="Gradle: io.netty:netty-all:4.1.12.Final" level="project" />
     <orderEntry type="library" name="Gradle: org.eclipse.jetty:jetty-server:9.4.6.v20170531" level="project" />
     <orderEntry type="library" name="Gradle: org.eclipse.jetty:jetty-servlet:9.4.6.v20170531" level="project" />
     <orderEntry type="library" name="Gradle: org.eclipse.jetty:jetty-webapp:9.4.6.v20170531" level="project" />
