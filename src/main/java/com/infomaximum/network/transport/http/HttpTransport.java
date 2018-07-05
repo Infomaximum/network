@@ -9,10 +9,7 @@ import com.infomaximum.network.transport.http.builder.connector.BuilderHttpConne
 import com.infomaximum.network.transport.http.builder.filter.BuilderFilter;
 import com.infomaximum.network.transport.http.jsp.JspStarter;
 import org.apache.jasper.servlet.JspServlet;
-import org.eclipse.jetty.server.Connector;
-import org.eclipse.jetty.server.Handler;
-import org.eclipse.jetty.server.Server;
-import org.eclipse.jetty.server.ServerConnector;
+import org.eclipse.jetty.server.*;
 import org.eclipse.jetty.server.handler.DefaultHandler;
 import org.eclipse.jetty.server.handler.HandlerCollection;
 import org.eclipse.jetty.servlet.ServletContextHandler;
@@ -56,7 +53,15 @@ public class HttpTransport extends Transport<Session> {
         }
         List<Connector> connectors = new ArrayList<>();
         for (BuilderHttpConnector builderHttpConnector: httpBuilderTransport.getBuilderConnectors()) {
-            connectors.add(builderHttpConnector.build(server));
+            Connector connector = builderHttpConnector.build(server);
+            connectors.add(connector);
+
+            //Возможно есть подписчики
+            if (httpBuilderTransport.getHttpChannelListeners()!=null) {
+                for (HttpChannel.Listener listener: httpBuilderTransport.getHttpChannelListeners()) {
+                    connector.addBean(listener);
+                }
+            }
         }
         server.setConnectors(connectors.toArray(new Connector[connectors.size()]));
 

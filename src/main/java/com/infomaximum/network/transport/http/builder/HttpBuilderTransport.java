@@ -3,6 +3,7 @@ package com.infomaximum.network.transport.http.builder;
 import com.infomaximum.network.builder.BuilderTransport;
 import com.infomaximum.network.transport.http.builder.connector.BuilderHttpConnector;
 import com.infomaximum.network.transport.http.builder.filter.BuilderFilter;
+import org.eclipse.jetty.server.HttpChannel;
 import org.eclipse.jetty.server.handler.ErrorHandler;
 
 import java.net.InetAddress;
@@ -22,6 +23,7 @@ public class HttpBuilderTransport extends BuilderTransport {
 
     private String jspPath;
     private Set<BuilderFilter> filters;
+    private Set<HttpChannel.Listener> httpChannelListeners;
 
     public HttpBuilderTransport(Class classWebMvcConfig) {
         this.classWebMvcConfig = classWebMvcConfig;
@@ -53,6 +55,14 @@ public class HttpBuilderTransport extends BuilderTransport {
         return this;
     }
 
+    public HttpBuilderTransport addListener(HttpChannel.Listener listener){
+        if (httpChannelListeners==null) {
+            httpChannelListeners = new HashSet<HttpChannel.Listener>();
+        }
+        httpChannelListeners.add(listener);
+        return this;
+    }
+
     public Set<BuilderHttpConnector> getBuilderConnectors() {
         return builderConnectors;
     }
@@ -70,5 +80,8 @@ public class HttpBuilderTransport extends BuilderTransport {
     }
     public Set<BuilderFilter> getFilters() {
         return filters;
+    }
+    public Set<HttpChannel.Listener> getHttpChannelListeners() {
+        return httpChannelListeners;
     }
 }

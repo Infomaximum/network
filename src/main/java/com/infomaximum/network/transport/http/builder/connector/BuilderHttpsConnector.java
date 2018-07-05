@@ -4,6 +4,8 @@ import com.infomaximum.network.exception.NetworkException;
 import org.eclipse.jetty.server.*;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 
+import java.security.KeyStore;
+
 public class BuilderHttpsConnector extends BuilderHttpConnector {
 
     private SslContextFactory sslContextFactory;
