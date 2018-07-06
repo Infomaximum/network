@@ -23,14 +23,6 @@ public class BuilderHttpConnector {
         ServerConnector connector = new ServerConnector(server);
         connector.setPort(port);
         connector.setHost(host);
-
-        connector.addBean(new HttpChannel.Listener(){
-            public void onComplete(Request request){
-                System.out.println(request);
-            }
-        });
-
-
         return connector;
     }
 }
