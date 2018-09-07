@@ -3,7 +3,6 @@ package com.infomaximum.network.session;
 import com.infomaximum.network.NetworkImpl;
 import com.infomaximum.network.external.IExecutePacket;
 import com.infomaximum.network.packet.ResponsePacket;
-import com.infomaximum.network.struct.SessionData;
 import com.infomaximum.network.transport.Transport;
 import net.minidev.json.JSONObject;
 import org.slf4j.Logger;
@@ -24,9 +23,9 @@ import java.util.concurrent.atomic.AtomicLong;
  */
 public class TransportSession {
 
-    private final static Logger log = LoggerFactory.getLogger(TransportSession.class);
+    public final static long DEFAULT_REQUEST_TIMEOUT = 3L * 60L * 1000L;//Таймаут
 
-    public final static long DEFAULT_REQUEST_TIMEOUT = 3L*60L*1000L;//Таймаут
+    private final static Logger log = LoggerFactory.getLogger(TransportSession.class);
 
     private final Session session;
 
@@ -34,7 +33,9 @@ public class TransportSession {
     private final Transport transport;
     private final Object channel;
 
-    /** итератор для id пакетов- запрашиваем о чем то клиент */
+    /**
+     * итератор для id пакетов- запрашиваем о чем то клиент
+     */
     private final AtomicLong nextIdPacketToQuestionClient = new AtomicLong(-1);
     private final Map<Long, CompletableFuture<ResponsePacket>> waitResponses = new ConcurrentHashMap<Long, CompletableFuture<com.infomaximum.network.packet.ResponsePacket>>();
 
@@ -42,14 +43,14 @@ public class TransportSession {
     private boolean isPhaseHandshake;
 
     public TransportSession(final NetworkImpl network, final Transport transport, final Object channel) throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
-        this.network=network;
-        this.transport=transport;
-        this.channel=channel;
+        this.network = network;
+        this.transport = transport;
+        this.channel = channel;
 
         this.session = new Session(network, this);
 
         //Проверяем наличие фазы рукопожатия
-        if (network.getHandshake()!=null) {
+        if (network.getHandshake() != null) {
             isPhaseHandshake = true;
         } else {
             isPhaseHandshake = false;
@@ -61,18 +62,19 @@ public class TransportSession {
         return isPhaseHandshake;
     }
 
-    public void completedPhaseHandshake(){
+    public void completedPhaseHandshake() {
         isPhaseHandshake = false;
         network.onHandshake(session);
     }
 
-    public void failPhaseHandshake(ResponsePacket responsePacket){
+    public void failPhaseHandshake(ResponsePacket responsePacket) {
         try {
-            if (responsePacket!=null) {
+            if (responsePacket != null) {
                 transport.send(channel, responsePacket).get();
             }
             transport.close(channel);
-        } catch (Throwable ignore) {}
+        } catch (Throwable ignore) {
+        }
         destroyed();
     }
 
@@ -80,7 +82,9 @@ public class TransportSession {
         return session;
     }
 
-    /** Сюда приходят входящие пакеты из сети */
+    /**
+     * Сюда приходят входящие пакеты из сети
+     */
     public void incomingPacket(com.infomaximum.network.packet.Packet packet) {
         try {
             if (packet.getType() == com.infomaximum.network.packet.TypePacket.RESPONSE) {
@@ -93,31 +97,32 @@ public class TransportSession {
                     future.complete(responsePacket);
                 }
             } else {
-                CompletableFuture<ResponsePacket> response = getExecutePacket().exec(session, (com.infomaximum.network.packet.TargetPacket) packet);
-                if (response!=null) {
-                    response.thenAccept(responsePacket -> {
-                        if (packet.getType() == com.infomaximum.network.packet.TypePacket.REQUEST) {//Требуется ответ
-                            if (responsePacket == null) {
-                                log.error("Response packet is null");
-                                try {
-                                    transport.close(channel);
-                                } catch (Throwable ignore) {}
-                                destroyed();
-                            }
-                            try {
-                                transport.send(channel, responsePacket);
-                            } catch (Throwable e) {
-                                if (!(e instanceof IOException)) {
-                                    log.error("Exception", e);
+                getExecutePacket()
+                        .exec(session, (com.infomaximum.network.packet.TargetPacket) packet)
+                        .thenAccept(responsePacket -> {
+                            if (packet.getType() == com.infomaximum.network.packet.TypePacket.REQUEST) {//Требуется ответ
+                                if (responsePacket == null) {
+                                    log.error("Response packet is null");
+                                    try {
+                                        transport.close(channel);
+                                    } catch (Throwable ignore) {
+                                    }
+                                    destroyed();
                                 }
                                 try {
-                                    transport.close(channel);
-                                } catch (Throwable ignore) {}
-                                destroyed();
+                                    transport.send(channel, responsePacket);
+                                } catch (Throwable e) {
+                                    if (!(e instanceof IOException)) {
+                                        log.error("Exception", e);
+                                    }
+                                    try {
+                                        transport.close(channel);
+                                    } catch (Throwable ignore) {
+                                    }
+                                    destroyed();
+                                }
                             }
-                        }
-                    });
-                }
+                        });
 
 
 //                response.handle((jsonObject, throwable) -> {
@@ -164,7 +169,10 @@ public class TransportSession {
             }
         } catch (Exception e) {
             log.error("{} Ошибка обработки входящего пакета: ", session, e);
-            try { transport.close(channel); } catch (IOException ignore) {}
+            try {
+                transport.close(channel);
+            } catch (IOException ignore) {
+            }
             destroyed();
         }
     }
@@ -197,6 +205,7 @@ public class TransportSession {
 
     /**
      * Возврощаем обработчика пакетов
+     *
      * @return
      */
     protected IExecutePacket getExecutePacket() {
@@ -208,6 +217,9 @@ public class TransportSession {
     }
 
     public void destroyed() {
-        try { transport.close(channel); } catch (Throwable ignore) {}
+        try {
+            transport.close(channel);
+        } catch (Throwable ignore) {
+        }
     }
 }
