@@ -3,8 +3,6 @@ package com.infomaximum.network.packet;
 import net.minidev.json.JSONAware;
 import net.minidev.json.JSONObject;
 
-import java.io.Serializable;
-
 /**
  * Created by kris on 26.08.16.
  */
@@ -34,7 +32,7 @@ public class ResponsePacket extends Packet implements IPacketId {
     @Override
     protected void serializeNative(JSONObject jsonObject) {
         jsonObject.put("id", id);
-        if (dataException==null) {
+        if (dataException != null) {
             jsonObject.put("error", dataException);
         }
     }
