@@ -10,8 +10,6 @@ import com.infomaximum.network.event.NetworkListener;
  */
 public interface Network extends AutoCloseable {
 
-    public ManagerSession getManagerSession();
-
     public void addNetworkListener(NetworkListener listener);
 
     public void removeNetworkListener(NetworkListener listener);

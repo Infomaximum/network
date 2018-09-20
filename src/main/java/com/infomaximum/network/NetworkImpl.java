@@ -1,10 +1,9 @@
 package com.infomaximum.network;
 
 import com.infomaximum.network.event.NetworkListener;
-import com.infomaximum.network.external.IExecutePacket;
-import com.infomaximum.network.external.handshake.Handshake;
+import com.infomaximum.network.handler.PacketHandler;
+import com.infomaximum.network.handler.handshake.Handshake;
 import com.infomaximum.network.packet.*;
-import com.infomaximum.network.session.manager.ManagerSessionImpl;
 import com.infomaximum.network.session.Session;
 import com.infomaximum.network.session.TransportSession;
 import com.infomaximum.network.transport.Transport;
@@ -14,7 +13,6 @@ import net.minidev.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.Set;
@@ -31,7 +29,7 @@ public class NetworkImpl implements Network, TransportListener {
     private final Handshake handshake;
 
     private final SessionDataBuilder sessionDataBuilder;
-    private final IExecutePacket executePacket;
+    private final PacketHandler packetHandler;
 
     private final Class<? extends RequestPacket> extensionRequestPacket;
 
@@ -40,30 +38,42 @@ public class NetworkImpl implements Network, TransportListener {
     private final Set<NetworkListener> listeners;
     private final ConcurrentHashMap<Object, TransportSession> transportSessions;
 
-    private final ManagerSessionImpl managerSession;
+    private Thread.UncaughtExceptionHandler uncaughtExceptionHandler;
 
-    public NetworkImpl(ManagerSessionImpl managerSession,
-                       Handshake handshake,
+    public NetworkImpl(Handshake handshake,
                        SessionDataBuilder sessionDataBuilder,
                        Class<? extends RequestPacket> extensionRequestPacket,
-                       IExecutePacket executePacket
+                       PacketHandler.Builder packetHandlerBuilder,
+                       Thread.UncaughtExceptionHandler uncaughtExceptionHandler
     ) throws Exception {
-        this.handshake=handshake;
+        this.handshake = handshake;
 
         this.sessionDataBuilder = sessionDataBuilder;
-        this.executePacket=executePacket;
+        if (packetHandlerBuilder != null) {
+            this.packetHandler = packetHandlerBuilder.build(this);
+        } else {
+            this.packetHandler = null;
+        }
 
-        this.extensionRequestPacket=extensionRequestPacket;
+        this.extensionRequestPacket = extensionRequestPacket;
 
         this.transports = new CopyOnWriteArrayList<Transport>();
 
         this.listeners = new CopyOnWriteArraySet<NetworkListener>();
         this.transportSessions = new ConcurrentHashMap<Object, TransportSession>();
 
-        this.managerSession = managerSession;
-        if (managerSession != null) this.addNetworkListener(managerSession);
+        if (uncaughtExceptionHandler == null) {
+            this.uncaughtExceptionHandler = new Thread.UncaughtExceptionHandler() {
+                @Override
+                public void uncaughtException(Thread t, Throwable e) {
+                    log.error("UncaughtException", e);
+                }
+            };
+        } else {
+            this.uncaughtExceptionHandler = uncaughtExceptionHandler;
+        }
 
-        if (instance!=null) throw new RuntimeException("Network is not singleton");
+        if (instance != null) throw new RuntimeException("Network is not singleton");
         instance = this;
     }
 
@@ -79,13 +89,12 @@ public class NetworkImpl implements Network, TransportListener {
         return sessionDataBuilder;
     }
 
-    public IExecutePacket getExecutePacket() {
-        return executePacket;
+    public PacketHandler getPacketHandler() {
+        return packetHandler;
     }
 
-    @Override
-    public ManagerSession getManagerSession() {
-        return managerSession;
+    public Thread.UncaughtExceptionHandler getUncaughtExceptionHandler() {
+        return uncaughtExceptionHandler;
     }
 
     @Override
@@ -125,38 +134,21 @@ public class NetworkImpl implements Network, TransportListener {
 
     public void onHandshake(Session session) {
         //Оповещаем подписчиков
-        for (NetworkListener listener: listeners) {
+        for (NetworkListener listener : listeners) {
             listener.onHandshake(session);
-        }
-    }
-
-    public void onLogin(Session session, Serializable user){
-        //Оповещаем подписчиков
-        for (NetworkListener listener: listeners) {
-            listener.onLogin(session, user);
-        }
-    }
-
-    public void onLogout(Session session, Serializable user){
-        //Оповещаем подписчиков
-        for (NetworkListener listener: listeners) {
-            listener.onLogout(session, user);
         }
     }
 
     @Override
     public void onDisconnect(Transport transport, Object channel, int statusCode, Throwable throwable) {
         TransportSession transportSession = transportSessions.remove(channel);
-        if (transportSession!=null) {
+        if (transportSession != null) {
             log.info("{} onDisconnect, {}, exception: {}", transportSession.getSession(), statusCode, throwable);
 
-            if (transportSession.getSession().isLogin()) {
-                transportSession.getSession().logout();//Обязательно делаем logout
-            }
             transportSession.destroyed();
 
             //Оповещаем подписчиков
-            for (NetworkListener listener: listeners) {
+            for (NetworkListener listener : listeners) {
                 listener.onDisconnect(transportSession.getSession());
             }
         }
@@ -174,13 +166,13 @@ public class NetworkImpl implements Network, TransportListener {
 
     public Packet parsePacket(JSONObject parse) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
         TypePacket type = TypePacket.get(parse.getAsNumber("type").intValue());
-        if (type==TypePacket.ASYNC) {
+        if (type == TypePacket.ASYNC) {
             String controller = parse.getAsString("controller");
             String action = parse.getAsString("action");
             JSONObject data = (JSONObject) parse.get("data");
             return new AsyncPacket(controller, action, data);
         } else if (type == TypePacket.REQUEST) {
-            if (extensionRequestPacket==null) {
+            if (extensionRequestPacket == null) {
                 return new RequestPacket(parse);
             } else {
                 return extensionRequestPacket.getConstructor(JSONObject.class).newInstance(parse);
@@ -197,18 +189,14 @@ public class NetworkImpl implements Network, TransportListener {
 
     @Override
     public void close() throws Exception {
-        if (managerSession!=null) {
-            removeNetworkListener(managerSession);
-            managerSession.close();
-        }
-        while (transports.size()>0) {
+        while (transports.size() > 0) {
             try {
                 transports.remove(0).destroy();
             } catch (Exception e) {
                 log.error("Error destroy connect", e);
             }
         }
-        instance=null;
+        instance = null;
     }
 }
 
