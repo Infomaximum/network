@@ -1,13 +1,13 @@
-package com.infomaximum.network.external.handshake;
+package com.infomaximum.network.handler.handshake;
 
-import com.infomaximum.network.session.Session;
-import com.infomaximum.network.external.IExecutePacket;
+import com.infomaximum.network.handler.PacketHandler;
 import com.infomaximum.network.packet.ResponsePacket;
+import com.infomaximum.network.session.Session;
 
 /**
  * Created by kris on 01.09.16.
  */
-public abstract class Handshake implements IExecutePacket {
+public abstract class Handshake implements PacketHandler {
 
     public abstract void onPhaseHandshake(Session session);
 

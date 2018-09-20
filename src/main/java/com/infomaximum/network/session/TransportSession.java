@@ -1,7 +1,7 @@
 package com.infomaximum.network.session;
 
 import com.infomaximum.network.NetworkImpl;
-import com.infomaximum.network.external.IExecutePacket;
+import com.infomaximum.network.handler.PacketHandler;
 import com.infomaximum.network.packet.ResponsePacket;
 import com.infomaximum.network.transport.Transport;
 import net.minidev.json.JSONObject;
@@ -97,7 +97,7 @@ public class TransportSession {
                     future.complete(responsePacket);
                 }
             } else {
-                getExecutePacket()
+                getPacketHandler()
                         .exec(session, (com.infomaximum.network.packet.TargetPacket) packet)
                         .thenAccept(responsePacket -> {
                             if (packet.getType() == com.infomaximum.network.packet.TypePacket.REQUEST) {//Требуется ответ
@@ -123,49 +123,6 @@ public class TransportSession {
                                 }
                             }
                         });
-
-
-//                response.handle((jsonObject, throwable) -> {
-//                    if (throwable == null) {
-//                        if (packet.getType() == com.infomaximum.network.packet.TypePacket.REQUEST) {//Требуется ответ
-//                            transport.send(channel, com.infomaximum.network.packet.ResponsePacket.response((com.infomaximum.network.packet.RequestPacket) packet, network.getCodeResponse().SUCCESS(), response));
-//                        }
-//                    } else {
-//                        if (throwable instanceof ResponseException)
-//
-//                        if (packet.getType() == com.infomaximum.network.packet.TypePacket.REQUEST) {//Требуется ответ
-//                            transport.send(channel, com.infomaximum.network.packet.ResponsePacket.response((com.infomaximum.network.packet.RequestPacket) packet, responseException.getCode(), responseException.getDate()));
-//                        }
-//
-//                        //Если это ошибка рукопожатия, то надо рвать соединение
-//                        if (throwable instanceof HandshakeException) {
-//                            try {
-//                                transport.close(channel);
-//                            } catch (Throwable ignore) {}
-//                            destroyed();
-//                        }
-//                    }
-//
-//                    return null;
-//                });
-//
-//                response.thenAccept(jsonObject -> {
-//                    if (packet.getType() == com.infomaximum.network.packet.TypePacket.REQUEST) {//Требуется ответ
-//                        transport.send(channel, com.infomaximum.network.packet.ResponsePacket.response((com.infomaximum.network.packet.RequestPacket) packet, network.getCodeResponse().SUCCESS(), response));
-//                    }
-//                }).exceptionally(throwable -> {
-//                    if (packet.getType() == com.infomaximum.network.packet.TypePacket.REQUEST) {//Требуется ответ
-//                        transport.send(channel, com.infomaximum.network.packet.ResponsePacket.response((com.infomaximum.network.packet.RequestPacket) packet, responseException.getCode(), responseException.getDate()));
-//                    }
-//
-//                    //Если это ошибка рукопожатия, то надо рвать соединение
-//                    if (throwable instanceof HandshakeException) {
-//                        try {
-//                            transport.close(channel);
-//                        } catch (Throwable ignore) {}
-//                        destroyed();
-//                    }
-//                });
             }
         } catch (Exception e) {
             log.error("{} Ошибка обработки входящего пакета: ", session, e);
@@ -208,11 +165,11 @@ public class TransportSession {
      *
      * @return
      */
-    protected IExecutePacket getExecutePacket() {
+    protected PacketHandler getPacketHandler() {
         if (isPhaseHandshake) {
             return network.getHandshake();
         } else {
-            return network.getExecutePacket();
+            return network.getPacketHandler();
         }
     }
 

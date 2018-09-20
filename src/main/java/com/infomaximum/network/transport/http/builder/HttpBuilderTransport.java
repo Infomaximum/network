@@ -6,8 +6,6 @@ import com.infomaximum.network.transport.http.builder.filter.BuilderFilter;
 import org.eclipse.jetty.server.HttpChannel;
 import org.eclipse.jetty.server.handler.ErrorHandler;
 
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
 import java.util.HashSet;
 import java.util.Set;
 
