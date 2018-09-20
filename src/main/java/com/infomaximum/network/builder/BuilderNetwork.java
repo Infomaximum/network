@@ -2,7 +2,6 @@ package com.infomaximum.network.builder;
 
 import com.infomaximum.network.Network;
 import com.infomaximum.network.NetworkImpl;
-import com.infomaximum.network.SessionDataBuilder;
 import com.infomaximum.network.handler.PacketHandler;
 import com.infomaximum.network.handler.handshake.Handshake;
 import com.infomaximum.network.packet.RequestPacket;
@@ -20,8 +19,6 @@ public class BuilderNetwork {
 
     private Handshake handshake = null;
     private PacketHandler.Builder packetHandlerBuilder = null;
-
-    private SessionDataBuilder sessionDataBuilder = null;
 
     private Class<? extends RequestPacket> extensionRequestPacket = null;
 
@@ -48,12 +45,6 @@ public class BuilderNetwork {
         return this;
     }
 
-
-    public BuilderNetwork withSessionDataBuilder(SessionDataBuilder sessionDataBuilder) {
-        this.sessionDataBuilder = sessionDataBuilder;
-        return this;
-    }
-
     public BuilderNetwork withExtensionRequestPacket(Class<? extends RequestPacket> extensionRequestPacket) {
         this.extensionRequestPacket = extensionRequestPacket;
         return this;
@@ -67,7 +58,6 @@ public class BuilderNetwork {
     public Network build() throws Exception {
         NetworkImpl network = new NetworkImpl(
                 handshake,
-                sessionDataBuilder,
                 extensionRequestPacket,
                 packetHandlerBuilder,
                 uncaughtExceptionHandler
