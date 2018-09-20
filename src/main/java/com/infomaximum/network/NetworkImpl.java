@@ -28,7 +28,6 @@ public class NetworkImpl implements Network, TransportListener {
 
     private final Handshake handshake;
 
-    private final SessionDataBuilder sessionDataBuilder;
     private final PacketHandler packetHandler;
 
     private final Class<? extends RequestPacket> extensionRequestPacket;
@@ -41,14 +40,12 @@ public class NetworkImpl implements Network, TransportListener {
     private Thread.UncaughtExceptionHandler uncaughtExceptionHandler;
 
     public NetworkImpl(Handshake handshake,
-                       SessionDataBuilder sessionDataBuilder,
                        Class<? extends RequestPacket> extensionRequestPacket,
                        PacketHandler.Builder packetHandlerBuilder,
                        Thread.UncaughtExceptionHandler uncaughtExceptionHandler
     ) throws Exception {
         this.handshake = handshake;
 
-        this.sessionDataBuilder = sessionDataBuilder;
         if (packetHandlerBuilder != null) {
             this.packetHandler = packetHandlerBuilder.build(this);
         } else {
@@ -83,10 +80,6 @@ public class NetworkImpl implements Network, TransportListener {
 
     public Handshake getHandshake() {
         return handshake;
-    }
-
-    public SessionDataBuilder getSessionDataBuilder() {
-        return sessionDataBuilder;
     }
 
     public PacketHandler getPacketHandler() {

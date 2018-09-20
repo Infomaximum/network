@@ -3,6 +3,7 @@ package com.infomaximum.network.session;
 import com.infomaximum.network.NetworkImpl;
 import com.infomaximum.network.handler.PacketHandler;
 import com.infomaximum.network.packet.ResponsePacket;
+import com.infomaximum.network.struct.HandshakeData;
 import com.infomaximum.network.transport.Transport;
 import net.minidev.json.JSONObject;
 import org.slf4j.Logger;
@@ -62,8 +63,9 @@ public class TransportSession {
         return isPhaseHandshake;
     }
 
-    public void completedPhaseHandshake() {
+    public void completedPhaseHandshake(HandshakeData handshakeData) {
         isPhaseHandshake = false;
+        session.initHandshakeData(handshakeData);
         network.onHandshake(session);
     }
 
