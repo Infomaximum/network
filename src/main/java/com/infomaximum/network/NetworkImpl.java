@@ -8,7 +8,6 @@ import com.infomaximum.network.session.Session;
 import com.infomaximum.network.session.TransportSession;
 import com.infomaximum.network.transport.Transport;
 import com.infomaximum.network.transport.TransportListener;
-import net.minidev.json.JSONAware;
 import net.minidev.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -172,9 +171,9 @@ public class NetworkImpl implements Network, TransportListener {
             }
         } else if (type == TypePacket.RESPONSE) {
             long id = parse.getAsNumber("id").longValue();
+            int code = parse.getAsNumber("code").intValue();
             JSONObject data = (JSONObject) parse.get("data");
-            JSONAware dataException = (JSONAware) parse.get("error");
-            return new ResponsePacket(id, data, dataException);
+            return new ResponsePacket(id, code, data);
         } else {
             throw new RuntimeException("Not support type packet: " + type);
         }

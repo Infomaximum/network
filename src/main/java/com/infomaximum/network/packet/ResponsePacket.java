@@ -1,6 +1,5 @@
 package com.infomaximum.network.packet;
 
-import net.minidev.json.JSONAware;
 import net.minidev.json.JSONObject;
 
 /**
@@ -9,14 +8,12 @@ import net.minidev.json.JSONObject;
 public class ResponsePacket extends Packet implements IPacketId {
 
     private final long id;
+    private final int code;
 
-    //Опциональное поле, для пакетов типа RESPONSE
-    private JSONAware dataException;
-
-    public ResponsePacket(long id, JSONObject data, JSONAware dataException) {
+    public ResponsePacket(long id, int code, JSONObject data) {
         super(data);
         this.id = id;
-        this.dataException = dataException;
+        this.code = code;
     }
 
     @Override
@@ -32,16 +29,10 @@ public class ResponsePacket extends Packet implements IPacketId {
     @Override
     protected void serializeNative(JSONObject jsonObject) {
         jsonObject.put("id", id);
-        if (dataException != null) {
-            jsonObject.put("error", dataException);
-        }
+        jsonObject.put("code", code);
     }
 
-    public static ResponsePacket responseAccept(IPacketId request, JSONObject data) {
-        return new ResponsePacket(request.getId(), data, null);
-    }
-
-    public static ResponsePacket responseException(IPacketId request, JSONAware dataException) {
-        return new ResponsePacket(request.getId(), null, dataException);
+    public static ResponsePacket response(IPacketId request, int code, JSONObject data) {
+        return new ResponsePacket(request.getId(), code, data);
     }
 }
