@@ -4,6 +4,7 @@ import com.infomaximum.network.Network;
 import com.infomaximum.network.NetworkImpl;
 import com.infomaximum.network.builder.BuilderNetwork;
 import com.infomaximum.network.handler.PacketHandler;
+import com.infomaximum.network.mvc.ResponseEntity;
 import com.infomaximum.network.packet.RequestPacket;
 import com.infomaximum.network.packet.ResponsePacket;
 import com.infomaximum.network.packet.TargetPacket;
@@ -49,7 +50,11 @@ public class WSPerformanceTest {
                                     public CompletableFuture<ResponsePacket> exec(Session session, TargetPacket packet) {
                                         if (packet instanceof RequestPacket) {
                                             CompletableFuture<ResponsePacket> completableFuture = new CompletableFuture<ResponsePacket>();
-                                            completableFuture.complete(ResponsePacket.responseAccept((RequestPacket) packet, new JSONObject()));
+                                            completableFuture.complete(ResponsePacket.response(
+                                                    (RequestPacket) packet,
+                                                    ResponseEntity.RESPONSE_CODE_OK,
+                                                    new JSONObject()
+                                            ));
                                             return completableFuture;
                                         } else {
                                             return null;

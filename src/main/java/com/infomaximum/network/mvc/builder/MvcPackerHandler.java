@@ -2,6 +2,7 @@ package com.infomaximum.network.mvc.builder;
 
 import com.infomaximum.network.NetworkImpl;
 import com.infomaximum.network.handler.PacketHandler;
+import com.infomaximum.network.mvc.ResponseEntity;
 import com.infomaximum.network.mvc.anotation.Controller;
 import com.infomaximum.network.mvc.anotation.ControllerAction;
 import com.infomaximum.network.packet.RequestPacket;
@@ -22,6 +23,13 @@ import java.util.concurrent.CompletableFuture;
 public class MvcPackerHandler implements PacketHandler {
 
     private final static Logger log = LoggerFactory.getLogger(MvcPackerHandler.class);
+    private final NetworkImpl network;
+    private final HashMap<String, MvcController> controllers;
+
+    private MvcPackerHandler(NetworkImpl network, HashMap<String, MvcController> controllers) {
+        this.network = network;
+        this.controllers = controllers;
+    }
 
     private static class MvcController {
         private final Object controller;
@@ -71,14 +79,6 @@ public class MvcPackerHandler implements PacketHandler {
         }
     }
 
-    private final NetworkImpl network;
-    private final HashMap<String, MvcController> controllers;
-
-    private MvcPackerHandler(NetworkImpl network, HashMap<String, MvcController> controllers) {
-        this.network = network;
-        this.controllers = controllers;
-    }
-
     @Override
     public CompletableFuture<ResponsePacket> exec(Session session, TargetPacket packet) {
         MvcController mvcController = controllers.get(packet.controller);
@@ -87,9 +87,12 @@ public class MvcPackerHandler implements PacketHandler {
             final Method method = mvcController.actions.get(packet.action);
             if (method == null) {
                 return CompletableFuture.completedFuture(
-                        ResponsePacket.responseException((RequestPacket) packet, new JSONObject() {{
-                            put("message", "unknown action");
-                        }})
+                        ResponsePacket.response(
+                                (RequestPacket) packet,
+                                ResponseEntity.RESPONSE_CODE_ERROR,
+                                new JSONObject() {{
+                                    put("message", "unknown action");
+                                }})
                 );
             }
 
@@ -111,15 +114,27 @@ public class MvcPackerHandler implements PacketHandler {
             Object result = method.invoke(mvcController.controller, methodArds);
 
             if (result == null) {
-                return CompletableFuture.completedFuture(ResponsePacket.responseAccept((RequestPacket) packet, null));
-            } else if (result instanceof CompletableFuture) {
-                CompletableFuture<JSONObject> futureResponse = (CompletableFuture<JSONObject>) result;
-                return futureResponse.thenApply(
-                        jsonResponse -> ResponsePacket.responseAccept((RequestPacket) packet, jsonResponse)
+                return CompletableFuture.completedFuture(ResponsePacket.response(
+                        (RequestPacket) packet,
+                        ResponseEntity.RESPONSE_CODE_OK,
+                        null)
                 );
-            } else if (result instanceof JSONObject) {
+            } else if (result instanceof CompletableFuture) {
+                CompletableFuture<ResponseEntity> futureResponse = (CompletableFuture<ResponseEntity>) result;
+                return futureResponse.thenApply(
+                        responseEntity -> ResponsePacket.response(
+                                (RequestPacket) packet,
+                                responseEntity.code,
+                                responseEntity.data
+                        )
+                ).exceptionally(throwable -> {
+                    network.getUncaughtExceptionHandler().uncaughtException(Thread.currentThread(), throwable);
+                    return null;
+                });
+            } else if (result instanceof ResponseEntity) {
+                ResponseEntity responseEntity = (ResponseEntity) result;
                 return CompletableFuture.completedFuture(
-                        ResponsePacket.responseAccept((RequestPacket) packet, (JSONObject) result)
+                        ResponsePacket.response((RequestPacket) packet, responseEntity.code, responseEntity.data)
                 );
             } else {
                 throw new RuntimeException("Not support return type: " + result);
