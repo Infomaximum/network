@@ -9,6 +9,7 @@ import com.infomaximum.network.packet.RequestPacket;
 import com.infomaximum.network.packet.ResponsePacket;
 import com.infomaximum.network.packet.TargetPacket;
 import com.infomaximum.network.session.Session;
+import com.infomaximum.network.session.TransportSession;
 import net.minidev.json.JSONObject;
 import org.reflections.Reflections;
 import org.slf4j.Logger;
@@ -23,6 +24,7 @@ import java.util.concurrent.CompletableFuture;
 public class MvcPackerHandler implements PacketHandler {
 
     private final static Logger log = LoggerFactory.getLogger(MvcPackerHandler.class);
+
     private final NetworkImpl network;
     private final HashMap<String, MvcController> controllers;
 
@@ -106,6 +108,10 @@ public class MvcPackerHandler implements PacketHandler {
                     methodArds[i] = session;
                 } else if (clazz == JSONObject.class) {
                     methodArds[i] = packet.getData();
+                } else if (clazz == TransportSession.class) {
+                    methodArds[i] = session.getTransportSession();
+                } else if (TargetPacket.class.isAssignableFrom(clazz)) {
+                    methodArds[i] = packet;
                 } else {
                     throw new RuntimeException("Nothing type to method: " + packet.action + ", i: " + i);
                 }
