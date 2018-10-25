@@ -2,17 +2,18 @@ package com.infomaximum.network.session;
 
 import com.infomaximum.network.NetworkImpl;
 import com.infomaximum.network.handler.PacketHandler;
+import com.infomaximum.network.packet.Packet;
 import com.infomaximum.network.packet.ResponsePacket;
 import com.infomaximum.network.struct.HandshakeData;
 import com.infomaximum.network.transport.Transport;
-import net.minidev.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
-import java.util.concurrent.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
@@ -112,7 +113,7 @@ public class TransportSession {
                                     destroyed();
                                 }
                                 try {
-                                    transport.send(channel, responsePacket);
+                                    send(responsePacket);
                                 } catch (Throwable e) {
                                     if (!(e instanceof IOException)) {
                                         log.error("Exception", e);
@@ -136,30 +137,8 @@ public class TransportSession {
         }
     }
 
-    public void sendAsync(String controller, String method, JSONObject data) throws IOException {
-        transport.send(channel, new com.infomaximum.network.packet.AsyncPacket(controller, method, data));
-    }
-
-    public com.infomaximum.network.packet.ResponsePacket sendRequest(String controller, String method, JSONObject data) throws TimeoutException, ExecutionException, InterruptedException, IOException {
-        return sendRequest(controller, method, data, DEFAULT_REQUEST_TIMEOUT);
-    }
-
-    public com.infomaximum.network.packet.ResponsePacket sendRequest(String controller, String method, JSONObject data, long timeout) throws TimeoutException, ExecutionException, InterruptedException, IOException {
-        long id = nextIdPacketToQuestionClient.getAndIncrement();
-
-        CompletableFuture<com.infomaximum.network.packet.ResponsePacket> future = new CompletableFuture<com.infomaximum.network.packet.ResponsePacket>();
-        waitResponses.put(id, future);
-
-        try {
-            //Отправляем пакет на запрос
-            transport.send(channel, new com.infomaximum.network.packet.RequestPacket(id, controller, method, data));
-
-            //Дожидаемся ответа
-            return future.get(timeout, TimeUnit.MILLISECONDS);
-        } finally {
-            //Чистим
-            waitResponses.remove(id);
-        }
+    public void send(Packet packet) throws IOException {
+        transport.send(channel, packet);
     }
 
     /**
