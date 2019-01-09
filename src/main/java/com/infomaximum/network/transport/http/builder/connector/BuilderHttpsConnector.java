@@ -65,9 +65,17 @@ public class BuilderHttpsConnector extends BuilderHttpConnector {
             return this;
         }
 
+        public String[] getIncludeProtocols() {
+            return builderHttpsConnector.sslContextFactory.getIncludeProtocols();
+        }
+
         public BuilderSslContextFactory setExcludeProtocols(String... protocols) {
             builderHttpsConnector.sslContextFactory.setExcludeProtocols(protocols);
             return this;
+        }
+
+        public String[] getExcludeProtocols() {
+            return builderHttpsConnector.sslContextFactory.getExcludeProtocols();
         }
 
         public BuilderSslContextFactory setIncludeCipherSuites(String... cipherSuites) {
@@ -75,9 +83,17 @@ public class BuilderHttpsConnector extends BuilderHttpConnector {
             return this;
         }
 
+        public String[] getIncludeCipherSuites() {
+            return builderHttpsConnector.sslContextFactory.getIncludeCipherSuites();
+        }
+
         public BuilderSslContextFactory setExcludeCipherSuites(String... cipherSuites) {
             builderHttpsConnector.sslContextFactory.setExcludeCipherSuites(cipherSuites);
             return this;
+        }
+
+        public String[] getExcludeCipherSuites() {
+            return builderHttpsConnector.sslContextFactory.getExcludeCipherSuites();
         }
 
         public BuilderHttpsConnector build() {
