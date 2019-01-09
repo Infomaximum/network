@@ -3,9 +3,9 @@ package com.infomaximum.network.transport.http.http;
 import com.infomaximum.network.Network;
 import com.infomaximum.network.builder.BuilderNetwork;
 import com.infomaximum.network.controller.filter.AuthFilter;
-import com.infomaximum.network.struct.TestCodeResponse;
 import com.infomaximum.network.transport.http.SpringConfigurationMvc;
 import com.infomaximum.network.transport.http.builder.HttpBuilderTransport;
+import com.infomaximum.network.transport.http.builder.connector.BuilderHttpConnector;
 import com.infomaximum.network.transport.http.builder.filter.BuilderFilter;
 import com.infomaximum.network.transport.http.http.utils.TestContentUtils;
 import org.junit.After;
@@ -30,11 +30,11 @@ public class FilterHttpRequestTest {
     public void init() throws Exception {
         network = new BuilderNetwork()
                 .withTransport(
-                        new HttpBuilderTransport(port, SpringConfigurationMvc.class)
+                        new HttpBuilderTransport(SpringConfigurationMvc.class)
+                                .addConnector(new BuilderHttpConnector(port))
                                 .withJspPath("webapp/views")
-                                .withAddFilter(new BuilderFilter(AuthFilter.class, "/jsp/*"))
+                                .addFilter(new BuilderFilter(AuthFilter.class, "/jsp/*"))
                 )
-                .withCodeResponse(new TestCodeResponse())
                 .build();
     }
 
@@ -51,7 +51,7 @@ public class FilterHttpRequestTest {
 
     @After
     public void destroy() throws Exception {
-        network.destroy();
+        network.close();
         network=null;
     }
 }

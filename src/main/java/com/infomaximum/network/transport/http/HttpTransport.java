@@ -1,16 +1,15 @@
 package com.infomaximum.network.transport.http;
 
+import com.infomaximum.network.exception.NetworkException;
 import com.infomaximum.network.packet.Packet;
 import com.infomaximum.network.transport.Transport;
 import com.infomaximum.network.transport.TypeTransport;
 import com.infomaximum.network.transport.http.builder.HttpBuilderTransport;
+import com.infomaximum.network.transport.http.builder.connector.BuilderHttpConnector;
 import com.infomaximum.network.transport.http.builder.filter.BuilderFilter;
 import com.infomaximum.network.transport.http.jsp.JspStarter;
 import org.apache.jasper.servlet.JspServlet;
-import org.eclipse.jetty.server.Connector;
-import org.eclipse.jetty.server.Handler;
-import org.eclipse.jetty.server.Server;
-import org.eclipse.jetty.server.ServerConnector;
+import org.eclipse.jetty.server.*;
 import org.eclipse.jetty.server.handler.DefaultHandler;
 import org.eclipse.jetty.server.handler.HandlerCollection;
 import org.eclipse.jetty.servlet.ServletContextHandler;
@@ -26,6 +25,9 @@ import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.Future;
 
 /**
  * Created with IntelliJ IDEA.
@@ -42,11 +44,25 @@ public class HttpTransport extends Transport<Session> {
 
     private final Server server;
 
-    public HttpTransport(final HttpBuilderTransport httpBuilderTransport) throws Exception {
+    public HttpTransport(final HttpBuilderTransport httpBuilderTransport) throws NetworkException {
         server = new Server(new QueuedThreadPool(10000));
-        ServerConnector connector = new ServerConnector(server);
-        connector.setPort(httpBuilderTransport.getPort());
-        server.setConnectors(new Connector[]{connector});
+
+        if (httpBuilderTransport.getBuilderConnectors() == null || httpBuilderTransport.getBuilderConnectors().isEmpty()) {
+            throw new NetworkException("Not found connectors");
+        }
+        List<Connector> connectors = new ArrayList<>();
+        for (BuilderHttpConnector builderHttpConnector: httpBuilderTransport.getBuilderConnectors()) {
+            Connector connector = builderHttpConnector.build(server);
+            connectors.add(connector);
+
+            //Возможно есть подписчики
+            if (httpBuilderTransport.getHttpChannelListeners()!=null) {
+                for (HttpChannel.Listener listener: httpBuilderTransport.getHttpChannelListeners()) {
+                    connector.addBean(listener);
+                }
+            }
+        }
+        server.setConnectors(connectors.toArray(new Connector[connectors.size()]));
 
         ServletContextHandler context = new ServletContextHandler();
         context.setContextPath("/");
@@ -57,11 +73,14 @@ public class HttpTransport extends Transport<Session> {
         applicationContext.register(httpBuilderTransport.getClassWebMvcConfig());
         context.addServlet(new ServletHolder("default", new DispatcherServlet(applicationContext)), "/");
 
-
-
         if (httpBuilderTransport.isSupportJsp()) {
             //Устанавливаем каталог для сборки jsp файлов
-            Path scratchDirectory = Files.createTempDirectory(null);
+            Path scratchDirectory;
+            try {
+                scratchDirectory = Files.createTempDirectory(null);
+            } catch (IOException e) {
+                throw new NetworkException(e);
+            }
             scratchDirectory.toFile().deleteOnExit();
             context.setAttribute("javax.servlet.context.tempdir", scratchDirectory.toFile());
 
@@ -89,7 +108,11 @@ public class HttpTransport extends Transport<Session> {
 
         if (httpBuilderTransport.getErrorHandler()!=null) server.setErrorHandler(httpBuilderTransport.getErrorHandler());
 
-        server.start();
+        try {
+            server.start();
+        } catch (Exception e) {
+            throw new NetworkException(e);
+        }
 
         instance = this;
     }
@@ -100,8 +123,8 @@ public class HttpTransport extends Transport<Session> {
     }
 
     @Override
-    public void send(Session session, Packet packet) throws IOException {
-        session.getRemote().sendStringByFuture(packet.serialize());
+    public Future<Void> send(Session session, Packet packet) throws IOException {
+        return session.getRemote().sendStringByFuture(packet.serialize());
     }
 
     @Override

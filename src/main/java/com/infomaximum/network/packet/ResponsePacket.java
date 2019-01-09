@@ -1,9 +1,6 @@
 package com.infomaximum.network.packet;
 
-import com.infomaximum.network.exception.ResponseException;
 import net.minidev.json.JSONObject;
-
-import java.io.Serializable;
 
 /**
  * Created by kris on 26.08.16.
@@ -11,23 +8,17 @@ import java.io.Serializable;
 public class ResponsePacket extends Packet implements IPacketId {
 
     private final long id;
+    private final int code;
 
-    //Опциональное поле, для пакетов типа RESPONSE
-    private final Serializable code;
-
-    public ResponsePacket(long id, Serializable code, JSONObject data) {
+    public ResponsePacket(long id, int code, JSONObject data) {
         super(data);
         this.id = id;
-        this.code=code;
+        this.code = code;
     }
 
     @Override
     public long getId() {
         return id;
-    }
-
-    public Serializable getCode() {
-        return code;
     }
 
     @Override
@@ -41,7 +32,7 @@ public class ResponsePacket extends Packet implements IPacketId {
         jsonObject.put("code", code);
     }
 
-    public static ResponsePacket response(IPacketId request, Serializable code, JSONObject data) {
+    public static ResponsePacket response(IPacketId request, int code, JSONObject data) {
         return new ResponsePacket(request.getId(), code, data);
     }
 }

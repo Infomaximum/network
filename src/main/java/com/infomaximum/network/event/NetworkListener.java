@@ -1,8 +1,6 @@
 package com.infomaximum.network.event;
 
-import com.infomaximum.network.Session;
-
-import java.io.Serializable;
+import com.infomaximum.network.session.Session;
 
 /**
  * Created by IntelliJ IDEA.
@@ -16,10 +14,6 @@ public interface NetworkListener {
 	public void onConnect(Session session);
 
 	public void onHandshake(Session session);
-
-	public void onLogin(Session session, Serializable user);
-
-	public void onLogout(Session session, Serializable user);
 
 	public void onDisconnect(Session session);
 }

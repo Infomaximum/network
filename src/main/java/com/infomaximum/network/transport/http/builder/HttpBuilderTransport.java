@@ -1,11 +1,11 @@
 package com.infomaximum.network.transport.http.builder;
 
 import com.infomaximum.network.builder.BuilderTransport;
+import com.infomaximum.network.transport.http.builder.connector.BuilderHttpConnector;
 import com.infomaximum.network.transport.http.builder.filter.BuilderFilter;
+import org.eclipse.jetty.server.HttpChannel;
 import org.eclipse.jetty.server.handler.ErrorHandler;
 
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -14,24 +14,24 @@ import java.util.Set;
  */
 public class HttpBuilderTransport extends BuilderTransport {
 
-    private InetAddress host;
-    private int port;
+    private Set<BuilderHttpConnector> builderConnectors;
 
     private Class classWebMvcConfig;
     private ErrorHandler errorHandler;
 
     private String jspPath;
     private Set<BuilderFilter> filters;
+    private Set<HttpChannel.Listener> httpChannelListeners;
 
-    public HttpBuilderTransport(int port, Class classWebMvcConfig) {
+    public HttpBuilderTransport(Class classWebMvcConfig) {
         this.classWebMvcConfig = classWebMvcConfig;
-        this.host = new InetSocketAddress(0).getAddress();
-        this.port = port;
-
     }
 
-    public HttpBuilderTransport withHost(InetAddress host){
-        this.host=host;
+    public HttpBuilderTransport addConnector(BuilderHttpConnector builderConnector){
+        if (builderConnectors==null) {
+            builderConnectors = new HashSet<>();
+        }
+        builderConnectors.add(builderConnector);
         return this;
     }
 
@@ -45,19 +45,24 @@ public class HttpBuilderTransport extends BuilderTransport {
         return this;
     }
 
-    public HttpBuilderTransport withAddFilter(BuilderFilter filterItem){
+    public HttpBuilderTransport addFilter(BuilderFilter filterItem){
         if (filters==null) {
-            filters = new HashSet<BuilderFilter>();
+            filters = new HashSet<>();
         }
         filters.add(filterItem);
         return this;
     }
 
-    public InetAddress getHost() {
-        return host;
+    public HttpBuilderTransport addListener(HttpChannel.Listener listener){
+        if (httpChannelListeners==null) {
+            httpChannelListeners = new HashSet<>();
+        }
+        httpChannelListeners.add(listener);
+        return this;
     }
-    public int getPort() {
-        return port;
+
+    public Set<BuilderHttpConnector> getBuilderConnectors() {
+        return builderConnectors;
     }
     public Class getClassWebMvcConfig() {
         return classWebMvcConfig;
@@ -73,5 +78,8 @@ public class HttpBuilderTransport extends BuilderTransport {
     }
     public Set<BuilderFilter> getFilters() {
         return filters;
+    }
+    public Set<HttpChannel.Listener> getHttpChannelListeners() {
+        return httpChannelListeners;
     }
 }
