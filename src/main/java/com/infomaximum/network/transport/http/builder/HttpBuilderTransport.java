@@ -29,7 +29,7 @@ public class HttpBuilderTransport extends BuilderTransport {
 
     public HttpBuilderTransport addConnector(BuilderHttpConnector builderConnector){
         if (builderConnectors==null) {
-            builderConnectors = new HashSet<BuilderHttpConnector>();
+            builderConnectors = new HashSet<>();
         }
         builderConnectors.add(builderConnector);
         return this;
@@ -47,7 +47,7 @@ public class HttpBuilderTransport extends BuilderTransport {
 
     public HttpBuilderTransport addFilter(BuilderFilter filterItem){
         if (filters==null) {
-            filters = new HashSet<BuilderFilter>();
+            filters = new HashSet<>();
         }
         filters.add(filterItem);
         return this;
@@ -55,7 +55,7 @@ public class HttpBuilderTransport extends BuilderTransport {
 
     public HttpBuilderTransport addListener(HttpChannel.Listener listener){
         if (httpChannelListeners==null) {
-            httpChannelListeners = new HashSet<HttpChannel.Listener>();
+            httpChannelListeners = new HashSet<>();
         }
         httpChannelListeners.add(listener);
         return this;

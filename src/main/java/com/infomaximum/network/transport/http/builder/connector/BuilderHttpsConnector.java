@@ -3,10 +3,12 @@ package com.infomaximum.network.transport.http.builder.connector;
 import com.infomaximum.network.exception.NetworkException;
 import org.eclipse.jetty.server.*;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
-
-import java.security.KeyStore;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class BuilderHttpsConnector extends BuilderHttpConnector {
+
+    private final static Logger log = LoggerFactory.getLogger(BuilderHttpsConnector.class);
 
     private SslContextFactory sslContextFactory;
 
@@ -19,22 +21,8 @@ public class BuilderHttpsConnector extends BuilderHttpConnector {
      * @param keyStorePath
      * @return
      */
-    public BuilderHttpsConnector withSslContext(String keyStorePath) {
-        sslContextFactory = new SslContextFactory();
-        sslContextFactory.setKeyStorePath(keyStorePath);
-        return this;
-    }
-
-    /**
-     * Support format: p12
-     * @param keyStorePath
-     * @return
-     */
-    public BuilderHttpsConnector withSslContext(String keyStorePath, String keyStorePassword) {
-        sslContextFactory = new SslContextFactory();
-        sslContextFactory.setKeyStorePath(keyStorePath);
-        sslContextFactory.setKeyStorePassword(keyStorePassword);
-        return this;
+    public BuilderSslContextFactory withSslContext(String keyStorePath) {
+        return new BuilderSslContextFactory(this, keyStorePath);
     }
 
     @Override
@@ -54,6 +42,36 @@ public class BuilderHttpsConnector extends BuilderHttpConnector {
                 new HttpConnectionFactory(httpsConfig));
         connector.setPort( port );
 
+//        log.info(sslContextFactory.dump());
         return connector;
+    }
+
+    public class BuilderSslContextFactory {
+
+        private final BuilderHttpsConnector builderHttpsConnector;
+
+        private BuilderSslContextFactory(BuilderHttpsConnector builderHttpsConnector, String keyStorePath) {
+            this.builderHttpsConnector = builderHttpsConnector;
+            this.builderHttpsConnector.sslContextFactory = new SslContextFactory(keyStorePath);
+        }
+
+        public BuilderSslContextFactory setKeyStorePassword(String keyStorePassword) {
+            builderHttpsConnector.sslContextFactory.setKeyStorePassword(keyStorePassword);
+            return this;
+        }
+
+        public BuilderSslContextFactory setIncludeProtocols(String... protocols) {
+            builderHttpsConnector.sslContextFactory.setIncludeProtocols(protocols);
+            return this;
+        }
+
+        public BuilderSslContextFactory setExcludeProtocols(String... protocols) {
+            builderHttpsConnector.sslContextFactory.setExcludeProtocols(protocols);
+            return this;
+        }
+
+        public BuilderHttpsConnector build() {
+            return builderHttpsConnector;
+        }
     }
 }
