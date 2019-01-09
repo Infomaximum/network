@@ -70,6 +70,16 @@ public class BuilderHttpsConnector extends BuilderHttpConnector {
             return this;
         }
 
+        public BuilderSslContextFactory setIncludeCipherSuites(String... cipherSuites) {
+            builderHttpsConnector.sslContextFactory.setIncludeCipherSuites(cipherSuites);
+            return this;
+        }
+
+        public BuilderSslContextFactory setExcludeCipherSuites(String... cipherSuites) {
+            builderHttpsConnector.sslContextFactory.setExcludeCipherSuites(cipherSuites);
+            return this;
+        }
+
         public BuilderHttpsConnector build() {
             return builderHttpsConnector;
         }
