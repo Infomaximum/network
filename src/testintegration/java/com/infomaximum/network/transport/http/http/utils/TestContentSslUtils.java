@@ -1,5 +1,6 @@
 package com.infomaximum.network.transport.http.http.utils;
 
+import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.junit.Assert;
 
 import javax.net.ssl.*;
@@ -8,7 +9,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.security.*;
-import java.security.cert.X509Certificate;
 
 public class TestContentSslUtils {
 
@@ -58,19 +58,7 @@ public class TestContentSslUtils {
             }
             return tms;
         } else {
-            return new TrustManager[] {
-                    new X509TrustManager() {
-                        public java.security.cert.X509Certificate[] getAcceptedIssuers() {
-                            return new X509Certificate[0];
-                        }
-                        public void checkClientTrusted(
-                                java.security.cert.X509Certificate[] certs, String authType) {
-                        }
-                        public void checkServerTrusted(
-                                java.security.cert.X509Certificate[] certs, String authType) {
-                        }
-                    }
-            };
+            return SslContextFactory.TRUST_ALL_CERTS;
         }
     }
 }
