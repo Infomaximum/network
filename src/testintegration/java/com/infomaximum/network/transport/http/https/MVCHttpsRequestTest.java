@@ -74,6 +74,28 @@ public class MVCHttpsRequestTest extends TestHttpsRequest {
         Assert.assertFalse(actualConnectorInfo.containsSelectedCipherSuite("TLS_DHE_DSS_WITH_AES_256_CBC_SHA256.2"));
     }
 
+    @Test
+    public void testAppendExcludeCipherSuitesAndProtocols() throws Exception {
+        initKeyStore();
+        buildNetwork(new BuilderHttpsConnector(port)
+                .withSslContext(keyStorePath.toAbsolutePath().toString())
+                .setKeyStorePassword(PASSWORD)
+                .setExcludeCipherSuites("TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA384", "TLS_DHE_DSS_WITH_AES_256_CBC_SHA256")
+                .setExcludeProtocols("TLSv1.1")
+                .addExcludeCipherSuites("TLS_ECDH_ECDSA_WITH_AES_256_CBC_SHA384", "TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA384", "TLS_ECDH_ECDSA_WITH_AES_256_CBC_SHA")
+                .addExcludeProtocols("TLSv1.2")
+                .build());
+
+        HttpsConnectorInfo actualConnectorInfo = (HttpsConnectorInfo) network.getInfo().getTransportsInfo().get(0).getConnectorsInfo().get(0);
+        Assert.assertFalse(actualConnectorInfo.containsSelectedCipherSuite("TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA384"));
+        Assert.assertFalse(actualConnectorInfo.containsSelectedCipherSuite("TLS_ECDH_ECDSA_WITH_AES_256_CBC_SHA384"));
+        Assert.assertFalse(actualConnectorInfo.containsSelectedCipherSuite("TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA384"));
+        Assert.assertFalse(actualConnectorInfo.containsSelectedCipherSuite("TLS_ECDH_ECDSA_WITH_AES_256_CBC_SHA"));
+
+        Assert.assertFalse(actualConnectorInfo.containsSelectedProtocol("TLSv1.1"));
+        Assert.assertFalse(actualConnectorInfo.containsSelectedProtocol("TLSv1.2"));
+    }
+
     private void buildNetwork(BuilderHttpConnector builderHttpConnector) throws Exception {
         network = new BuilderNetwork()
                 .withTransport(
