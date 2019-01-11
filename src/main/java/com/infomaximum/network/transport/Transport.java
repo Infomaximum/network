@@ -1,6 +1,8 @@
 package com.infomaximum.network.transport;
 
 import com.infomaximum.network.packet.Packet;
+import com.infomaximum.network.struct.info.TransportInfo;
+
 import java.io.IOException;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
@@ -50,4 +52,6 @@ public abstract class Transport<Channel> {
     public abstract void destroy() throws Exception;
 
     public abstract void close(Channel channel) throws IOException;
+
+    public abstract TransportInfo getInfo();
 }

@@ -1,10 +1,14 @@
 package com.infomaximum.network.transport.http.builder.connector;
 
 import com.infomaximum.network.exception.NetworkException;
+import com.infomaximum.network.struct.info.HttpConnectorInfo;
+import com.infomaximum.network.struct.info.HttpsConnectorInfo;
 import org.eclipse.jetty.server.*;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.function.Supplier;
 
 public class BuilderHttpsConnector extends BuilderHttpConnector {
 
@@ -44,6 +48,10 @@ public class BuilderHttpsConnector extends BuilderHttpConnector {
 
 //        log.info(sslContextFactory.dump());
         return connector;
+    }
+
+    public Supplier<? extends HttpConnectorInfo> getInfoSupplier() {
+        return () -> new HttpsConnectorInfo(host, port, sslContextFactory.getSelectedProtocols(), sslContextFactory.getSelectedCipherSuites());
     }
 
     public class BuilderSslContextFactory {
