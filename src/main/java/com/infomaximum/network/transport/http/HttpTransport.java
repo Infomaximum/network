@@ -2,6 +2,8 @@ package com.infomaximum.network.transport.http;
 
 import com.infomaximum.network.exception.NetworkException;
 import com.infomaximum.network.packet.Packet;
+import com.infomaximum.network.struct.info.HttpConnectorInfo;
+import com.infomaximum.network.struct.info.TransportInfo;
 import com.infomaximum.network.transport.Transport;
 import com.infomaximum.network.transport.TypeTransport;
 import com.infomaximum.network.transport.http.builder.HttpBuilderTransport;
@@ -28,6 +30,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Future;
+import java.util.function.Supplier;
 
 /**
  * Created with IntelliJ IDEA.
@@ -43,15 +46,18 @@ public class HttpTransport extends Transport<Session> {
     public static HttpTransport instance;
 
     private final Server server;
+    private final List<Supplier<? extends HttpConnectorInfo>> connectorInfoSuppliers;
 
     public HttpTransport(final HttpBuilderTransport httpBuilderTransport) throws NetworkException {
         server = new Server(new QueuedThreadPool(10000));
+        connectorInfoSuppliers = new ArrayList<>();
 
         if (httpBuilderTransport.getBuilderConnectors() == null || httpBuilderTransport.getBuilderConnectors().isEmpty()) {
             throw new NetworkException("Not found connectors");
         }
         List<Connector> connectors = new ArrayList<>();
         for (BuilderHttpConnector builderHttpConnector: httpBuilderTransport.getBuilderConnectors()) {
+            connectorInfoSuppliers.add(builderHttpConnector.getInfoSupplier());
             Connector connector = builderHttpConnector.build(server);
             connectors.add(connector);
 
@@ -130,6 +136,13 @@ public class HttpTransport extends Transport<Session> {
     @Override
     public void close(Session session) throws IOException {
         session.close();
+    }
+
+    @Override
+    public TransportInfo getInfo() {
+        TransportInfo transportInfo = new TransportInfo();
+        connectorInfoSuppliers.forEach(infoSupplier -> transportInfo.addConnectorInfo(infoSupplier.get()));
+        return transportInfo;
     }
 
     @Override

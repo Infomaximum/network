@@ -1,11 +1,14 @@
 package com.infomaximum.network.transport.http.builder.connector;
 
 import com.infomaximum.network.exception.NetworkException;
+import com.infomaximum.network.struct.info.HttpConnectorInfo;
 import org.eclipse.jetty.server.*;
+
+import java.util.function.Supplier;
 
 public class BuilderHttpConnector {
 
-    private String host;
+    protected String host;
     protected int port;
 
     public BuilderHttpConnector(int port) {
@@ -24,5 +27,9 @@ public class BuilderHttpConnector {
         connector.setPort(port);
         connector.setHost(host);
         return connector;
+    }
+
+    public Supplier<? extends HttpConnectorInfo> getInfoSupplier() {
+        return () -> new HttpConnectorInfo(host, port);
     }
 }

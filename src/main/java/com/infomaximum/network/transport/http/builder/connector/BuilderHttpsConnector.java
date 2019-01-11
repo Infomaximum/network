@@ -1,10 +1,14 @@
 package com.infomaximum.network.transport.http.builder.connector;
 
 import com.infomaximum.network.exception.NetworkException;
+import com.infomaximum.network.struct.info.HttpConnectorInfo;
+import com.infomaximum.network.struct.info.HttpsConnectorInfo;
 import org.eclipse.jetty.server.*;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.function.Supplier;
 
 public class BuilderHttpsConnector extends BuilderHttpConnector {
 
@@ -46,6 +50,10 @@ public class BuilderHttpsConnector extends BuilderHttpConnector {
         return connector;
     }
 
+    public Supplier<? extends HttpConnectorInfo> getInfoSupplier() {
+        return () -> new HttpsConnectorInfo(host, port, sslContextFactory.getSelectedProtocols(), sslContextFactory.getSelectedCipherSuites());
+    }
+
     public class BuilderSslContextFactory {
 
         private final BuilderHttpsConnector builderHttpsConnector;
@@ -74,6 +82,11 @@ public class BuilderHttpsConnector extends BuilderHttpConnector {
             return this;
         }
 
+        public BuilderSslContextFactory addExcludeProtocols(String... protocols) {
+            builderHttpsConnector.sslContextFactory.addExcludeProtocols(protocols);
+            return this;
+        }
+
         public String[] getExcludeProtocols() {
             return builderHttpsConnector.sslContextFactory.getExcludeProtocols();
         }
@@ -89,6 +102,11 @@ public class BuilderHttpsConnector extends BuilderHttpConnector {
 
         public BuilderSslContextFactory setExcludeCipherSuites(String... cipherSuites) {
             builderHttpsConnector.sslContextFactory.setExcludeCipherSuites(cipherSuites);
+            return this;
+        }
+
+        public BuilderSslContextFactory addExcludeCipherSuites(String... cipherSuites) {
+            builderHttpsConnector.sslContextFactory.addExcludeCipherSuites(cipherSuites);
             return this;
         }
 

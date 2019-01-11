@@ -6,6 +6,7 @@ import com.infomaximum.network.handler.handshake.Handshake;
 import com.infomaximum.network.packet.*;
 import com.infomaximum.network.session.Session;
 import com.infomaximum.network.session.TransportSession;
+import com.infomaximum.network.struct.info.NetworkInfo;
 import com.infomaximum.network.transport.Transport;
 import com.infomaximum.network.transport.TransportListener;
 import net.minidev.json.JSONObject;
@@ -154,6 +155,11 @@ public class NetworkImpl implements Network, TransportListener {
     @Override
     public void removeNetworkListener(NetworkListener listener) {
         listeners.remove(listener);
+    }
+
+    @Override
+    public NetworkInfo getInfo() {
+        return new NetworkInfo(transports);
     }
 
     public Packet parsePacket(JSONObject parse) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {

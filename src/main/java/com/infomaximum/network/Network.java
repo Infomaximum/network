@@ -1,6 +1,7 @@
 package com.infomaximum.network;
 
 import com.infomaximum.network.event.NetworkListener;
+import com.infomaximum.network.struct.info.NetworkInfo;
 
 /**
  * Created by IntelliJ IDEA.
@@ -14,4 +15,5 @@ public interface Network extends AutoCloseable {
 
     public void removeNetworkListener(NetworkListener listener);
 
+    public NetworkInfo getInfo();
 }

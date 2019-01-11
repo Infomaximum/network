@@ -75,7 +75,6 @@ public class BuilderNetwork {
                 network.registerTransport(transport);
             }
         }
-
         return network;
     }
 }
