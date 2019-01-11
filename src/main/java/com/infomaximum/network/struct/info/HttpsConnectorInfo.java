@@ -35,7 +35,7 @@ public class HttpsConnectorInfo extends HttpConnectorInfo{
         return "HttpsConnectorInfo{" +
                 "host='" + host + '\'' +
                 ", port=" + port +
-                "selectedProtocols=" + Arrays.toString(selectedProtocols) +
+                ", selectedProtocols=" + Arrays.toString(selectedProtocols) +
                 ", selectedCipherSuites=" + Arrays.toString(selectedCipherSuites) +
                 '}';
     }
