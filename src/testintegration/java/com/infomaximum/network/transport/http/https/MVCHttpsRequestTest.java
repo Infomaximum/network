@@ -14,7 +14,11 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.net.ssl.SSLHandshakeException;
+import javax.net.ssl.*;
+import java.net.SocketException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Objects;
 
 /**
  * Created by kris on 26.08.16.
@@ -94,6 +98,56 @@ public class MVCHttpsRequestTest extends TestHttpsRequest {
 
         Assert.assertFalse(actualConnectorInfo.containsSelectedProtocol("TLSv1.1"));
         Assert.assertFalse(actualConnectorInfo.containsSelectedProtocol("TLSv1.2"));
+    }
+
+    @Test
+    public void testTwoWayAuth() throws Exception {
+        Path serverKeyStorePath = Paths.get(Objects.requireNonNull(this.getClass().getClassLoader().getResource("httpstest/serverKeystore.jks")).toURI());
+        Path serverTrustStorePath = Paths.get(Objects.requireNonNull(this.getClass().getClassLoader().getResource("httpstest/serverTruststore.jks")).toURI());
+        Path clientKeyStorePath = Paths.get(Objects.requireNonNull(this.getClass().getClassLoader().getResource("httpstest/clientKeystore.jks")).toURI());
+        Path clientTrustStorePath = Paths.get(Objects.requireNonNull(this.getClass().getClassLoader().getResource("httpstest/clientTruststore.jks")).toURI());
+
+        buildNetwork(new BuilderHttpsConnector(port)
+                .withSslContext(serverKeyStorePath.toAbsolutePath().toString())
+                .setKeyStorePassword(PASSWORD)
+                .setTrustStorePath(serverTrustStorePath.toAbsolutePath().toString())
+                .build());
+
+        TestContentSslUtils.testContentTwoWaySslAuthorization(port, "/test/ping", "pong", clientKeyStorePath, clientTrustStorePath, "TLS", PASSWORD);
+    }
+
+    @Test
+    public void testTwoWayAuthServerTruststoreDoesNotContainsClientCertificate() throws Exception {
+        Path serverKeyStorePath = Paths.get(Objects.requireNonNull(this.getClass().getClassLoader().getResource("httpstest/serverKeystore.jks")).toURI());
+        Path clientKeyStorePath = Paths.get(Objects.requireNonNull(this.getClass().getClassLoader().getResource("httpstest/clientKeystore.jks")).toURI());
+        Path clientTrustStorePath = Paths.get(Objects.requireNonNull(this.getClass().getClassLoader().getResource("httpstest/clientTruststore.jks")).toURI());
+
+        Path serverTrustStorePath = clientTrustStorePath; // Задаем серверный trustStore, который не содержит клиентский сертификат
+
+        buildNetwork(new BuilderHttpsConnector(port)
+                .withSslContext(serverKeyStorePath.toAbsolutePath().toString())
+                .setKeyStorePassword(PASSWORD)
+                .setTrustStorePath(serverTrustStorePath.toAbsolutePath().toString())
+                .build());
+
+        TestContentSslUtils.testContentTwoWaySslAuthorization(port, "/test/ping", "pong", clientKeyStorePath, clientTrustStorePath, "TLS", PASSWORD);
+    }
+
+    @Test(expected = SSLHandshakeException.class)
+    public void testFailTwoWayAuthBecauseClientTruststoreDoesNotContainsServerCertificate() throws Exception {
+        Path serverKeyStorePath = Paths.get(Objects.requireNonNull(this.getClass().getClassLoader().getResource("httpstest/serverKeystore.jks")).toURI());
+        Path serverTrustStorePath = Paths.get(Objects.requireNonNull(this.getClass().getClassLoader().getResource("httpstest/serverTruststore.jks")).toURI());
+        Path clientKeyStorePath = Paths.get(Objects.requireNonNull(this.getClass().getClassLoader().getResource("httpstest/clientKeystore.jks")).toURI());
+
+        Path clientTrustStorePath = serverTrustStorePath; // Задаем клиенский trustStore, который не содержит серверный сертификат
+
+        buildNetwork(new BuilderHttpsConnector(port)
+                .withSslContext(serverKeyStorePath.toAbsolutePath().toString())
+                .setKeyStorePassword(PASSWORD)
+                .setTrustStorePath(serverTrustStorePath.toAbsolutePath().toString())
+                .build());
+
+        TestContentSslUtils.testContentTwoWaySslAuthorization(port, "/test/ping", "pong", clientKeyStorePath, clientTrustStorePath, "TLS", PASSWORD);
     }
 
     private void buildNetwork(BuilderHttpConnector builderHttpConnector) throws Exception {

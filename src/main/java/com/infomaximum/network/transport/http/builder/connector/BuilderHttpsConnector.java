@@ -8,6 +8,7 @@ import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.security.KeyStore;
 import java.util.function.Supplier;
 
 public class BuilderHttpsConnector extends BuilderHttpConnector {
@@ -65,6 +66,18 @@ public class BuilderHttpsConnector extends BuilderHttpConnector {
 
         public BuilderSslContextFactory setKeyStorePassword(String keyStorePassword) {
             builderHttpsConnector.sslContextFactory.setKeyStorePassword(keyStorePassword);
+            return this;
+        }
+
+        public BuilderSslContextFactory setTrustStore(KeyStore keyStore) {
+            builderHttpsConnector.sslContextFactory.setTrustStore(keyStore);
+            builderHttpsConnector.sslContextFactory.setWantClientAuth(true);
+            return this;
+        }
+
+        public BuilderSslContextFactory setTrustStorePath(String keyStore) {
+            builderHttpsConnector.sslContextFactory.setTrustStorePath(keyStore);
+            builderHttpsConnector.sslContextFactory.setWantClientAuth(true);
             return this;
         }
 
