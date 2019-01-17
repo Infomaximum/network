@@ -116,8 +116,8 @@ public class MVCHttpsRequestTest extends TestHttpsRequest {
         TestContentSslUtils.testContentTwoWaySslAuthorization(port, "/test/ping", "pong", clientKeyStorePath, clientTrustStorePath, "TLS", PASSWORD);
     }
 
-    @Test(expected = SocketException.class)
-    public void testFailTwoWayAuthBecauseServerTruststoreDoesNotContainsClientCertificate() throws Exception {
+    @Test
+    public void testTwoWayAuthServerTruststoreDoesNotContainsClientCertificate() throws Exception {
         Path serverKeyStorePath = Paths.get(Objects.requireNonNull(this.getClass().getClassLoader().getResource("httpstest/serverKeystore.jks")).toURI());
         Path clientKeyStorePath = Paths.get(Objects.requireNonNull(this.getClass().getClassLoader().getResource("httpstest/clientKeystore.jks")).toURI());
         Path clientTrustStorePath = Paths.get(Objects.requireNonNull(this.getClass().getClassLoader().getResource("httpstest/clientTruststore.jks")).toURI());
