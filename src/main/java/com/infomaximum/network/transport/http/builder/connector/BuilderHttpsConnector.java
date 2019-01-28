@@ -35,6 +35,8 @@ public class BuilderHttpsConnector extends BuilderHttpConnector {
         if (sslContextFactory == null) throw new NetworkException("Not init ssl key");
 
         HttpConfiguration httpsConfig = new HttpConfiguration();
+        //todo Возможно, стоит реализовать свой кастомайзер, чтобы в реквест передавались только необходимые атрибуты
+        httpsConfig.addCustomizer(new SecureRequestCustomizer());
         httpsConfig.setSecureScheme( "https" );
         httpsConfig.setSecurePort( port );
 
