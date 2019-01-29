@@ -83,6 +83,12 @@ public class BuilderHttpsConnector extends BuilderHttpConnector {
             return this;
         }
 
+        public BuilderSslContextFactory setCrlPath(String crlPath) {
+            builderHttpsConnector.sslContextFactory.setCrlPath(crlPath);
+            builderHttpsConnector.sslContextFactory.setValidatePeerCerts(true);
+            return this;
+        }
+
         public BuilderSslContextFactory setIncludeProtocols(String... protocols) {
             builderHttpsConnector.sslContextFactory.setIncludeProtocols(protocols);
             return this;

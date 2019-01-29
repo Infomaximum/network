@@ -146,6 +146,24 @@ public class MVCHttpsRequestTest extends TestHttpsRequest {
         TestContentSslUtils.testContentTwoWaySslAuthorization(port, "/test/ping", "pong", clientKeyStorePath, clientTrustStorePath, "TLS", PASSWORD);
     }
 
+    @Test(expected = SSLHandshakeException.class)
+    public void testFailBecauseCertificateRevoked() throws Exception {
+        Path serverKeyStorePath = Paths.get(Objects.requireNonNull(this.getClass().getClassLoader().getResource("httpstest/server.p12")).toURI());
+        Path clientKeyStorePath = Paths.get(Objects.requireNonNull(this.getClass().getClassLoader().getResource("httpstest/client.p12")).toURI());
+        Path serverAndClientTrustStorePath = Paths.get(Objects.requireNonNull(this.getClass().getClassLoader().getResource("httpstest/ca_truststore")).toURI());
+
+        Path crlPath = Paths.get(Objects.requireNonNull(this.getClass().getClassLoader().getResource("httpstest/client_revoked.crl")).toURI());
+
+        buildNetwork(new BuilderHttpsConnector(port)
+                .withSslContext(serverKeyStorePath.toAbsolutePath().toString())
+                .setKeyStorePassword(PASSWORD)
+                .setTrustStorePath(serverAndClientTrustStorePath.toAbsolutePath().toString())
+                .setCrlPath(crlPath.toString())
+                .build());
+
+        TestContentSslUtils.testContentTwoWaySslAuthorization(port, "/test/ping", "pong", clientKeyStorePath, serverAndClientTrustStorePath, "TLS", PASSWORD);
+    }
+
     private void buildNetwork(BuilderHttpConnector builderHttpConnector) throws Exception {
         network = new BuilderNetwork()
                 .withTransport(
