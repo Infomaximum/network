@@ -60,6 +60,7 @@ public class BuilderHttpsConnector extends BuilderHttpConnector {
     public class BuilderSslContextFactory {
 
         private final BuilderHttpsConnector builderHttpsConnector;
+        private boolean validatePeerCerts = false;
 
         private BuilderSslContextFactory(BuilderHttpsConnector builderHttpsConnector, String keyStorePath) {
             this.builderHttpsConnector = builderHttpsConnector;
@@ -85,7 +86,7 @@ public class BuilderHttpsConnector extends BuilderHttpConnector {
 
         public BuilderSslContextFactory setCrlPath(String crlPath) {
             builderHttpsConnector.sslContextFactory.setCrlPath(crlPath);
-            builderHttpsConnector.sslContextFactory.setValidatePeerCerts(true);
+            validatePeerCerts = true;
             return this;
         }
 
@@ -136,6 +137,7 @@ public class BuilderHttpsConnector extends BuilderHttpConnector {
         }
 
         public BuilderHttpsConnector build() {
+            builderHttpsConnector.sslContextFactory.setValidatePeerCerts(validatePeerCerts);
             return builderHttpsConnector;
         }
     }
