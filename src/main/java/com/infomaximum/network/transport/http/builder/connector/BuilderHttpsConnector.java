@@ -78,6 +78,11 @@ public class BuilderHttpsConnector extends BuilderHttpConnector {
             return this;
         }
 
+        public BuilderSslContextFactory setTrustStorePassword(String trustStorePassword) {
+            builderHttpsConnector.sslContextFactory.setTrustStorePassword(trustStorePassword);
+            return this;
+        }
+
         public BuilderSslContextFactory setTrustStorePath(String keyStore) {
             builderHttpsConnector.sslContextFactory.setTrustStorePath(keyStore);
             builderHttpsConnector.sslContextFactory.setWantClientAuth(true);
