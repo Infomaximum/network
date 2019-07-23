@@ -163,10 +163,10 @@ public class TransportSession {
 	}
 
 	public class RemoteAddress {
-		String rawRemoteAddress;
-		String endRemoteAddress;
+		private String rawRemoteAddress;
+        private String endRemoteAddress;
 
-		RemoteAddress(String rawRemoteAddress, String endRemoteAddress) {
+		private RemoteAddress(String rawRemoteAddress, String endRemoteAddress) {
 			this.rawRemoteAddress = rawRemoteAddress;
 			this.endRemoteAddress = endRemoteAddress;
 		}
