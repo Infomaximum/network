@@ -45,11 +45,15 @@ public class MvcPackerHandler implements PacketHandler {
 
     public static class Builder extends PacketHandler.Builder {
 
-        private Package scanPackage;
+        private String scanPackage;
 
         private Thread.UncaughtExceptionHandler uncaughtExceptionHandler;
 
         public Builder(Package scanPackage) {
+            this.scanPackage = scanPackage.getName();
+        }
+
+        public Builder(String scanPackage) {
             this.scanPackage = scanPackage;
         }
 
@@ -57,7 +61,7 @@ public class MvcPackerHandler implements PacketHandler {
         public PacketHandler build(NetworkImpl network) throws ReflectiveOperationException {
             HashMap<String, MvcController> controllers = new HashMap<>();
 
-            Reflections reflections = new Reflections(scanPackage.getName());
+            Reflections reflections = new Reflections(scanPackage);
             for (Class classController : reflections.getTypesAnnotatedWith(Controller.class, true)) {
                 Controller aController = (Controller) classController.getAnnotation(Controller.class);
 

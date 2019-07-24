@@ -22,4 +22,12 @@ public class ResponseEntity {
     public static ResponseEntity error(JSONObject data) {
         return new ResponseEntity(RESPONSE_CODE_ERROR, data);
     }
+
+    public static ResponseEntity error(int code) {
+        return error(code, null);
+    }
+
+    public static ResponseEntity error(int code, JSONObject data) {
+        return new ResponseEntity(code, data);
+    }
 }
