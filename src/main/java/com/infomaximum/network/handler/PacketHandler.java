@@ -1,6 +1,7 @@
 package com.infomaximum.network.handler;
 
 import com.infomaximum.network.NetworkImpl;
+import com.infomaximum.network.exception.NetworkException;
 import com.infomaximum.network.packet.ResponsePacket;
 import com.infomaximum.network.packet.TargetPacket;
 import com.infomaximum.network.session.Session;
@@ -12,11 +13,11 @@ import java.util.concurrent.CompletableFuture;
  */
 public interface PacketHandler {
 
-    public CompletableFuture<ResponsePacket> exec(Session session, TargetPacket packet);
+    CompletableFuture<ResponsePacket> exec(Session session, TargetPacket packet);
 
-    public abstract static class Builder {
+    abstract class Builder {
 
-        public abstract PacketHandler build(NetworkImpl network) throws ReflectiveOperationException;
+        public abstract PacketHandler build(NetworkImpl network) throws NetworkException;
 
     }
 }

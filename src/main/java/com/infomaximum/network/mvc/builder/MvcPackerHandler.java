@@ -1,6 +1,7 @@
 package com.infomaximum.network.mvc.builder;
 
 import com.infomaximum.network.NetworkImpl;
+import com.infomaximum.network.exception.NetworkException;
 import com.infomaximum.network.handler.PacketHandler;
 import com.infomaximum.network.mvc.ResponseEntity;
 import com.infomaximum.network.mvc.anotation.Controller;
@@ -58,30 +59,34 @@ public class MvcPackerHandler implements PacketHandler {
         }
 
         @Override
-        public PacketHandler build(NetworkImpl network) throws ReflectiveOperationException {
-            HashMap<String, MvcController> controllers = new HashMap<>();
+        public PacketHandler build(NetworkImpl network) throws NetworkException {
+            try {
+                HashMap<String, MvcController> controllers = new HashMap<>();
 
-            Reflections reflections = new Reflections(scanPackage);
-            for (Class classController : reflections.getTypesAnnotatedWith(Controller.class, true)) {
-                Controller aController = (Controller) classController.getAnnotation(Controller.class);
+                Reflections reflections = new Reflections(scanPackage);
+                for (Class classController : reflections.getTypesAnnotatedWith(Controller.class, true)) {
+                    Controller aController = (Controller) classController.getAnnotation(Controller.class);
 
-                Constructor constructor = classController.getConstructor();
-                constructor.setAccessible(true);
-                Object controller = constructor.newInstance();
+                    Constructor constructor = classController.getConstructor();
+                    constructor.setAccessible(true);
+                    Object controller = constructor.newInstance();
 
-                HashMap<String, Method> actions = new HashMap<String, Method>();
-                for (Method method : classController.getDeclaredMethods()) {
-                    ControllerAction aControllerAction = method.getDeclaredAnnotation(ControllerAction.class);
-                    if (aControllerAction == null) continue;
+                    HashMap<String, Method> actions = new HashMap<String, Method>();
+                    for (Method method : classController.getDeclaredMethods()) {
+                        ControllerAction aControllerAction = method.getDeclaredAnnotation(ControllerAction.class);
+                        if (aControllerAction == null) continue;
 
-                    method.setAccessible(true);
-                    actions.put(aControllerAction.value(), method);
+                        method.setAccessible(true);
+                        actions.put(aControllerAction.value(), method);
+                    }
+
+                    controllers.put(aController.value(), new MvcController(controller, actions));
                 }
 
-                controllers.put(aController.value(), new MvcController(controller, actions));
+                return new MvcPackerHandler(network, controllers);
+            } catch (ReflectiveOperationException e) {
+                throw new NetworkException(e);
             }
-
-            return new MvcPackerHandler(network, controllers);
         }
     }
 

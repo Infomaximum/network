@@ -1,6 +1,7 @@
 package com.infomaximum.network;
 
 import com.infomaximum.network.event.NetworkListener;
+import com.infomaximum.network.exception.NetworkException;
 import com.infomaximum.network.handler.PacketHandler;
 import com.infomaximum.network.handler.handshake.Handshake;
 import com.infomaximum.network.packet.*;
@@ -43,7 +44,7 @@ public class NetworkImpl implements Network, TransportListener {
                        Class<? extends RequestPacket> extensionRequestPacket,
                        PacketHandler.Builder packetHandlerBuilder,
                        Thread.UncaughtExceptionHandler uncaughtExceptionHandler
-    ) throws Exception {
+    ) throws NetworkException {
         this.handshake = handshake;
 
         if (packetHandlerBuilder != null) {
@@ -136,7 +137,7 @@ public class NetworkImpl implements Network, TransportListener {
     public void onDisconnect(Transport transport, Object channel, int statusCode, Throwable throwable) {
         TransportSession transportSession = transportSessions.remove(channel);
         if (transportSession != null) {
-            log.info("{} onDisconnect, {}, exception: {}", transportSession.getSession(), statusCode, throwable);
+            log.info("{} onDisconnect, {}", transportSession.getSession(), statusCode, throwable);
 
             transportSession.destroyed();
 
