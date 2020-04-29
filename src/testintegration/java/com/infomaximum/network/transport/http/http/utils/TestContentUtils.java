@@ -17,6 +17,10 @@ public class TestContentUtils {
 
     public static String getContent(int port, String path) throws IOException {
         HttpGet httpGet = new HttpGet(URI.create("http://localhost:" + port + path));
+        return getContent(httpGet);
+    }
+
+    public static String getContent(HttpGet httpGet) throws IOException {
         try (CloseableHttpClient client = HttpClients.createDefault()) {
             try (CloseableHttpResponse response = client.execute(httpGet)) {
 

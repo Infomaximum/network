@@ -2,6 +2,7 @@ package com.infomaximum.network.builder;
 
 import com.infomaximum.network.Network;
 import com.infomaximum.network.NetworkImpl;
+import com.infomaximum.network.exception.NetworkException;
 import com.infomaximum.network.handler.PacketHandler;
 import com.infomaximum.network.handler.handshake.Handshake;
 import com.infomaximum.network.packet.RequestPacket;
@@ -55,7 +56,7 @@ public class BuilderNetwork {
         return this;
     }
 
-    public Network build() throws Exception {
+    public Network build() throws NetworkException {
         NetworkImpl network = new NetworkImpl(
                 handshake,
                 extensionRequestPacket,
