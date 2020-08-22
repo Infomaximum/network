@@ -1,5 +1,5 @@
 group 'com.infomaximum'
-version '0.0.16RC11'
+version '0.0.16RC12'
 
 apply plugin: 'java'
 apply plugin: 'maven'
@@ -58,34 +58,34 @@ task testperformance(type: Test) {
 
 dependencies {
 
-    compile 'io.netty:netty-all:4.1.12.Final'
+//    compile 'io.netty:netty-all:4.1.12.Final'
 
-    compile 'org.eclipse.jetty:jetty-server:9.4.11.v20180605'
-    compile 'org.eclipse.jetty:jetty-servlet:9.4.11.v20180605'
-    compile 'org.eclipse.jetty:jetty-webapp:9.4.11.v20180605'
-    compile 'org.eclipse.jetty:apache-jsp:9.4.11.v20180605'
-    compile 'org.eclipse.jetty.websocket:websocket-server:9.4.11.v20180605'
-    compile 'org.eclipse.jetty.websocket:websocket-servlet:9.4.11.v20180605'
+    compile 'org.eclipse.jetty:jetty-server:9.4.31.v20200723'
+    compile 'org.eclipse.jetty:jetty-servlet:9.4.31.v20200723'
+    compile 'org.eclipse.jetty:jetty-webapp:9.4.31.v20200723'
+    compile 'org.eclipse.jetty:apache-jsp:9.4.31.v20200723'
+    compile 'org.eclipse.jetty.websocket:websocket-server:9.4.31.v20200723'
+    compile 'org.eclipse.jetty.websocket:websocket-servlet:9.4.31.v20200723'
 
-    compile 'org.springframework:spring-core:4.3.9.RELEASE'
-    compile 'org.springframework:spring-web:4.3.9.RELEASE'
-    compile 'org.springframework:spring-webmvc:4.3.9.RELEASE'
-    compile 'org.springframework:spring-context-support:4.3.9.RELEASE'
-    compile 'org.springframework:spring-messaging:4.3.9.RELEASE'
+    compile 'org.springframework:spring-core:5.2.8.RELEASE'
+    compile 'org.springframework:spring-web:5.2.8.RELEASE'
+    compile 'org.springframework:spring-webmvc:5.2.8.RELEASE'
+    compile 'org.springframework:spring-context-support:5.2.8.RELEASE'
+    compile 'org.springframework:spring-messaging:5.2.8.RELEASE'
     compile 'javax.servlet:jstl:1.2'
 
     compile 'net.minidev:json-smart:2.3'
 
-    compile 'org.reflections:reflections:0.9.11'
+    compile 'org.reflections:reflections:0.9.12'
 
-    compile 'org.slf4j:slf4j-api:1.7.25'
+    compile 'org.slf4j:slf4j-api:1.7.30'
 
-    testCompile 'junit:junit:4.12'
-    testCompile 'ch.qos.logback:logback-core:1.2.2'
+    testCompile 'junit:junit:4.13'
+    testCompile 'ch.qos.logback:logback-core:1.2.3'
     testCompile 'ch.qos.logback:logback-classic:1.2.3'
 
 
-    testintegrationCompile 'org.apache.httpcomponents:httpclient:4.5.3'
-    testintegrationCompile 'org.springframework:spring-test:4.3.9.RELEASE'
-    testintegrationCompile 'org.eclipse.jetty.websocket:websocket-client:9.4.6.v20170531'
+    testintegrationCompile 'org.apache.httpcomponents:httpclient:4.5.12'
+    testintegrationCompile 'org.springframework:spring-test:5.2.8.RELEASE'
+    testintegrationCompile 'org.eclipse.jetty.websocket:websocket-client:9.4.31.v20200723'
 }

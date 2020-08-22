@@ -18,39 +18,33 @@ public class BuilderHttpConnector {
         this.host = null;
     }
 
-    public BuilderHttpConnector withHost(String host){
+    public BuilderHttpConnector withHost(String host) {
         this.host = host;
         return this;
     }
 
-    public BuilderHttpConnector withRequestHeaderSize(int size){
+    public BuilderHttpConnector withRequestHeaderSize(int size) {
         this.requestHeaderSize = size;
         return this;
     }
 
-    public BuilderHttpConnector withResponseHeaderSize(int size){
+    public BuilderHttpConnector withResponseHeaderSize(int size) {
         this.responseHeaderSize = size;
         return this;
     }
 
     public Connector build(Server server) throws NetworkException {
-        ServerConnector connector;
-        if (requestHeaderSize != null || responseHeaderSize != null) {
-            HttpConfiguration httpsConfig = new HttpConfiguration();
-            if (requestHeaderSize != null) {
-                httpsConfig.setRequestHeaderSize(requestHeaderSize);
-            }
-            if (responseHeaderSize != null) {
-                httpsConfig.setResponseHeaderSize(responseHeaderSize);
-            }
-            connector = new ServerConnector(
-                    server,
-                    new HttpConnectionFactory(httpsConfig));
-            connector.setPort( port );
-            connector.setHost(host);
-        } else {
-            connector = new ServerConnector(server);
+        HttpConfiguration httpConfiguration = new HttpConfiguration();
+        if (requestHeaderSize != null) {
+            httpConfiguration.setRequestHeaderSize(requestHeaderSize);
         }
+        if (responseHeaderSize != null) {
+            httpConfiguration.setResponseHeaderSize(responseHeaderSize);
+        }
+
+        ServerConnector connector = new ServerConnector(
+                server, new HttpConnectionFactory(httpConfiguration)
+        );
         connector.setPort(port);
         connector.setHost(host);
         return connector;
