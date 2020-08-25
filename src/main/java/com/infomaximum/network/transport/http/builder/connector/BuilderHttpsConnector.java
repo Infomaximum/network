@@ -70,7 +70,11 @@ public class BuilderHttpsConnector extends BuilderHttpConnector {
 
         private BuilderSslContextFactory(BuilderHttpsConnector builderHttpsConnector, String keyStorePath) {
             this.builderHttpsConnector = builderHttpsConnector;
-            this.builderHttpsConnector.sslContextFactory = new SslContextFactory(keyStorePath);
+
+            SslContextFactory.Server sslContextFactory = new SslContextFactory.Server();
+            sslContextFactory.setKeyStorePath(keyStorePath);
+
+            this.builderHttpsConnector.sslContextFactory = sslContextFactory;
         }
 
         public BuilderSslContextFactory setKeyStorePassword(String keyStorePassword) {
@@ -79,8 +83,10 @@ public class BuilderHttpsConnector extends BuilderHttpConnector {
         }
 
         public BuilderSslContextFactory setTrustStore(KeyStore keyStore) {
-            builderHttpsConnector.sslContextFactory.setTrustStore(keyStore);
-            builderHttpsConnector.sslContextFactory.setWantClientAuth(true);
+            SslContextFactory.Server sslContextFactory = (SslContextFactory.Server) builderHttpsConnector.sslContextFactory;
+
+            sslContextFactory.setTrustStore(keyStore);
+            sslContextFactory.setWantClientAuth(true);
             return this;
         }
 
@@ -90,8 +96,10 @@ public class BuilderHttpsConnector extends BuilderHttpConnector {
         }
 
         public BuilderSslContextFactory setTrustStorePath(String keyStore) {
-            builderHttpsConnector.sslContextFactory.setTrustStorePath(keyStore);
-            builderHttpsConnector.sslContextFactory.setWantClientAuth(true);
+            SslContextFactory.Server sslContextFactory = (SslContextFactory.Server) builderHttpsConnector.sslContextFactory;
+
+            sslContextFactory.setTrustStorePath(keyStore);
+            sslContextFactory.setWantClientAuth(true);
             return this;
         }
 
