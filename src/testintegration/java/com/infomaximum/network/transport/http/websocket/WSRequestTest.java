@@ -1,13 +1,13 @@
 package com.infomaximum.network.transport.http.websocket;
 
 import com.infomaximum.network.Network;
-import com.infomaximum.network.NetworkImpl;
 import com.infomaximum.network.builder.BuilderNetwork;
-import com.infomaximum.network.handler.PacketHandler;
 import com.infomaximum.network.mvc.ResponseEntity;
-import com.infomaximum.network.packet.RequestPacket;
-import com.infomaximum.network.packet.ResponsePacket;
-import com.infomaximum.network.packet.TargetPacket;
+import com.infomaximum.network.protocol.standard.StandardProtocolBuilder;
+import com.infomaximum.network.protocol.standard.handler.PacketHandler;
+import com.infomaximum.network.protocol.standard.packet.RequestPacket;
+import com.infomaximum.network.protocol.standard.packet.ResponsePacket;
+import com.infomaximum.network.protocol.standard.packet.TargetPacket;
 import com.infomaximum.network.session.Session;
 import com.infomaximum.network.transport.coretest.websocket.CoreWSRequestTest;
 import com.infomaximum.network.transport.http.SpringConfigurationMvc;
@@ -39,29 +39,30 @@ public class WSRequestTest {
     @BeforeClass
     public static void init() throws Exception {
         network = new BuilderNetwork()
-                .withPacketHandler(
-                        new PacketHandler.Builder() {
-                            @Override
-                            public PacketHandler build(NetworkImpl network) {
-                                return new PacketHandler() {
+                .withProtocol(new StandardProtocolBuilder()
+                        .withPacketHandler(
+                                new PacketHandler.Builder() {
                                     @Override
-                                    public CompletableFuture<ResponsePacket> exec(Session session, TargetPacket packet) {
-                                        if (packet instanceof RequestPacket) {
-                                            CompletableFuture<ResponsePacket> completableFuture = new CompletableFuture<ResponsePacket>();
-                                            completableFuture.complete(ResponsePacket.response(
-                                                    (RequestPacket) packet,
-                                                    ResponseEntity.RESPONSE_CODE_OK,
-                                                    new JSONObject()
-                                            ));
-                                            return completableFuture;
-                                        } else {
-                                            return null;
-                                        }
+                                    public PacketHandler build(Thread.UncaughtExceptionHandler uncaughtExceptionHandler) {
+                                        return new PacketHandler() {
+                                            @Override
+                                            public CompletableFuture<ResponsePacket> exec(Session session, TargetPacket packet) {
+                                                if (packet instanceof RequestPacket) {
+                                                    CompletableFuture<ResponsePacket> completableFuture = new CompletableFuture<ResponsePacket>();
+                                                    completableFuture.complete(ResponsePacket.response(
+                                                            (RequestPacket) packet,
+                                                            ResponseEntity.RESPONSE_CODE_OK,
+                                                            new JSONObject()
+                                                    ));
+                                                    return completableFuture;
+                                                } else {
+                                                    return null;
+                                                }
+                                            }
+                                        };
                                     }
-                                };
-                            }
-                        }
-                )
+                                }
+                        ))
                 .withTransport(
                         new HttpBuilderTransport(SpringConfigurationMvc.class)
                                 .addConnector(new BuilderHttpConnector(port))

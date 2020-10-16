@@ -1,7 +1,7 @@
-package com.infomaximum.network.handler.handshake;
+package com.infomaximum.network.protocol.standard.handler.handshake;
 
-import com.infomaximum.network.handler.PacketHandler;
-import com.infomaximum.network.packet.ResponsePacket;
+import com.infomaximum.network.protocol.standard.handler.PacketHandler;
+import com.infomaximum.network.protocol.standard.packet.ResponsePacket;
 import com.infomaximum.network.session.Session;
 import com.infomaximum.network.struct.HandshakeData;
 

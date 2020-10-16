@@ -2,19 +2,18 @@ package com.infomaximum.network;
 
 import com.infomaximum.network.event.NetworkListener;
 import com.infomaximum.network.exception.NetworkException;
-import com.infomaximum.network.handler.PacketHandler;
-import com.infomaximum.network.handler.handshake.Handshake;
-import com.infomaximum.network.packet.*;
-import com.infomaximum.network.session.Session;
+import com.infomaximum.network.protocol.Protocol;
+import com.infomaximum.network.protocol.ProtocolUtils;
+import com.infomaximum.network.protocol.standard.packet.RequestPacket;
 import com.infomaximum.network.session.TransportSession;
 import com.infomaximum.network.struct.info.NetworkInfo;
 import com.infomaximum.network.transport.Transport;
 import com.infomaximum.network.transport.TransportListener;
 import net.minidev.json.JSONObject;
+import org.eclipse.jetty.websocket.common.WebSocketSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -27,31 +26,31 @@ public class NetworkImpl implements Network, TransportListener {
 
     public volatile static NetworkImpl instance = null;
 
-    private final Handshake handshake;
-
-    private final PacketHandler packetHandler;
+//    private final PacketHandler packetHandler;
 
     private final Class<? extends RequestPacket> extensionRequestPacket;
 
     private final List<Transport> transports;
+
+    private final List<Protocol> protocols;
 
     private final Set<NetworkListener> listeners;
     private final ConcurrentHashMap<Object, TransportSession> transportSessions;
 
     private Thread.UncaughtExceptionHandler uncaughtExceptionHandler;
 
-    public NetworkImpl(Handshake handshake,
-                       Class<? extends RequestPacket> extensionRequestPacket,
-                       PacketHandler.Builder packetHandlerBuilder,
-                       Thread.UncaughtExceptionHandler uncaughtExceptionHandler
+    public NetworkImpl(
+            List<Protocol> protocols,
+            Class<? extends RequestPacket> extensionRequestPacket,
+            Thread.UncaughtExceptionHandler uncaughtExceptionHandler
     ) throws NetworkException {
-        this.handshake = handshake;
+        this.protocols = protocols;
 
-        if (packetHandlerBuilder != null) {
-            this.packetHandler = packetHandlerBuilder.build(this);
-        } else {
-            this.packetHandler = null;
-        }
+//        if (packetHandlerBuilder != null) {
+//            this.packetHandler = packetHandlerBuilder.build(this);
+//        } else {
+//            this.packetHandler = null;
+//        }
 
         this.extensionRequestPacket = extensionRequestPacket;
 
@@ -79,13 +78,9 @@ public class NetworkImpl implements Network, TransportListener {
         transports.add(transport);
     }
 
-    public Handshake getHandshake() {
-        return handshake;
-    }
-
-    public PacketHandler getPacketHandler() {
-        return packetHandler;
-    }
+//    public Handshake getHandshake() {
+//        return handshake;
+//    }
 
     public Thread.UncaughtExceptionHandler getUncaughtExceptionHandler() {
         return uncaughtExceptionHandler;
@@ -94,10 +89,22 @@ public class NetworkImpl implements Network, TransportListener {
     @Override
     public void onConnect(Transport transport, Object channel, String remoteIpAddress) {
         try {
+            String nameProtocol = ProtocolUtils.getWebSocketProtocol((WebSocketSession) channel);
+            Protocol protocol = null;
+            for (Protocol iProtocol : protocols) {
+                if (iProtocol.getName().equals(nameProtocol)) {
+                    protocol = iProtocol;
+                    break;
+                }
+            }
+            if (protocol == null) {
+                throw new RuntimeException("Not support protocol, name: " + nameProtocol);
+            }
+
             TransportSession transportSession = transportSessions.get(channel);
             if (transportSession != null) return;//Странное это дело...
 
-            transportSession = new TransportSession(this, transport, channel);
+            transportSession = protocol.onConnect(transport, channel);
             transportSessions.put(channel, transportSession);
 
             log.info("{} onConnect, ip: {}", transportSession.getSession(), remoteIpAddress);
@@ -107,13 +114,6 @@ public class NetworkImpl implements Network, TransportListener {
                 listener.onConnect(transportSession.getSession());
             }
 
-            //Начинаем фазу рукопожатия
-            if (handshake == null) {
-                //Прикольно у нас нет обработчика рукопожатий, сразу считаем что оно свершилось)
-                onHandshake(transportSession.getSession());
-            } else {
-                handshake.onPhaseHandshake(transportSession.getSession());
-            }
         } catch (Exception e) {
             log.error("Error connect", e);
             onDisconnect(transport, channel, -1, e);
@@ -121,16 +121,9 @@ public class NetworkImpl implements Network, TransportListener {
     }
 
     @Override
-    public void incomingPacket(Transport transport, Object channel, Packet packet) {
+    public void incomingPacket(Transport transport, Object channel, JSONObject jPacket) {
         TransportSession threadSession = transportSessions.get(channel);
-        threadSession.incomingPacket(packet);
-    }
-
-    public void onHandshake(Session session) {
-        //Оповещаем подписчиков
-        for (NetworkListener listener : listeners) {
-            listener.onHandshake(session);
-        }
+        threadSession.incomingPacket(jPacket);
     }
 
     @Override
@@ -163,28 +156,6 @@ public class NetworkImpl implements Network, TransportListener {
         return new NetworkInfo(transports);
     }
 
-    public Packet parsePacket(JSONObject parse) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
-        TypePacket type = TypePacket.get(parse.getAsNumber("type").intValue());
-        if (type == TypePacket.ASYNC) {
-            String controller = parse.getAsString("controller");
-            String action = parse.getAsString("action");
-            JSONObject data = (JSONObject) parse.get("data");
-            return new AsyncPacket(controller, action, data);
-        } else if (type == TypePacket.REQUEST) {
-            if (extensionRequestPacket == null) {
-                return new RequestPacket(parse);
-            } else {
-                return extensionRequestPacket.getConstructor(JSONObject.class).newInstance(parse);
-            }
-        } else if (type == TypePacket.RESPONSE) {
-            long id = parse.getAsNumber("id").longValue();
-            int code = parse.getAsNumber("code").intValue();
-            JSONObject data = (JSONObject) parse.get("data");
-            return new ResponsePacket(id, code, data);
-        } else {
-            throw new RuntimeException("Not support type packet: " + type);
-        }
-    }
 
     @Override
     public void close() throws Exception {

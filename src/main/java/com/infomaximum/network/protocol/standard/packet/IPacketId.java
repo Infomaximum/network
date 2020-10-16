@@ -1,4 +1,4 @@
-package com.infomaximum.network.packet;
+package com.infomaximum.network.protocol.standard.packet;
 
 /**
  * Created by kris on 26.08.16.

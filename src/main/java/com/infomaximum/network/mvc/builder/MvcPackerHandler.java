@@ -1,16 +1,15 @@
 package com.infomaximum.network.mvc.builder;
 
-import com.infomaximum.network.NetworkImpl;
 import com.infomaximum.network.exception.NetworkException;
-import com.infomaximum.network.handler.PacketHandler;
 import com.infomaximum.network.mvc.ResponseEntity;
 import com.infomaximum.network.mvc.anotation.Controller;
 import com.infomaximum.network.mvc.anotation.ControllerAction;
-import com.infomaximum.network.packet.RequestPacket;
-import com.infomaximum.network.packet.ResponsePacket;
-import com.infomaximum.network.packet.TargetPacket;
+import com.infomaximum.network.protocol.standard.handler.PacketHandler;
+import com.infomaximum.network.protocol.standard.packet.RequestPacket;
+import com.infomaximum.network.protocol.standard.packet.ResponsePacket;
+import com.infomaximum.network.protocol.standard.packet.TargetPacket;
+import com.infomaximum.network.protocol.standard.session.StandardTransportSession;
 import com.infomaximum.network.session.Session;
-import com.infomaximum.network.session.TransportSession;
 import net.minidev.json.JSONObject;
 import org.reflections.Reflections;
 import org.slf4j.Logger;
@@ -26,11 +25,11 @@ public class MvcPackerHandler implements PacketHandler {
 
     private final static Logger log = LoggerFactory.getLogger(MvcPackerHandler.class);
 
-    private final NetworkImpl network;
+    private final Thread.UncaughtExceptionHandler uncaughtExceptionHandler;
     private final HashMap<String, MvcController> controllers;
 
-    private MvcPackerHandler(NetworkImpl network, HashMap<String, MvcController> controllers) {
-        this.network = network;
+    private MvcPackerHandler(Thread.UncaughtExceptionHandler uncaughtExceptionHandler, HashMap<String, MvcController> controllers) {
+        this.uncaughtExceptionHandler = uncaughtExceptionHandler;
         this.controllers = controllers;
     }
 
@@ -41,52 +40,6 @@ public class MvcPackerHandler implements PacketHandler {
         public MvcController(Object controller, HashMap<String, Method> actions) {
             this.controller = controller;
             this.actions = actions;
-        }
-    }
-
-    public static class Builder extends PacketHandler.Builder {
-
-        private String scanPackage;
-
-        private Thread.UncaughtExceptionHandler uncaughtExceptionHandler;
-
-        public Builder(Package scanPackage) {
-            this.scanPackage = scanPackage.getName();
-        }
-
-        public Builder(String scanPackage) {
-            this.scanPackage = scanPackage;
-        }
-
-        @Override
-        public PacketHandler build(NetworkImpl network) throws NetworkException {
-            try {
-                HashMap<String, MvcController> controllers = new HashMap<>();
-
-                Reflections reflections = new Reflections(scanPackage);
-                for (Class classController : reflections.getTypesAnnotatedWith(Controller.class, true)) {
-                    Controller aController = (Controller) classController.getAnnotation(Controller.class);
-
-                    Constructor constructor = classController.getConstructor();
-                    constructor.setAccessible(true);
-                    Object controller = constructor.newInstance();
-
-                    HashMap<String, Method> actions = new HashMap<String, Method>();
-                    for (Method method : classController.getDeclaredMethods()) {
-                        ControllerAction aControllerAction = method.getDeclaredAnnotation(ControllerAction.class);
-                        if (aControllerAction == null) continue;
-
-                        method.setAccessible(true);
-                        actions.put(aControllerAction.value(), method);
-                    }
-
-                    controllers.put(aController.value(), new MvcController(controller, actions));
-                }
-
-                return new MvcPackerHandler(network, controllers);
-            } catch (ReflectiveOperationException e) {
-                throw new NetworkException(e);
-            }
         }
     }
 
@@ -117,7 +70,7 @@ public class MvcPackerHandler implements PacketHandler {
                     methodArds[i] = session;
                 } else if (clazz == JSONObject.class) {
                     methodArds[i] = packet.getData();
-                } else if (clazz == TransportSession.class) {
+                } else if (clazz == StandardTransportSession.class) {
                     methodArds[i] = session.getTransportSession();
                 } else if (TargetPacket.class.isAssignableFrom(clazz)) {
                     methodArds[i] = packet;
@@ -143,7 +96,7 @@ public class MvcPackerHandler implements PacketHandler {
                                 responseEntity.data
                         )
                 ).exceptionally(throwable -> {
-                    network.getUncaughtExceptionHandler().uncaughtException(Thread.currentThread(), throwable);
+                    uncaughtExceptionHandler.uncaughtException(Thread.currentThread(), throwable);
                     return null;
                 });
             } else if (result instanceof ResponseEntity) {
@@ -155,9 +108,53 @@ public class MvcPackerHandler implements PacketHandler {
                 throw new RuntimeException("Not support return type: " + result);
             }
         } catch (Throwable t) {
-            network.getUncaughtExceptionHandler().uncaughtException(Thread.currentThread(), t);
+            uncaughtExceptionHandler.uncaughtException(Thread.currentThread(), t);
             return null;
         }
 
+    }
+
+    public static class Builder extends PacketHandler.Builder {
+
+        private String scanPackage;
+
+        public Builder(Package scanPackage) {
+            this.scanPackage = scanPackage.getName();
+        }
+
+        public Builder(String scanPackage) {
+            this.scanPackage = scanPackage;
+        }
+
+        @Override
+        public PacketHandler build(Thread.UncaughtExceptionHandler uncaughtExceptionHandler) throws NetworkException {
+            try {
+                HashMap<String, MvcController> controllers = new HashMap<>();
+
+                Reflections reflections = new Reflections(scanPackage);
+                for (Class classController : reflections.getTypesAnnotatedWith(Controller.class, true)) {
+                    Controller aController = (Controller) classController.getAnnotation(Controller.class);
+
+                    Constructor constructor = classController.getConstructor();
+                    constructor.setAccessible(true);
+                    Object controller = constructor.newInstance();
+
+                    HashMap<String, Method> actions = new HashMap<String, Method>();
+                    for (Method method : classController.getDeclaredMethods()) {
+                        ControllerAction aControllerAction = method.getDeclaredAnnotation(ControllerAction.class);
+                        if (aControllerAction == null) continue;
+
+                        method.setAccessible(true);
+                        actions.put(aControllerAction.value(), method);
+                    }
+
+                    controllers.put(aController.value(), new MvcController(controller, actions));
+                }
+
+                return new MvcPackerHandler(uncaughtExceptionHandler, controllers);
+            } catch (ReflectiveOperationException e) {
+                throw new NetworkException(e);
+            }
+        }
     }
 }

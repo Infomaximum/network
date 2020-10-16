@@ -3,46 +3,43 @@ package com.infomaximum.network.builder;
 import com.infomaximum.network.Network;
 import com.infomaximum.network.NetworkImpl;
 import com.infomaximum.network.exception.NetworkException;
-import com.infomaximum.network.handler.PacketHandler;
-import com.infomaximum.network.handler.handshake.Handshake;
-import com.infomaximum.network.packet.RequestPacket;
+import com.infomaximum.network.protocol.Protocol;
+import com.infomaximum.network.protocol.ProtocolBuilder;
+import com.infomaximum.network.protocol.standard.packet.RequestPacket;
 import com.infomaximum.network.transport.Transport;
 import com.infomaximum.network.transport.http.HttpTransport;
 import com.infomaximum.network.transport.http.builder.HttpBuilderTransport;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 
 /**
  * Created by kris on 26.08.16.
  */
 public class BuilderNetwork {
 
-    private Handshake handshake = null;
-    private PacketHandler.Builder packetHandlerBuilder = null;
-
     private Class<? extends RequestPacket> extensionRequestPacket = null;
 
     private Collection<BuilderTransport> builderTransports = null;
+
+    private Collection<ProtocolBuilder> protocolBuilders = null;
 
     private Thread.UncaughtExceptionHandler uncaughtExceptionHandler;
 
     public BuilderNetwork() {
     }
 
-    public BuilderNetwork withHandshake(Handshake handshake) {
-        this.handshake = handshake;
-        return this;
-    }
-
-    public BuilderNetwork withPacketHandler(PacketHandler.Builder packetHandlerBuilder) {
-        this.packetHandlerBuilder = packetHandlerBuilder;
-        return this;
-    }
-
     public BuilderNetwork withTransport(BuilderTransport builderTransport) {
         if (builderTransports == null) builderTransports = new HashSet<BuilderTransport>();
         builderTransports.add(builderTransport);
+        return this;
+    }
+
+    public BuilderNetwork withProtocol(ProtocolBuilder protocolBuilder) {
+        if (protocolBuilders == null) protocolBuilders = new HashSet<ProtocolBuilder>();
+        protocolBuilders.add(protocolBuilder);
         return this;
     }
 
@@ -57,10 +54,16 @@ public class BuilderNetwork {
     }
 
     public Network build() throws NetworkException {
+        List<Protocol> protocols = new ArrayList<>();
+        if (protocolBuilders != null) {
+            for (ProtocolBuilder builder : protocolBuilders) {
+                protocols.add(builder.build(uncaughtExceptionHandler));
+            }
+        }
+
         NetworkImpl network = new NetworkImpl(
-                handshake,
+                protocols,
                 extensionRequestPacket,
-                packetHandlerBuilder,
                 uncaughtExceptionHandler
         );
 

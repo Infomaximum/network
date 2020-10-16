@@ -13,7 +13,7 @@ public interface NetworkListener {
 
 	public void onConnect(Session session);
 
-	public void onHandshake(Session session);
+//	public void onHandshake(Session session);
 
 	public void onDisconnect(Session session);
 }

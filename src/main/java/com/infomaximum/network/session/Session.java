@@ -1,6 +1,5 @@
 package com.infomaximum.network.session;
 
-import com.infomaximum.network.NetworkImpl;
 import com.infomaximum.network.struct.HandshakeData;
 import com.infomaximum.network.struct.SessionData;
 
@@ -12,7 +11,6 @@ import java.util.UUID;
  */
 public class Session {
 
-    private final NetworkImpl network;
     private final TransportSession transportSession;
 
     public final String uuid;
@@ -20,9 +18,8 @@ public class Session {
     private HandshakeData handshakeData;
     private SessionData data;
 
-    protected Session(NetworkImpl network, TransportSession transportSession) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
-        this.network=network;
-        this.transportSession=transportSession;
+    public Session(TransportSession transportSession) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
+        this.transportSession = transportSession;
 
         this.uuid = UUID.randomUUID().toString();
     }

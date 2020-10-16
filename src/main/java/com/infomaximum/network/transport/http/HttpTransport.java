@@ -1,7 +1,7 @@
 package com.infomaximum.network.transport.http;
 
 import com.infomaximum.network.exception.NetworkException;
-import com.infomaximum.network.packet.Packet;
+import com.infomaximum.network.packet.IPacket;
 import com.infomaximum.network.struct.info.HttpConnectorInfo;
 import com.infomaximum.network.struct.info.TransportInfo;
 import com.infomaximum.network.transport.Transport;
@@ -11,7 +11,10 @@ import com.infomaximum.network.transport.http.builder.connector.BuilderHttpConne
 import com.infomaximum.network.transport.http.builder.filter.BuilderFilter;
 import com.infomaximum.network.transport.http.jsp.JspStarter;
 import org.apache.jasper.servlet.JspServlet;
-import org.eclipse.jetty.server.*;
+import org.eclipse.jetty.server.Connector;
+import org.eclipse.jetty.server.Handler;
+import org.eclipse.jetty.server.HttpChannel;
+import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.DefaultHandler;
 import org.eclipse.jetty.server.handler.HandlerCollection;
 import org.eclipse.jetty.servlet.ServletContextHandler;
@@ -129,7 +132,7 @@ public class HttpTransport extends Transport<Session> {
     }
 
     @Override
-    public Future<Void> send(Session session, Packet packet) throws IOException {
+    public Future<Void> send(Session session, IPacket packet) throws IOException {
         return session.getRemote().sendStringByFuture(packet.serialize());
     }
 

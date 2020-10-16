@@ -1,6 +1,6 @@
 package com.infomaximum.network.transport.coretest.websocket;
 
-import com.infomaximum.network.packet.RequestPacket;
+import com.infomaximum.network.protocol.standard.packet.RequestPacket;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.WebSocketAdapter;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
