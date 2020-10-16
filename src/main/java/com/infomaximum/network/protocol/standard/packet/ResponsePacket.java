@@ -1,4 +1,4 @@
-package com.infomaximum.network.packet;
+package com.infomaximum.network.protocol.standard.packet;
 
 import net.minidev.json.JSONObject;
 
@@ -24,6 +24,10 @@ public class ResponsePacket extends Packet implements IPacketId {
     @Override
     public TypePacket getType() {
         return TypePacket.RESPONSE;
+    }
+
+    public int getCode() {
+        return code;
     }
 
     @Override

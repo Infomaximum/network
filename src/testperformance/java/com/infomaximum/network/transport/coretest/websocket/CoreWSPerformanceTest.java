@@ -1,9 +1,9 @@
 package com.infomaximum.network.transport.coretest.websocket;
 
 import com.infomaximum.network.Network;
-import com.infomaximum.network.NetworkImpl;
-import com.infomaximum.network.packet.RequestPacket;
-import com.infomaximum.network.packet.ResponsePacket;
+import com.infomaximum.network.protocol.standard.packet.Packet;
+import com.infomaximum.network.protocol.standard.packet.RequestPacket;
+import com.infomaximum.network.protocol.standard.packet.ResponsePacket;
 import net.minidev.json.JSONObject;
 import net.minidev.json.parser.JSONParser;
 import org.eclipse.jetty.websocket.api.Session;
@@ -53,7 +53,7 @@ public class CoreWSPerformanceTest {
                             public void onWebSocketText(String message) {
                                 super.onWebSocketText(message);
                                 try {
-                                    ResponsePacket responsePacket = (ResponsePacket)((NetworkImpl)network).parsePacket((JSONObject) new JSONParser(JSONParser.DEFAULT_PERMISSIVE_MODE).parse(message));
+                                    ResponsePacket responsePacket = (ResponsePacket) (Packet.parse((JSONObject) new JSONParser(JSONParser.DEFAULT_PERMISSIVE_MODE).parse(message)));
                                     responseFuture.complete(responsePacket);
                                 } catch (Exception e) {
                                     Assert.fail();

@@ -1,9 +1,8 @@
-package com.infomaximum.network.handler;
+package com.infomaximum.network.protocol.standard.handler;
 
-import com.infomaximum.network.NetworkImpl;
 import com.infomaximum.network.exception.NetworkException;
-import com.infomaximum.network.packet.ResponsePacket;
-import com.infomaximum.network.packet.TargetPacket;
+import com.infomaximum.network.protocol.standard.packet.ResponsePacket;
+import com.infomaximum.network.protocol.standard.packet.TargetPacket;
 import com.infomaximum.network.session.Session;
 
 import java.util.concurrent.CompletableFuture;
@@ -17,7 +16,7 @@ public interface PacketHandler {
 
     abstract class Builder {
 
-        public abstract PacketHandler build(NetworkImpl network) throws NetworkException;
+        public abstract PacketHandler build(Thread.UncaughtExceptionHandler uncaughtExceptionHandler) throws NetworkException;
 
     }
 }
