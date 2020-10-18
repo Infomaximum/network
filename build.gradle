@@ -1,5 +1,5 @@
 group 'com.infomaximum'
-version '0.0.17'
+version '0.0.18'
 
 apply plugin: 'java'
 apply plugin: 'maven'
@@ -60,12 +60,12 @@ dependencies {
 
 //    compile 'io.netty:netty-all:4.1.12.Final'
 
-    compile 'org.eclipse.jetty:jetty-server:9.4.31.v20200723'
-    compile 'org.eclipse.jetty:jetty-servlet:9.4.31.v20200723'
-    compile 'org.eclipse.jetty:jetty-webapp:9.4.31.v20200723'
-    compile 'org.eclipse.jetty:apache-jsp:9.4.31.v20200723'
-    compile 'org.eclipse.jetty.websocket:websocket-server:9.4.31.v20200723'
-    compile 'org.eclipse.jetty.websocket:websocket-servlet:9.4.31.v20200723'
+    compile 'org.eclipse.jetty:jetty-server:9.4.32.v20200930'
+    compile 'org.eclipse.jetty:jetty-servlet:9.4.32.v20200930'
+    compile 'org.eclipse.jetty:jetty-webapp:9.4.32.v20200930'
+    compile 'org.eclipse.jetty:apache-jsp:9.4.32.v20200930'
+    compile 'org.eclipse.jetty.websocket:websocket-server:9.4.32.v20200930'
+    compile 'org.eclipse.jetty.websocket:websocket-servlet:9.4.32.v20200930'
 
     compile 'org.springframework:spring-core:5.2.8.RELEASE'
     compile 'org.springframework:spring-web:5.2.8.RELEASE'
