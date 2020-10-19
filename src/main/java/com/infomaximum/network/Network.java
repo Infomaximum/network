@@ -11,9 +11,12 @@ import com.infomaximum.network.struct.info.NetworkInfo;
  */
 public interface Network extends AutoCloseable {
 
-    public void addNetworkListener(NetworkListener listener);
+    void addNetworkListener(NetworkListener listener);
 
-    public void removeNetworkListener(NetworkListener listener);
+    void removeNetworkListener(NetworkListener listener);
 
-    public NetworkInfo getInfo();
+    NetworkInfo getInfo();
+
+    @Override
+    void close();
 }
