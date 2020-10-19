@@ -158,7 +158,7 @@ public class NetworkImpl implements Network, TransportListener {
 
 
     @Override
-    public void close() throws Exception {
+    public void close() {
         while (transports.size() > 0) {
             try {
                 transports.remove(0).destroy();
