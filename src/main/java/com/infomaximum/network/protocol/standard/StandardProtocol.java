@@ -1,7 +1,7 @@
 package com.infomaximum.network.protocol.standard;
 
+import com.infomaximum.network.protocol.PacketHandler;
 import com.infomaximum.network.protocol.Protocol;
-import com.infomaximum.network.protocol.standard.handler.PacketHandler;
 import com.infomaximum.network.protocol.standard.handler.handshake.Handshake;
 import com.infomaximum.network.protocol.standard.session.StandardTransportSession;
 import com.infomaximum.network.session.Session;
@@ -15,8 +15,11 @@ public class StandardProtocol extends Protocol {
 
     protected StandardProtocol(
             Handshake handshake,
-            PacketHandler packetHandler
+            PacketHandler packetHandler,
+            Thread.UncaughtExceptionHandler uncaughtExceptionHandler
     ) {
+        super(uncaughtExceptionHandler);
+
         this.handshake = handshake;
         this.packetHandler = packetHandler;
     }

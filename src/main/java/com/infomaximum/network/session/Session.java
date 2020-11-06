@@ -3,7 +3,6 @@ package com.infomaximum.network.session;
 import com.infomaximum.network.struct.HandshakeData;
 import com.infomaximum.network.struct.SessionData;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.UUID;
 
 /**
@@ -18,7 +17,7 @@ public class Session {
     private HandshakeData handshakeData;
     private SessionData data;
 
-    public Session(TransportSession transportSession) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
+    public Session(TransportSession transportSession) {
         this.transportSession = transportSession;
 
         this.uuid = UUID.randomUUID().toString();

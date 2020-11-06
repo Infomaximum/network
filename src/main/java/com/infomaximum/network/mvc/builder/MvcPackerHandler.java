@@ -4,7 +4,8 @@ import com.infomaximum.network.exception.NetworkException;
 import com.infomaximum.network.mvc.ResponseEntity;
 import com.infomaximum.network.mvc.anotation.Controller;
 import com.infomaximum.network.mvc.anotation.ControllerAction;
-import com.infomaximum.network.protocol.standard.handler.PacketHandler;
+import com.infomaximum.network.packet.IPacket;
+import com.infomaximum.network.protocol.PacketHandler;
 import com.infomaximum.network.protocol.standard.packet.RequestPacket;
 import com.infomaximum.network.protocol.standard.packet.ResponsePacket;
 import com.infomaximum.network.protocol.standard.packet.TargetPacket;
@@ -44,11 +45,13 @@ public class MvcPackerHandler implements PacketHandler {
     }
 
     @Override
-    public CompletableFuture<ResponsePacket> exec(Session session, TargetPacket packet) {
-        MvcController mvcController = controllers.get(packet.controller);
+    public CompletableFuture<IPacket> exec(Session session, IPacket packet) {
+        TargetPacket requestPacket = (TargetPacket) packet;
+
+        MvcController mvcController = controllers.get(requestPacket.controller);
 
         try {
-            final Method method = mvcController.actions.get(packet.action);
+            final Method method = mvcController.actions.get(requestPacket.action);
             if (method == null) {
                 return CompletableFuture.completedFuture(
                         ResponsePacket.response(
@@ -69,13 +72,13 @@ public class MvcPackerHandler implements PacketHandler {
                 if (clazz == Session.class) {
                     methodArds[i] = session;
                 } else if (clazz == JSONObject.class) {
-                    methodArds[i] = packet.getData();
+                    methodArds[i] = requestPacket.getData();
                 } else if (clazz == StandardTransportSession.class) {
                     methodArds[i] = session.getTransportSession();
                 } else if (TargetPacket.class.isAssignableFrom(clazz)) {
                     methodArds[i] = packet;
                 } else {
-                    throw new RuntimeException("Nothing type to method: " + packet.action + ", i: " + i);
+                    throw new RuntimeException("Nothing type to method: " + requestPacket.action + ", i: " + i);
                 }
             }
 
@@ -90,7 +93,7 @@ public class MvcPackerHandler implements PacketHandler {
             } else if (result instanceof CompletableFuture) {
                 CompletableFuture<ResponseEntity> futureResponse = (CompletableFuture<ResponseEntity>) result;
                 return futureResponse.thenApply(
-                        responseEntity -> ResponsePacket.response(
+                        responseEntity -> (IPacket) ResponsePacket.response(
                                 (RequestPacket) packet,
                                 responseEntity.code,
                                 responseEntity.data

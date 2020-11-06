@@ -1,7 +1,6 @@
 package com.infomaximum.network;
 
 import com.infomaximum.network.event.NetworkListener;
-import com.infomaximum.network.exception.NetworkException;
 import com.infomaximum.network.protocol.Protocol;
 import com.infomaximum.network.protocol.ProtocolUtils;
 import com.infomaximum.network.protocol.standard.packet.RequestPacket;
@@ -9,7 +8,6 @@ import com.infomaximum.network.session.TransportSession;
 import com.infomaximum.network.struct.info.NetworkInfo;
 import com.infomaximum.network.transport.Transport;
 import com.infomaximum.network.transport.TransportListener;
-import net.minidev.json.JSONObject;
 import org.eclipse.jetty.websocket.common.WebSocketSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,8 +24,6 @@ public class NetworkImpl implements Network, TransportListener {
 
     public volatile static NetworkImpl instance = null;
 
-//    private final PacketHandler packetHandler;
-
     private final Class<? extends RequestPacket> extensionRequestPacket;
 
     private final List<Transport> transports;
@@ -43,14 +39,8 @@ public class NetworkImpl implements Network, TransportListener {
             List<Protocol> protocols,
             Class<? extends RequestPacket> extensionRequestPacket,
             Thread.UncaughtExceptionHandler uncaughtExceptionHandler
-    ) throws NetworkException {
+    ) {
         this.protocols = protocols;
-
-//        if (packetHandlerBuilder != null) {
-//            this.packetHandler = packetHandlerBuilder.build(this);
-//        } else {
-//            this.packetHandler = null;
-//        }
 
         this.extensionRequestPacket = extensionRequestPacket;
 
@@ -77,10 +67,6 @@ public class NetworkImpl implements Network, TransportListener {
     public void registerTransport(Transport transport) {
         transports.add(transport);
     }
-
-//    public Handshake getHandshake() {
-//        return handshake;
-//    }
 
     public Thread.UncaughtExceptionHandler getUncaughtExceptionHandler() {
         return uncaughtExceptionHandler;
@@ -121,9 +107,9 @@ public class NetworkImpl implements Network, TransportListener {
     }
 
     @Override
-    public void incomingPacket(Transport transport, Object channel, JSONObject jPacket) {
+    public void incomingMessage(Transport transport, Object channel, String message) {
         TransportSession threadSession = transportSessions.get(channel);
-        threadSession.incomingPacket(jPacket);
+        threadSession.incomingMessage(message);
     }
 
     @Override
@@ -169,4 +155,3 @@ public class NetworkImpl implements Network, TransportListener {
         instance = null;
     }
 }
-

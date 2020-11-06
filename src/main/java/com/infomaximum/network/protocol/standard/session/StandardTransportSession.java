@@ -1,20 +1,18 @@
 package com.infomaximum.network.protocol.standard.session;
 
 import com.infomaximum.network.packet.IPacket;
+import com.infomaximum.network.protocol.PacketHandler;
 import com.infomaximum.network.protocol.standard.StandardProtocol;
-import com.infomaximum.network.protocol.standard.handler.PacketHandler;
 import com.infomaximum.network.protocol.standard.packet.Packet;
 import com.infomaximum.network.protocol.standard.packet.ResponsePacket;
-import com.infomaximum.network.session.Session;
 import com.infomaximum.network.session.TransportSession;
 import com.infomaximum.network.struct.HandshakeData;
 import com.infomaximum.network.transport.Transport;
 import net.minidev.json.JSONObject;
+import net.minidev.json.parser.JSONParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
@@ -32,8 +30,6 @@ public class StandardTransportSession extends TransportSession {
 
     private final static Logger log = LoggerFactory.getLogger(StandardTransportSession.class);
 
-    private final Session session;
-
     /**
      * итератор для id пакетов- запрашиваем о чем то клиент
      */
@@ -41,12 +37,14 @@ public class StandardTransportSession extends TransportSession {
     private final Map<Long, CompletableFuture<ResponsePacket>> waitResponses = new ConcurrentHashMap<Long, CompletableFuture<com.infomaximum.network.protocol.standard.packet.ResponsePacket>>();
 
     //Флаг определяеющий что мы в фазе рукопожатия
-    private boolean isPhaseHandshake;
+    private boolean phaseHandshake;
 
-    public StandardTransportSession(StandardProtocol protocol, final Transport transport, final Object channel) throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
+    public StandardTransportSession(
+            StandardProtocol protocol,
+            final Transport transport,
+            final Object channel
+    ) {
         super(protocol, transport, channel);
-
-        this.session = new Session(this);
 
         //Проверяем наличие фазы рукопожатия
 //		if (network.getHandshake() != null) {
@@ -57,13 +55,20 @@ public class StandardTransportSession extends TransportSession {
 //		}
     }
 
-    protected boolean isPhaseHandshake() {
-        return isPhaseHandshake;
+    @Override
+    public boolean isPhaseHandshake() {
+        return phaseHandshake;
+    }
+
+    @Override
+    public IPacket parse(String message) throws Exception {
+        JSONObject incoming = (JSONObject) new JSONParser(JSONParser.DEFAULT_PERMISSIVE_MODE).parse(message);
+        return Packet.parse(incoming);
     }
 
     @Override
     public void completedPhaseHandshake(HandshakeData handshakeData) {
-        isPhaseHandshake = false;
+        phaseHandshake = false;
 //		session.initHandshakeData(handshakeData);
 //		network.onHandshake(session);
     }
@@ -81,70 +86,13 @@ public class StandardTransportSession extends TransportSession {
         destroyed();
     }
 
-    public Session getSession() {
-        return session;
-    }
-
-    /**
-     * Сюда приходят входящие пакеты из сети
-     */
-    public void incomingPacket(JSONObject jPacket) {
-        try {
-            Packet packet = Packet.parse(jPacket);
-
-            if (packet.getType() == com.infomaximum.network.protocol.standard.packet.TypePacket.RESPONSE) {
-                com.infomaximum.network.protocol.standard.packet.ResponsePacket responsePacket = (com.infomaximum.network.protocol.standard.packet.ResponsePacket) packet;
-                //Пришел ответ на запрос
-                CompletableFuture future = waitResponses.remove(responsePacket.getId());
-                if (future == null) {
-                    log.error("nothing answer: " + packet.toString());
-                } else {
-                    future.complete(responsePacket);
-                }
-            } else {
-                getPacketHandler()
-                        .exec(session, (com.infomaximum.network.protocol.standard.packet.TargetPacket) packet)
-                        .thenAccept(responsePacket -> {
-                            if (packet.getType() == com.infomaximum.network.protocol.standard.packet.TypePacket.REQUEST) {//Требуется ответ
-                                if (responsePacket == null) {
-                                    log.error("Response packet is null");
-                                    try {
-                                        transport.close(channel);
-                                    } catch (Throwable ignore) {
-                                    }
-                                    destroyed();
-                                }
-                                try {
-                                    send(responsePacket);
-                                } catch (Throwable e) {
-                                    if (!(e instanceof IOException)) {
-                                        log.error("Exception", e);
-                                    }
-                                    try {
-                                        transport.close(channel);
-                                    } catch (Throwable ignore) {
-                                    }
-                                    destroyed();
-                                }
-                            }
-                        });
-            }
-        } catch (Exception e) {
-            log.error("{} Ошибка обработки входящего пакета: ", session, e);
-            try {
-                transport.close(channel);
-            } catch (IOException ignore) {
-            }
-            destroyed();
-        }
-    }
 
     /**
      * Возврощаем обработчика пакетов
      *
      * @return
      */
-    protected PacketHandler getPacketHandler() {
+    public PacketHandler getPacketHandler() {
 //		if (isPhaseHandshake) {
 //			return network.getHandshake();
 //		} else {

@@ -3,11 +3,11 @@ package com.infomaximum.network.transport.http.websocket;
 import com.infomaximum.network.Network;
 import com.infomaximum.network.builder.BuilderNetwork;
 import com.infomaximum.network.mvc.ResponseEntity;
+import com.infomaximum.network.packet.IPacket;
+import com.infomaximum.network.protocol.PacketHandler;
 import com.infomaximum.network.protocol.standard.StandardProtocolBuilder;
-import com.infomaximum.network.protocol.standard.handler.PacketHandler;
 import com.infomaximum.network.protocol.standard.packet.RequestPacket;
 import com.infomaximum.network.protocol.standard.packet.ResponsePacket;
-import com.infomaximum.network.protocol.standard.packet.TargetPacket;
 import com.infomaximum.network.session.Session;
 import com.infomaximum.network.transport.coretest.websocket.CoreWSPerformanceTest;
 import com.infomaximum.network.transport.http.SpringConfigurationMvc;
@@ -49,9 +49,9 @@ public class WSPerformanceTest {
                                             public PacketHandler build(Thread.UncaughtExceptionHandler uncaughtExceptionHandler) {
                                                 return new PacketHandler() {
                                                     @Override
-                                                    public CompletableFuture<ResponsePacket> exec(Session session, TargetPacket packet) {
+                                                    public CompletableFuture<IPacket> exec(Session session, IPacket packet) {
                                                         if (packet instanceof RequestPacket) {
-                                                            CompletableFuture<ResponsePacket> completableFuture = new CompletableFuture<ResponsePacket>();
+                                                            CompletableFuture<IPacket> completableFuture = new CompletableFuture<IPacket>();
                                                             completableFuture.complete(ResponsePacket.response(
                                                                     (RequestPacket) packet,
                                                                     ResponseEntity.RESPONSE_CODE_OK,
