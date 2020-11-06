@@ -2,7 +2,6 @@ package com.infomaximum.network.transport;
 
 import com.infomaximum.network.packet.IPacket;
 import com.infomaximum.network.struct.info.TransportInfo;
-import net.minidev.json.JSONObject;
 
 import java.io.IOException;
 import java.util.Set;
@@ -36,9 +35,9 @@ public abstract class Transport<Channel> {
         }
     }
 
-    public void fireIncomingPacket(Channel channel, JSONObject jPacket) {
+    public void fireIncomingMessage(Channel channel, String message) {
         for (TransportListener transportListener: this.listeners) {
-            transportListener.incomingPacket(this, channel, jPacket);
+            transportListener.incomingMessage(this, channel, message);
         }
     }
 

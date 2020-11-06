@@ -1,9 +1,9 @@
 package com.infomaximum.network.protocol.standard;
 
 import com.infomaximum.network.exception.NetworkException;
+import com.infomaximum.network.protocol.PacketHandler;
 import com.infomaximum.network.protocol.Protocol;
 import com.infomaximum.network.protocol.ProtocolBuilder;
-import com.infomaximum.network.protocol.standard.handler.PacketHandler;
 import com.infomaximum.network.protocol.standard.handler.handshake.Handshake;
 
 public class StandardProtocolBuilder extends ProtocolBuilder {
@@ -28,7 +28,8 @@ public class StandardProtocolBuilder extends ProtocolBuilder {
     public Protocol build(Thread.UncaughtExceptionHandler uncaughtExceptionHandler) throws NetworkException {
         return new StandardProtocol(
                 handshake,
-                packetHandlerBuilder.build(uncaughtExceptionHandler)
+                packetHandlerBuilder.build(uncaughtExceptionHandler),
+                uncaughtExceptionHandler
         );
     }
 }

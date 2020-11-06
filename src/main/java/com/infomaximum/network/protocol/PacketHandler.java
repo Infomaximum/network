@@ -1,8 +1,7 @@
-package com.infomaximum.network.protocol.standard.handler;
+package com.infomaximum.network.protocol;
 
 import com.infomaximum.network.exception.NetworkException;
-import com.infomaximum.network.protocol.standard.packet.ResponsePacket;
-import com.infomaximum.network.protocol.standard.packet.TargetPacket;
+import com.infomaximum.network.packet.IPacket;
 import com.infomaximum.network.session.Session;
 
 import java.util.concurrent.CompletableFuture;
@@ -12,7 +11,7 @@ import java.util.concurrent.CompletableFuture;
  */
 public interface PacketHandler {
 
-    CompletableFuture<ResponsePacket> exec(Session session, TargetPacket packet);
+    CompletableFuture<IPacket> exec(Session session, IPacket packet);
 
     abstract class Builder {
 

@@ -7,7 +7,5 @@ public enum TypeTransport {
 
     SOCKET,
 
-    HTTP,
-
-    SPRING_BOOT_HTTP;
+    HTTP;
 }

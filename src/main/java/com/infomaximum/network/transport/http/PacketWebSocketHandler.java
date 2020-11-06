@@ -1,8 +1,5 @@
 package com.infomaximum.network.transport.http;
 
-import com.infomaximum.network.utils.ExecutorUtil;
-import net.minidev.json.JSONObject;
-import net.minidev.json.parser.JSONParser;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.*;
 import org.slf4j.Logger;
@@ -29,17 +26,7 @@ public class PacketWebSocketHandler {
 
     @OnWebSocketMessage
     public void onMessage(Session session, String message){
-        ExecutorUtil.executors.execute(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    JSONObject incoming = (JSONObject) new JSONParser(JSONParser.DEFAULT_PERMISSIVE_MODE).parse(message);
-                    HttpTransport.instance.fireIncomingPacket(session, incoming);
-                } catch (Exception e) {
-                    log.error("Ошибка обработки входящего пакета, игнорим. packet: " + message, e);
-                }
-            }
-        });
+        HttpTransport.instance.fireIncomingMessage(session, message);
     }
 
     @OnWebSocketError
