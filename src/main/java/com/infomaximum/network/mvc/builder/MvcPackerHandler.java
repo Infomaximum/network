@@ -11,6 +11,7 @@ import com.infomaximum.network.protocol.standard.packet.ResponsePacket;
 import com.infomaximum.network.protocol.standard.packet.TargetPacket;
 import com.infomaximum.network.protocol.standard.session.StandardTransportSession;
 import com.infomaximum.network.session.Session;
+import com.infomaximum.network.session.SessionImpl;
 import net.minidev.json.JSONObject;
 import org.reflections.Reflections;
 import org.slf4j.Logger;
@@ -74,7 +75,7 @@ public class MvcPackerHandler implements PacketHandler {
                 } else if (clazz == JSONObject.class) {
                     methodArds[i] = requestPacket.getData();
                 } else if (clazz == StandardTransportSession.class) {
-                    methodArds[i] = session.getTransportSession();
+                    methodArds[i] = ((SessionImpl) session).getTransportSession();
                 } else if (TargetPacket.class.isAssignableFrom(clazz)) {
                     methodArds[i] = packet;
                 } else {

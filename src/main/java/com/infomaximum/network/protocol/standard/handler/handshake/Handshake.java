@@ -3,6 +3,7 @@ package com.infomaximum.network.protocol.standard.handler.handshake;
 import com.infomaximum.network.protocol.PacketHandler;
 import com.infomaximum.network.protocol.standard.packet.ResponsePacket;
 import com.infomaximum.network.session.Session;
+import com.infomaximum.network.session.SessionImpl;
 import com.infomaximum.network.struct.HandshakeData;
 
 /**
@@ -14,17 +15,19 @@ public abstract class Handshake implements PacketHandler {
 
     /**
      * Завершаем фазу рукопожатия
+     *
      * @param session
      */
     public void completedPhaseHandshake(Session session, HandshakeData handshakeData) {
-        session.getTransportSession().completedPhaseHandshake(handshakeData);
+        ((SessionImpl) session).getTransportSession().completedPhaseHandshake(handshakeData);
     }
 
     /**
      * Ошибка фазы рукопожатия - разрываем соединение
+     *
      * @param session
      */
-    public void failPhaseHandshake(Session session, ResponsePacket responsePacket){
-        session.getTransportSession().failPhaseHandshake(responsePacket);
+    public void failPhaseHandshake(Session session, ResponsePacket responsePacket) {
+        ((SessionImpl) session).getTransportSession().failPhaseHandshake(responsePacket);
     }
 }
