@@ -5,6 +5,7 @@ import com.infomaximum.network.protocol.PacketHandler;
 import com.infomaximum.network.protocol.standard.StandardProtocol;
 import com.infomaximum.network.protocol.standard.packet.Packet;
 import com.infomaximum.network.protocol.standard.packet.ResponsePacket;
+import com.infomaximum.network.session.SessionImpl;
 import com.infomaximum.network.session.TransportSession;
 import com.infomaximum.network.struct.HandshakeData;
 import com.infomaximum.network.transport.Transport;
@@ -37,7 +38,7 @@ public class StandardTransportSession extends TransportSession {
     private final Map<Long, CompletableFuture<ResponsePacket>> waitResponses = new ConcurrentHashMap<Long, CompletableFuture<com.infomaximum.network.protocol.standard.packet.ResponsePacket>>();
 
     //Флаг определяеющий что мы в фазе рукопожатия
-    private boolean phaseHandshake;
+    private volatile boolean phaseHandshake;
 
     public StandardTransportSession(
             StandardProtocol protocol,
@@ -47,12 +48,12 @@ public class StandardTransportSession extends TransportSession {
         super(protocol, transport, channel);
 
         //Проверяем наличие фазы рукопожатия
-//		if (network.getHandshake() != null) {
-//			isPhaseHandshake = true;
-//		} else {
-//			isPhaseHandshake = false;
-////			network.onHandshake(session);
-//		}
+        if (protocol.handshake != null) {
+            phaseHandshake = true;
+        } else {
+            phaseHandshake = false;
+//			network.onHandshake(session);
+        }
     }
 
     @Override
@@ -69,7 +70,7 @@ public class StandardTransportSession extends TransportSession {
     @Override
     public void completedPhaseHandshake(HandshakeData handshakeData) {
         phaseHandshake = false;
-//		session.initHandshakeData(handshakeData);
+        ((SessionImpl) session).initHandshakeData(handshakeData);
 //		network.onHandshake(session);
     }
 
@@ -93,10 +94,11 @@ public class StandardTransportSession extends TransportSession {
      * @return
      */
     public PacketHandler getPacketHandler() {
-//		if (isPhaseHandshake) {
-//			return network.getHandshake();
-//		} else {
-        return ((StandardProtocol) protocol).getPacketHandler();
-//		}
+        StandardProtocol standardProtocol = (StandardProtocol) protocol;
+        if (phaseHandshake) {
+            return standardProtocol.handshake;
+        } else {
+            return standardProtocol.getPacketHandler();
+        }
     }
 }

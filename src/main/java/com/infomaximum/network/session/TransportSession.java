@@ -30,7 +30,7 @@ public abstract class TransportSession implements TransportPacketHandler {
         this.channel = channel;
         this.requestQueue = new ExecuteRequest(this, protocol.uncaughtExceptionHandler);
 
-        this.session = new Session(this);
+        this.session = new SessionImpl(this);
     }
 
     public abstract void completedPhaseHandshake(HandshakeData handshakeData);

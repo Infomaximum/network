@@ -9,7 +9,7 @@ import com.infomaximum.network.transport.Transport;
 
 public class StandardProtocol extends Protocol {
 
-    private final Handshake handshake;
+    public final Handshake handshake;
 
     private final PacketHandler packetHandler;
 
@@ -36,7 +36,7 @@ public class StandardProtocol extends Protocol {
 
         //Начинаем фазу рукопожатия
         if (handshake == null) {
-            //Прикольно у нас нет обработчика рукопожатий, сразу считаем что оно свершилось)
+            //У нас нет обработчика рукопожатий, сразу считаем что оно свершилось)
             onHandshake(transportSession.getSession());
         } else {
             handshake.onPhaseHandshake(transportSession.getSession());
