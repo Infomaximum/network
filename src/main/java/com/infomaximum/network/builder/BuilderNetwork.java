@@ -57,6 +57,10 @@ public class BuilderNetwork {
         return protocolBuilders;
     }
 
+    public Thread.UncaughtExceptionHandler getUncaughtExceptionHandler() {
+        return uncaughtExceptionHandler;
+    }
+
     public Network build() throws NetworkException {
         List<Protocol> protocols = new ArrayList<>();
         if (protocolBuilders != null) {
