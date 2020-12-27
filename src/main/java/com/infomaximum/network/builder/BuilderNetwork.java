@@ -53,8 +53,8 @@ public class BuilderNetwork {
         return this;
     }
 
-    public Collection<ProtocolBuilder> getProtocolBuilders() {
-        return protocolBuilders;
+    public Collection<BuilderTransport> getBuilderTransports() {
+        return builderTransports;
     }
 
     public Thread.UncaughtExceptionHandler getUncaughtExceptionHandler() {
