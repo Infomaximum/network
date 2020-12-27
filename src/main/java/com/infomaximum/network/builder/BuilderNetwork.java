@@ -53,6 +53,10 @@ public class BuilderNetwork {
         return this;
     }
 
+    public Collection<ProtocolBuilder> getProtocolBuilders() {
+        return protocolBuilders;
+    }
+
     public Network build() throws NetworkException {
         List<Protocol> protocols = new ArrayList<>();
         if (protocolBuilders != null) {
