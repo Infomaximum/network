@@ -1,9 +1,6 @@
 /.gradle/
 /build/
-/.idea/libraries/
-/.idea/artifacts/
-/.idea/.name
-/.idea/workspace.xml
+/.idea/
 /out/
 
 # ---> Java
