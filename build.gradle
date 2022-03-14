@@ -57,18 +57,18 @@ task testperformance(type: Test) {
 
 dependencies {
 
-    compile 'org.eclipse.jetty:jetty-server:9.4.38.v20210224'
-    compile 'org.eclipse.jetty:jetty-servlet:9.4.38.v20210224'
-    compile 'org.eclipse.jetty:jetty-webapp:9.4.38.v20210224'
-    compile 'org.eclipse.jetty:apache-jsp:9.4.38.v20210224'
-    compile 'org.eclipse.jetty.websocket:websocket-server:9.4.38.v20210224'
-    compile 'org.eclipse.jetty.websocket:websocket-servlet:9.4.38.v20210224'
+    compile 'org.eclipse.jetty:jetty-server:9.4.45.v20220203'
+    compile 'org.eclipse.jetty:jetty-servlet:9.4.45.v20220203'
+    compile 'org.eclipse.jetty:jetty-webapp:9.4.45.v20220203'
+    compile 'org.eclipse.jetty:apache-jsp:9.4.45.v20220203'
+    compile 'org.eclipse.jetty.websocket:websocket-server:9.4.45.v20220203'
+    compile 'org.eclipse.jetty.websocket:websocket-servlet:9.4.45.v20220203'
 
-    compile 'org.springframework:spring-core:5.2.13.RELEASE'
-    compile 'org.springframework:spring-web:5.2.13.RELEASE'
-    compile 'org.springframework:spring-webmvc:5.2.13.RELEASE'
-    compile 'org.springframework:spring-context-support:5.2.13.RELEASE'
-    compile 'org.springframework:spring-messaging:5.2.13.RELEASE'
+    compile 'org.springframework:spring-core:5.2.19.RELEASE'
+    compile 'org.springframework:spring-web:5.2.19.RELEASE'
+    compile 'org.springframework:spring-webmvc:5.2.19.RELEASE'
+    compile 'org.springframework:spring-context-support:5.2.19.RELEASE'
+    compile 'org.springframework:spring-messaging:5.2.19.RELEASE'
     compile 'javax.servlet:jstl:1.2'
 
     compile 'net.minidev:json-smart:2.3'
@@ -82,6 +82,6 @@ dependencies {
     testCompile 'ch.qos.logback:logback-classic:1.2.3'
 
     testintegrationCompile 'org.apache.httpcomponents:httpclient:4.5.13'
-    testintegrationCompile 'org.springframework:spring-test:5.2.13.RELEASE'
-    testintegrationCompile 'org.eclipse.jetty.websocket:websocket-client:9.4.38.v20210224'
+    testintegrationCompile 'org.springframework:spring-test:5.2.19.RELEASE'
+    testintegrationCompile 'org.eclipse.jetty.websocket:websocket-client:9.4.45.v20220203'
 }
