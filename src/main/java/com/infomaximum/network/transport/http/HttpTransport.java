@@ -10,7 +10,6 @@ import com.infomaximum.network.transport.http.builder.HttpBuilderTransport;
 import com.infomaximum.network.transport.http.builder.connector.BuilderHttpConnector;
 import com.infomaximum.network.transport.http.builder.filter.BuilderFilter;
 import com.infomaximum.network.transport.http.jsp.JspStarter;
-import jakarta.servlet.Servlet;
 import org.apache.jasper.servlet.JspServlet;
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Handler;
@@ -25,7 +24,6 @@ import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.server.config.JettyWebSocketServletContainerInitializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 import org.springframework.web.servlet.DispatcherServlet;
 
@@ -35,17 +33,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Future;
 import java.util.function.Supplier;
-
-import org.springframework.context.annotation.AnnotationConfigRegistry;
-import jakarta.servlet.http.HttpServlet;
-import org.springframework.context.support.AbstractRefreshableConfigApplicationContext;
-import org.springframework.web.context.WebApplicationContext;
-import org.springframework.core.io.DefaultResourceLoader;
-import org.springframework.context.ApplicationContext;
-import org.springframework.core.env.EnvironmentCapable;
-
 
 /**
  * Created with IntelliJ IDEA.
