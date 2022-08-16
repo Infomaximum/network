@@ -6,23 +6,25 @@ import com.infomaximum.network.transport.coretest.websocket.CoreWSBadRequestTest
 import com.infomaximum.network.transport.http.SpringConfigurationMvc;
 import com.infomaximum.network.transport.http.builder.HttpBuilderTransport;
 import com.infomaximum.network.transport.http.builder.connector.BuilderHttpConnector;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 
 /**
  * Created by kris on 26.08.16.
  *
  * Тест проверяющий, что на ошибочный пакет соединение рвется
  */
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class WSBadRequestTest {
 
     private static final int port=8099;
 
-    private static Network network;
+    private Network network;
 
-    @BeforeClass
-    public static void init() throws Exception {
+    @BeforeAll
+    public void init() throws Exception {
         network = new BuilderNetwork()
                 .withTransport(
                         new HttpBuilderTransport(SpringConfigurationMvc.class)
@@ -37,8 +39,8 @@ public class WSBadRequestTest {
         CoreWSBadRequestTest.test(port);
     }
 
-    @AfterClass
-    public static void destroy() throws Exception {
+    @AfterAll
+    public void destroy() throws Exception {
         network.close();
         network=null;
     }

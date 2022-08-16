@@ -1,9 +1,7 @@
 package com.infomaximum.network.transport.http.https;
 
-import org.junit.After;
-import org.junit.Before;
-import sun.security.tools.keytool.CertAndKeyGen;
-import sun.security.x509.X500Name;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -24,7 +22,7 @@ public class TestHttpsRequest {
     protected KeyStore keystore;
     protected Path keyStorePath;
 
-    @Before
+    @BeforeAll
     public void setUp() throws Exception {
         keyStorePath = Files.createTempDirectory("testStore").toAbsolutePath().resolve("keystore");
         keyStorePath.toFile().deleteOnExit();
@@ -34,20 +32,20 @@ public class TestHttpsRequest {
     }
 
     public void initKeyStore(String certAlgorithm, String certSigAlgorithm) throws Exception {
-        createCertificateStructure(keystore, certAlgorithm, certSigAlgorithm);
+        //createCertificateStructure(keystore, certAlgorithm, certSigAlgorithm);
         try (FileOutputStream fos = new FileOutputStream(keyStorePath.toFile())) {
             keystore.store(fos, PASSWORD.toCharArray());
         }
     }
 
     public void initKeyStore() throws Exception {
-        createCertificateStructure(keystore, DEFAULT_CERT_ALGORITHM, DEFAULT_CERT_SIG_ALGORITHM);
+        //createCertificateStructure(keystore, DEFAULT_CERT_ALGORITHM, DEFAULT_CERT_SIG_ALGORITHM);
         try (FileOutputStream fos = new FileOutputStream(keyStorePath.toFile())) {
             keystore.store(fos, PASSWORD.toCharArray());
         }
     }
 
-    @After
+    @AfterAll
     public void destroy() throws Exception {
         deleteDirectory(keyStorePath.toAbsolutePath().toFile());
     }
@@ -63,6 +61,7 @@ public class TestHttpsRequest {
         }
     }
 
+    /*
     private void createCertificateStructure(KeyStore keyStore, String algorithm, String sigAlgorithm) throws NoSuchProviderException, NoSuchAlgorithmException, InvalidKeyException, IOException, CertificateException, SignatureException, KeyStoreException {
         // generate the certificate
         // first parameter  = Algorithm
@@ -84,4 +83,5 @@ public class TestHttpsRequest {
         keyStore.setKeyEntry(ALIAS, certGen.getPrivateKey(), PASSWORD.toCharArray(),
                 new X509Certificate[] { cert });
     }
+     */
 }

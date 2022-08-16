@@ -1,7 +1,7 @@
 package com.infomaximum.network.transport.http.builder.filter;
 
-import javax.servlet.DispatcherType;
-import javax.servlet.Filter;
+import jakarta.servlet.DispatcherType;
+import jakarta.servlet.Filter;
 import java.util.EnumSet;
 
 /**

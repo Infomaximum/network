@@ -1,87 +1,103 @@
-group 'com.infomaximum'
-version '1.0.1p1'
-
-apply plugin: 'java'
-
+plugins {
+    id 'java'
+    id 'maven-publish'
+    id 'signing'
+    id ("de.jjohannes.extra-java-module-info") version "0.15"
+}
+apply from: 'https://raw.githubusercontent.com/Infomaximum/platform-java-module-info/main/com.infomaximum.platform-java-module-info.gradle'
 if (project.hasProperty('ossrhUsername')) {
     apply from: 'publish.gradle'
 }
 
-sourceCompatibility = 1.8
+group 'com.infomaximum'
+version '1.1.0'
 
-repositories {
-    mavenCentral()
+ext.moduleName = 'com.infomaximum.network'
+
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(17))
+    }
+}
+
+compileJava {
+    doFirst {
+        options.compilerArgs = [
+                '--module-path', classpath.asPath
+        ]
+        classpath = files()
+    }
 }
 
 sourceSets {
+    main {
+        java.srcDir 'src/main/java'
+        resources.srcDir 'src/main/resources'
+    }
+    test {
+        java.srcDir 'src/test/java'
+        resources.srcDir 'src/test/resources'
+    }
     testintegration {
-        java {
-            compileClasspath += main.output + test.output
-            runtimeClasspath += main.output + test.output
-            srcDir file('src/testintegration/java')
-        }
-        resources {
-            srcDir file('src/testintegration/resources')
-        }
+        java.srcDir 'src/testintegration/java'
+        resources.srcDir 'src/testintegration/resources'
+        compileClasspath += sourceSets.main.output + sourceSets.test.output
+        runtimeClasspath += sourceSets.main.output + sourceSets.test.output
     }
     testperformance {
-        java {
-            compileClasspath += main.output + test.output + testintegration.output
-            runtimeClasspath += main.output + test.output + testintegration.output
-            srcDir file('src/testperformance/java')
-        }
-        resources {
-            srcDir file('src/testperformance/resources')
-        }
+        java.srcDir 'src/testperformance/java'
+        resources.srcDir 'src/testperformance/resources'
+        compileClasspath += sourceSets.main.output + sourceSets.test.output + testintegration.output
+        runtimeClasspath += sourceSets.main.output + sourceSets.test.output + testintegration.output
     }
 }
 
 configurations {
-    testintegrationCompile.extendsFrom testCompile
-    testintegrationRuntime.extendsFrom testRuntime
-    testperformanceCompile.extendsFrom testintegrationCompile
-    testperformanceRuntime.extendsFrom testintegrationRuntime
+    testintegrationImplementation.extendsFrom(testImplementation)
+    testintegrationRuntimeOnly.extendsFrom(testRuntimeOnly)
+    testperformanceImplementation.extendsFrom(testintegrationImplementation)
+    testperformanceRuntimeOnly.extendsFrom(testintegrationRuntimeOnly)
 }
 
-task testintegration(type: Test) {
-    testClassesDir = sourceSets.testintegration.output.classesDir
-    classpath = sourceSets.testintegration.runtimeClasspath
-    outputs.upToDateWhen { false }
-}
-
-task testperformance(type: Test) {
-    testClassesDir = sourceSets.testperformance.output.classesDir
-    classpath = sourceSets.testperformance.runtimeClasspath
-    outputs.upToDateWhen { false }
+repositories {
+    mavenCentral()
+    maven { url "https://repo.spring.io/libs-milestone/" }
 }
 
 dependencies {
+    implementation 'org.eclipse.jetty:jetty-server:11.0.11'
+    implementation 'org.eclipse.jetty:jetty-servlet:11.0.11'
+    implementation 'org.eclipse.jetty:jetty-webapp:11.0.11'
+    implementation 'org.eclipse.jetty:apache-jsp:11.0.11'
+    implementation 'org.eclipse.jetty.websocket:websocket-jetty-server:11.0.11'
+    implementation 'org.eclipse.jetty.websocket:websocket-servlet:11.0.11'
 
-    compile 'org.eclipse.jetty:jetty-server:9.4.45.v20220203'
-    compile 'org.eclipse.jetty:jetty-servlet:9.4.45.v20220203'
-    compile 'org.eclipse.jetty:jetty-webapp:9.4.45.v20220203'
-    compile 'org.eclipse.jetty:apache-jsp:9.4.45.v20220203'
-    compile 'org.eclipse.jetty.websocket:websocket-server:9.4.45.v20220203'
-    compile 'org.eclipse.jetty.websocket:websocket-servlet:9.4.45.v20220203'
+    implementation 'org.springframework:spring-core:6.0.0-M5'
+    implementation 'org.springframework:spring-web:6.0.0-M5'
+    implementation 'org.springframework:spring-webmvc:6.0.0-M5'
+    implementation 'org.springframework:spring-context-support:6.0.0-M5'
+    implementation 'org.springframework:spring-messaging:6.0.0-M5'
 
-    compile 'org.springframework:spring-core:5.2.19.RELEASE'
-    compile 'org.springframework:spring-web:5.2.19.RELEASE'
-    compile 'org.springframework:spring-webmvc:5.2.19.RELEASE'
-    compile 'org.springframework:spring-context-support:5.2.19.RELEASE'
-    compile 'org.springframework:spring-messaging:5.2.19.RELEASE'
-    compile 'javax.servlet:jstl:1.2'
+    implementation 'net.minidev:json-smart:2.4.8'
 
-    compile 'net.minidev:json-smart:2.3'
+    implementation('org.reflections:reflections:0.10.2')
 
-    compile 'org.reflections:reflections:0.9.11'
+    implementation 'org.slf4j:slf4j-api:1.7.30'
 
-    compile 'org.slf4j:slf4j-api:1.7.30'
+    testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.9.0'
+    testImplementation 'ch.qos.logback:logback-core:1.2.3'
+    testImplementation 'ch.qos.logback:logback-classic:1.2.3'
 
-    testCompile 'junit:junit:4.13.2'
-    testCompile 'ch.qos.logback:logback-core:1.2.3'
-    testCompile 'ch.qos.logback:logback-classic:1.2.3'
-
-    testintegrationCompile 'org.apache.httpcomponents:httpclient:4.5.13'
-    testintegrationCompile 'org.springframework:spring-test:5.2.19.RELEASE'
-    testintegrationCompile 'org.eclipse.jetty.websocket:websocket-client:9.4.45.v20220203'
+    testintegrationImplementation 'org.springframework:spring-test:6.0.0-M5'
+    testintegrationImplementation 'org.eclipse.jetty.websocket:websocket-jetty-client:11.0.11'
 }
+
+task testintegration(type: Test, description: 'Integration test', group: 'Verification') {
+    outputs.upToDateWhen { false }
+}
+
+task testperformance(type: Test, description: 'Performance test', group: 'Verification') {
+    outputs.upToDateWhen { false }
+}
+
+tasks.withType(Copy).all { duplicatesStrategy 'exclude' }

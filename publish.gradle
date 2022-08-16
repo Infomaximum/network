@@ -1,70 +1,68 @@
-apply plugin: 'maven'
-apply plugin: 'signing'
-
-task javadocJar(type: Jar) {
-    classifier = 'javadoc'
-    from javadoc
+task sourceJar(type: Jar) {
+    from sourceSets.main.java.srcDirs
+    archiveClassifier = "sources"
 }
 
-//Задача для сборки jar с исходниками
-task sourcesJar(type: Jar, dependsOn:classes) {
-    classifier = 'sources'
-    from sourceSets.main.allSource
+task packageJavadoc(type: Jar) {
+    from sourceSets.main.java.srcDirs
+    archiveClassifier = 'javadoc'
 }
 
-//Добавляем в артифакты исходники
-artifacts {
-    archives javadocJar, sourcesJar
-}
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
 
-signing {
-    sign configurations.archives
-}
+            from components.java
+            artifact sourceJar
+            artifact packageJavadoc
 
-uploadArchives {
-    repositories {
-        mavenDeployer {
-            beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
-
-            repository(url: "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/") {
-                authentication(userName: ossrhUsername, password: ossrhPassword)
-            }
-
-            snapshotRepository(url: "https://s01.oss.sonatype.org/content/repositories/snapshots/") {
-                authentication(userName: ossrhUsername, password: ossrhPassword)
-            }
-
-            pom.project {
-                name 'network'
-                packaging 'jar'
-                // optionally artifactId can be defined here
-                description 'Library for creating a light http server'
-                url 'https://github.com/Infomaximum/network'
-
-                scm {
-                    connection 'scm:git:https://github.com/Infomaximum/network.git'
-                    developerConnection 'scm:git:git@github.com:Infomaximum/network.git'
-                    url 'https://github.com/Infomaximum/network'
+            versionMapping {
+                usage('java-api') {
+                    fromResolutionOf('runtimeClasspath')
                 }
+                usage('java-runtime') {
+                    fromResolutionResult()
+                }
+            }
 
+            pom {
+                name = 'network'
+                description = 'Library for creating a light http server'
+                url = 'https://github.com/Infomaximum/network'
                 licenses {
                     license {
-                        name 'The Apache License, Version 2.0'
-                        url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                        name = 'The Apache License, Version 2.0'
+                        url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
                     }
                 }
-
                 developers {
                     developer {
-                        id 'infomaximum'
-                        name 'Infomaximum LLC'
-                        email 'develop@infomaximum.com'
+                        id = 'infomaximum'
+                        name = 'Infomaximum LLC'
+                        email = 'develop@infomaximum.com'
                     }
                 }
+                scm {
+                    connection = 'scm:git:https://github.com/Infomaximum/network.git'
+                    developerConnection = 'scm:git:git@github.com:Infomaximum/network.git'
+                    url = 'https://github.com/Infomaximum/network'
+                }
+            }
+        }
+    }
+    repositories {
+        maven {
+            def releasesRepoUrl = "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"
+            def snapshotsRepoUrl = "https://s01.oss.sonatype.org/content/repositories/snapshots/"
+            url = version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
+            credentials {
+                username ossrhUsername
+                password ossrhPassword
             }
         }
     }
 }
 
-uploadArchives.dependsOn 'clean'
-uploadArchives.dependsOn 'test'
+signing {
+    sign publishing.publications.mavenJava
+}

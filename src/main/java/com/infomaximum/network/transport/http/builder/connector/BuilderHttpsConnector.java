@@ -15,7 +15,7 @@ public class BuilderHttpsConnector extends BuilderHttpConnector {
 
     private final static Logger log = LoggerFactory.getLogger(BuilderHttpsConnector.class);
 
-    private SslContextFactory sslContextFactory;
+    private SslContextFactory.Server sslContextFactory;
 
     public BuilderHttpsConnector(int port) {
         super(port);

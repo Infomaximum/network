@@ -47,7 +47,7 @@ public abstract class Transport<Channel> {
         }
     }
 
-    public abstract Future<Void> send(Channel channel, IPacket packet) throws IOException;
+    public abstract void send(Channel channel, IPacket packet) throws IOException;
 
     public abstract void destroy() throws Exception;
 

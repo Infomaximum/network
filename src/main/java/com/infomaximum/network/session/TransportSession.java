@@ -75,7 +75,9 @@ public abstract class TransportSession implements TransportPacketHandler {
 
     public RemoteAddress buildRemoteAddress() {
         String endRemoteAddress = ((WebSocketSession) channel).getUpgradeRequest().getHeader("X-Real-IP");
-        String rawRemoteAddress = ((WebSocketSession) channel).getRemoteAddress().getAddress().toString().split("/")[1];
+        log.error("ПОПРАВИТЬ!!!!! rawRemoteAddress (TransportSession)");
+//        String rawRemoteAddress = ((WebSocketSession) channel).getRemoteAddress().getAddress().toString().split("/")[1];
+        String rawRemoteAddress = "ПОПРАВИТЬ!!!!!";
         if (endRemoteAddress == null) {
             endRemoteAddress = rawRemoteAddress;
         }

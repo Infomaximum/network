@@ -6,16 +6,17 @@ import com.infomaximum.network.transport.http.SpringConfigurationMvc;
 import com.infomaximum.network.transport.http.builder.HttpBuilderTransport;
 import com.infomaximum.network.transport.http.builder.connector.BuilderHttpConnector;
 import com.infomaximum.network.transport.http.http.utils.TestContentUtils;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.springframework.util.Assert;
 
 import java.util.UUID;
 
 /**
  * Created by kris on 26.08.16.
- *
+ * <p>
  * Тест проверяющий, что на запрос приходит ответ
  */
 public class JspHttpRequestTest {
@@ -24,7 +25,7 @@ public class JspHttpRequestTest {
 
     private Network network;
 
-    @Before
+    @BeforeAll
     public void init() throws Exception {
         network = new BuilderNetwork()
                 .withTransport(
@@ -40,12 +41,12 @@ public class JspHttpRequestTest {
         String message = UUID.randomUUID().toString();
         String bodyContent = TestContentUtils.getContent(port, "/jsp/?message=" + message);
 
-        Assert.assertNotEquals(-1, bodyContent.indexOf(message));
+        Assertions.assertNotEquals(-1, bodyContent.indexOf(message));
     }
 
-    @After
+    @AfterAll
     public void destroy() throws Exception {
         network.close();
-        network=null;
+        network = null;
     }
 }

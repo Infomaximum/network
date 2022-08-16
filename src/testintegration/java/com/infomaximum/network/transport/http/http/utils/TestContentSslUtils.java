@@ -1,7 +1,7 @@
 package com.infomaximum.network.transport.http.http.utils;
 
 import org.eclipse.jetty.util.ssl.SslContextFactory;
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 
 import javax.net.ssl.*;
 import java.io.*;
@@ -14,7 +14,7 @@ public class TestContentSslUtils {
 
     public static void testContent(int port, String path, String expectedBody, String protocol, KeyStore keyStore) throws IOException, KeyManagementException, NoSuchAlgorithmException, KeyStoreException {
         String body = getContent(port, path, keyStore, protocol);
-        Assert.assertEquals(expectedBody, body);
+        Assertions.assertEquals(expectedBody, body);
     }
 
     public static void testConnectionFail(int port, String path, String protocol, KeyStore keyStore) throws IOException, KeyManagementException, NoSuchAlgorithmException, KeyStoreException {
@@ -23,7 +23,7 @@ public class TestContentSslUtils {
 
     public static void testContentTwoWaySslAuthorization(int port, String path, String expectedBody, Path clientKeyStorePath, Path clientTrustStorePath, String protocol, String password) throws IOException, KeyManagementException, NoSuchAlgorithmException, KeyStoreException, CertificateException, UnrecoverableKeyException {
         String body = getContentTwoWaySslAuthorization(port, path, clientKeyStorePath, clientTrustStorePath, protocol, password);
-        Assert.assertEquals(expectedBody, body);
+        Assertions.assertEquals(expectedBody, body);
     }
 
     private static String getContentTwoWaySslAuthorization(int port, String path, Path clientKeyStorePath, Path clientTrustStorePath, String protocol, String password) throws NoSuchAlgorithmException, KeyStoreException, IOException, CertificateException, UnrecoverableKeyException, KeyManagementException {
@@ -41,7 +41,7 @@ public class TestContentSslUtils {
         HttpsURLConnection.setDefaultHostnameVerifier(allHostsValid);
 
         HttpsURLConnection connection = (HttpsURLConnection) new URL("https://localhost:" + port + path).openConnection();
-        Assert.assertEquals(200, connection.getResponseCode());
+        Assertions.assertEquals(200, connection.getResponseCode());
         String content = getContent(connection);
 
         connection.disconnect();
@@ -58,7 +58,7 @@ public class TestContentSslUtils {
         HttpsURLConnection.setDefaultHostnameVerifier(allHostsValid);
 
         HttpsURLConnection connection = (HttpsURLConnection) new URL("https://localhost:" + port + path).openConnection();
-        Assert.assertEquals(200, connection.getResponseCode());
+        Assertions.assertEquals(200, connection.getResponseCode());
         String content = getContent(connection);
 
         connection.disconnect();

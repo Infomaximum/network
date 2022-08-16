@@ -79,7 +79,7 @@ public class StandardTransportSession extends TransportSession {
         ResponsePacket responsePacket = (ResponsePacket) packet;
         try {
             if (responsePacket != null) {
-                transport.send(channel, responsePacket).get();
+                transport.send(channel, responsePacket);
             }
             transport.close(channel);
         } catch (Throwable ignore) {

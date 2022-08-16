@@ -14,9 +14,10 @@ import com.infomaximum.network.transport.http.SpringConfigurationMvc;
 import com.infomaximum.network.transport.http.builder.HttpBuilderTransport;
 import com.infomaximum.network.transport.http.builder.connector.BuilderHttpConnector;
 import net.minidev.json.JSONObject;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 
 import java.util.concurrent.CompletableFuture;
 
@@ -25,19 +26,15 @@ import java.util.concurrent.CompletableFuture;
  * <p>
  * Тест проверяющий, что на запрос приходит ответ
  */
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class WSRequestTest {
 
     private static final int port = 8099;
 
-    private static Network network;
+    private Network network;
 
-    @Test
-    public void test() throws Exception {
-        CoreWSRequestTest.test(network, port);
-    }
-
-    @BeforeClass
-    public static void init() throws Exception {
+    @BeforeAll
+    public void init() throws Exception {
         network = new BuilderNetwork()
                 .withProtocol(new StandardProtocolBuilder()
                         .withPacketHandler(
@@ -70,8 +67,13 @@ public class WSRequestTest {
                 .build();
     }
 
-    @AfterClass
-    public static void destroy() throws Exception {
+    @Test
+    public void test() throws Exception {
+        CoreWSRequestTest.test(network, port);
+    }
+
+    @AfterAll
+    public void destroy() throws Exception {
         network.close();
         network = null;
     }

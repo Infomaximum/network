@@ -4,9 +4,9 @@ import com.infomaximum.network.Network;
 import com.infomaximum.network.builder.BuilderNetwork;
 import com.infomaximum.network.transport.http.builder.HttpBuilderTransport;
 import com.infomaximum.network.transport.http.builder.connector.BuilderHttpConnector;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,7 +18,7 @@ public class HttpPerformanceTest {
 
     private Network network;
 
-    @Before
+    @BeforeAll
     public void init() throws Exception {
         network = new BuilderNetwork()
                 .withTransport(
@@ -77,7 +77,7 @@ public class HttpPerformanceTest {
 //        }
     }
 
-    @After
+    @AfterAll
     public void destroy() throws Exception {
         network.close();
         network = null;

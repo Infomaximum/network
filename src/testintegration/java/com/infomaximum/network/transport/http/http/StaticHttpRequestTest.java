@@ -6,28 +6,30 @@ import com.infomaximum.network.transport.http.SpringConfigurationMvc;
 import com.infomaximum.network.transport.http.builder.HttpBuilderTransport;
 import com.infomaximum.network.transport.http.builder.connector.BuilderHttpConnector;
 import com.infomaximum.network.transport.http.http.utils.TestContentUtils;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 
 /**
  * Created by kris on 26.08.16.
  *
  * Тест проверяющий, что на запрос приходит ответ
  */
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class StaticHttpRequestTest {
 
     private static final int port = 8099;
 
     private Network network;
 
-    @Before
+    @BeforeAll
     public void init() throws Exception {
         network = new BuilderNetwork()
                 .withTransport(
                         new HttpBuilderTransport(SpringConfigurationMvc.class)
                                 .addConnector(new BuilderHttpConnector(port))
-                                .withJspPath("webapp/views")
+//                                .withJspPath("webapp/views")
                 )
                 .build();
     }
@@ -43,7 +45,7 @@ public class StaticHttpRequestTest {
         TestContentUtils.testContent(port, "/static/1/internal.2.txt", "webapp/static/1/internal.2.txt");
     }
 
-    @After
+    @AfterAll
     public void destroy() throws Exception {
         network.close();
         network=null;

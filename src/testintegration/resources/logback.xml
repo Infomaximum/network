@@ -7,7 +7,7 @@
         </encoder>
     </appender>
 
-    <logger name="me.mobin" level="info" />
+    <logger name="com.infomaximum" level="debug" />
 
     <logger name="org.springframework" level="warn" />
 

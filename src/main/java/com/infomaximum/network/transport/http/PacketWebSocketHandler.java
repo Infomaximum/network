@@ -19,7 +19,10 @@ public class PacketWebSocketHandler {
         //Определяеи ip, проверяя загаловки возможно балансировщик добавит данные с реальным ip
         String remoteIpAddress = null;
         if (session.getUpgradeRequest().getHeaders()!=null) remoteIpAddress = session.getUpgradeRequest().getHeader("X-Real-IP");
-        if (remoteIpAddress == null) remoteIpAddress = session.getRemoteAddress().getAddress().getHostAddress();
+
+        //        if (remoteIpAddress == null) remoteIpAddress = session.getRemoteAddress().getAddress().getHostAddress();
+        log.error("ПОПРАВИТЬ!!!!! rawRemoteAddress (PacketWebSocketHandler)");
+        String rawRemoteAddress = "ПОПРАВИТЬ!!!!!";
 
         HttpTransport.instance.fireConnect(session, remoteIpAddress);//Оповещаем о новом подключении
     }

@@ -8,10 +8,7 @@ import com.infomaximum.network.transport.http.builder.HttpBuilderTransport;
 import com.infomaximum.network.transport.http.builder.connector.BuilderHttpConnector;
 import com.infomaximum.network.transport.http.builder.filter.BuilderFilter;
 import com.infomaximum.network.transport.http.http.utils.TestContentUtils;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.*;
 
 import java.util.UUID;
 
@@ -20,13 +17,14 @@ import java.util.UUID;
  *
  * Тест проверяющий, что на запрос приходит ответ
  */
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class FilterHttpRequestTest {
 
     private static final int port = 8099;
 
     private Network network;
 
-    @Before
+    @BeforeAll
     public void init() throws Exception {
         network = new BuilderNetwork()
                 .withTransport(
@@ -43,13 +41,13 @@ public class FilterHttpRequestTest {
         String message = UUID.randomUUID().toString();
 
         int statusCode1 = TestContentUtils.getStatusCode(port, "/jsp/?message=" + message);
-        Assert.assertEquals(401, statusCode1);
+        Assertions.assertEquals(401, statusCode1);
 
         int statusCode2 = TestContentUtils.getStatusCode(port, "/jsp/?auth=xxx&message=" + message);
-        Assert.assertEquals(200, statusCode2);
+        Assertions.assertEquals(200, statusCode2);
     }
 
-    @After
+    @AfterAll
     public void destroy() throws Exception {
         network.close();
         network=null;

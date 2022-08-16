@@ -1,10 +1,12 @@
 package com.infomaximum.network.transport.coretest.websocket;
 
+import com.infomaximum.network.protocol.standard.StandardProtocol;
 import com.infomaximum.network.protocol.standard.packet.RequestPacket;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.WebSocketAdapter;
+import org.eclipse.jetty.websocket.client.ClientUpgradeRequest;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 
 import java.net.URI;
 import java.util.concurrent.CompletableFuture;
@@ -22,6 +24,9 @@ public class CoreWSBadRequestTest {
 
         WebSocketClient client = new WebSocketClient();
         client.start();
+
+        ClientUpgradeRequest upgradeRequest = new ClientUpgradeRequest();
+        upgradeRequest.setSubProtocols(StandardProtocol.NAME);
 
         //Калбек ответа
         CompletableFuture<Boolean> responseFuture = new CompletableFuture<Boolean>();
@@ -42,9 +47,9 @@ public class CoreWSBadRequestTest {
             @Override
             public void onWebSocketError(Throwable cause){
                 super.onWebSocketError(cause);
-                Assert.assertTrue(true);
+                Assertions.assertTrue(true);
             }
-        }, new URI("ws://localhost:"  + port + "/ws"));
+        }, new URI("ws://localhost:"  + port + "/ws"), upgradeRequest);
 
         //Ожидаем подключения
         Session session = fut.get();

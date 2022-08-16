@@ -9,6 +9,8 @@ import com.infomaximum.network.transport.Transport;
 
 public class StandardProtocol extends Protocol {
 
+    public static final String NAME="ws-mvc";
+
     public final Handshake handshake;
 
     private final PacketHandler packetHandler;
@@ -26,7 +28,7 @@ public class StandardProtocol extends Protocol {
 
     @Override
     public String getName() {
-        return "ws-mvc";
+        return NAME;
     }
 
     @Override

@@ -14,9 +14,9 @@ import com.infomaximum.network.transport.http.SpringConfigurationMvc;
 import com.infomaximum.network.transport.http.builder.HttpBuilderTransport;
 import com.infomaximum.network.transport.http.builder.connector.BuilderHttpConnector;
 import net.minidev.json.JSONObject;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,7 +38,7 @@ public class WSPerformanceTest {
         CoreWSPerformanceTest.test(network, port);
     }
 
-    @BeforeClass
+    @BeforeAll
     public static void init() throws Exception {
         network = new BuilderNetwork()
                 .withProtocol(
@@ -74,7 +74,7 @@ public class WSPerformanceTest {
                 .build();
     }
 
-    @AfterClass
+    @AfterAll
     public static void destroy() throws Exception {
         network.close();
         network = null;

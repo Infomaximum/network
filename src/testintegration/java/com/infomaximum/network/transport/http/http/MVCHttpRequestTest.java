@@ -6,9 +6,9 @@ import com.infomaximum.network.transport.http.SpringConfigurationMvc;
 import com.infomaximum.network.transport.http.builder.HttpBuilderTransport;
 import com.infomaximum.network.transport.http.builder.connector.BuilderHttpConnector;
 import com.infomaximum.network.transport.http.http.utils.TestContentUtils;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 /**
  * Created by kris on 26.08.16.
@@ -19,15 +19,15 @@ public class MVCHttpRequestTest {
 
     private static final int port=8099;
 
-    private Network network;
+    private static Network network;
 
-    @Before
-    public void init() throws Exception {
+    @BeforeAll
+    public static void init() throws Exception {
         network = new BuilderNetwork()
                 .withTransport(
                         new HttpBuilderTransport(SpringConfigurationMvc.class)
                                 .addConnector(new BuilderHttpConnector(port))
-                                .withJspPath("webapp/views")
+                                //.withJspPath("webapp/views")
                 )
                 .build();
     }
@@ -38,8 +38,8 @@ public class MVCHttpRequestTest {
         TestContentUtils.testContent(port, "/test/ping", "pong");
     }
 
-    @After
-    public void destroy() throws Exception {
+    @AfterAll
+    public static void destroy() throws Exception {
         network.close();
         network=null;
     }

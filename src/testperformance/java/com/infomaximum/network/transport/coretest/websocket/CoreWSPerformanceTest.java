@@ -1,6 +1,7 @@
 package com.infomaximum.network.transport.coretest.websocket;
 
 import com.infomaximum.network.Network;
+import com.infomaximum.network.protocol.standard.StandardProtocol;
 import com.infomaximum.network.protocol.standard.packet.Packet;
 import com.infomaximum.network.protocol.standard.packet.RequestPacket;
 import com.infomaximum.network.protocol.standard.packet.ResponsePacket;
@@ -8,8 +9,9 @@ import net.minidev.json.JSONObject;
 import net.minidev.json.parser.JSONParser;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.WebSocketAdapter;
+import org.eclipse.jetty.websocket.client.ClientUpgradeRequest;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,6 +33,9 @@ public class CoreWSPerformanceTest {
         WebSocketClient client = new WebSocketClient();
         client.setConnectTimeout(30L*1000L);
         client.start();
+
+        ClientUpgradeRequest upgradeRequest = new ClientUpgradeRequest();
+        upgradeRequest.setSubProtocols(StandardProtocol.NAME);
 
         ExecutorService executors = Executors.newCachedThreadPool();
 
@@ -56,7 +61,7 @@ public class CoreWSPerformanceTest {
                                     ResponsePacket responsePacket = (ResponsePacket) (Packet.parse((JSONObject) new JSONParser(JSONParser.DEFAULT_PERMISSIVE_MODE).parse(message)));
                                     responseFuture.complete(responsePacket);
                                 } catch (Exception e) {
-                                    Assert.fail();
+                                    Assertions.fail();
                                 }
                             }
 
@@ -73,7 +78,7 @@ public class CoreWSPerformanceTest {
                                 if (!responseFuture.isDone())
                                     responseFuture.completeExceptionally(new Exception("Ошибка соединения", cause));
                             }
-                        }, new URI("ws://localhost:"  + port + "/ws"));
+                        }, new URI("ws://localhost:"  + port + "/ws"), upgradeRequest);
                         Session session = fut.get();
                         countConnected.incrementAndGet();
                         log.info("connected: " + countConnected.get());
@@ -97,7 +102,7 @@ public class CoreWSPerformanceTest {
                         session.getRemote().sendString(requestPacket1.serialize());
 
                         ResponsePacket responsePacket1 = responseFuture.get(1, TimeUnit.MINUTES);
-                        Assert.assertEquals(requestPacket1.getId(), responsePacket1.getId());
+                        Assertions.assertEquals(requestPacket1.getId(), responsePacket1.getId());
 
                         Thread.sleep(1000L);
 
@@ -122,6 +127,6 @@ public class CoreWSPerformanceTest {
         for (FutureTask<Boolean> futureTask: taskList) {
             if (futureTask.get()) countSuccess++;
         }
-        Assert.assertEquals(countSuccess, taskList.size());
+        Assertions.assertEquals(countSuccess, taskList.size());
     }
 }

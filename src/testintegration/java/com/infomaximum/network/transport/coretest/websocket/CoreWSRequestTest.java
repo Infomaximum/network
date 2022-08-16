@@ -1,6 +1,7 @@
 package com.infomaximum.network.transport.coretest.websocket;
 
 import com.infomaximum.network.Network;
+import com.infomaximum.network.protocol.standard.StandardProtocol;
 import com.infomaximum.network.protocol.standard.packet.Packet;
 import com.infomaximum.network.protocol.standard.packet.RequestPacket;
 import com.infomaximum.network.protocol.standard.packet.ResponsePacket;
@@ -8,8 +9,9 @@ import net.minidev.json.JSONObject;
 import net.minidev.json.parser.JSONParser;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.WebSocketAdapter;
+import org.eclipse.jetty.websocket.client.ClientUpgradeRequest;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 
 import java.net.URI;
 import java.util.concurrent.CompletableFuture;
@@ -27,6 +29,9 @@ public class CoreWSRequestTest {
         WebSocketClient client = new WebSocketClient();
         client.start();
 
+        ClientUpgradeRequest upgradeRequest = new ClientUpgradeRequest();
+        upgradeRequest.setSubProtocols(StandardProtocol.NAME);
+
         //Калбек ответа
         CompletableFuture<ResponsePacket> responseFuture = new CompletableFuture<ResponsePacket>();
 
@@ -38,7 +43,7 @@ public class CoreWSRequestTest {
                     ResponsePacket responsePacket = (ResponsePacket) (Packet.parse((JSONObject) new JSONParser(JSONParser.DEFAULT_PERMISSIVE_MODE).parse(message)));
                     responseFuture.complete(responsePacket);
                 } catch (Exception e) {
-                    Assert.fail();
+                    Assertions.fail();
                 }
             }
 
@@ -53,7 +58,7 @@ public class CoreWSRequestTest {
                 super.onWebSocketError(cause);
                 if (! responseFuture.isDone()) responseFuture.completeExceptionally(new Exception("Ошибка соединения", cause));
             }
-        }, new URI("ws://localhost:"  + port + "/ws"));
+        }, new URI("ws://localhost:"  + port + "/ws"), upgradeRequest);
 
         //Ожидаем подключения
         Session session = fut.get();
@@ -64,7 +69,7 @@ public class CoreWSRequestTest {
 
         ResponsePacket responsePacket = responseFuture.get(1, TimeUnit.MINUTES);
 
-        Assert.assertEquals(requestPacket.getId(), responsePacket.getId());
+        Assertions.assertEquals(requestPacket.getId(), responsePacket.getId());
 
         session.close();//Закрываем соединение
     }
