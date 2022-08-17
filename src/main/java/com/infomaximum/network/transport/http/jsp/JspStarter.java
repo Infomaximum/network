@@ -1,12 +1,12 @@
 package com.infomaximum.network.transport.http.jsp;
 
 //import org.apache.tomcat.util.scan.StandardJarScanner;
-import org.apache.tomcat.util.scan.StandardJarScanner;
-import org.eclipse.jetty.apache.jsp.JettyJasperInitializer;
+//import org.apache.tomcat.util.scan.StandardJarScanner;
+//import org.eclipse.jetty.apache.jsp.JettyJasperInitializer;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.listener.ContainerInitializer;
 import org.eclipse.jetty.util.component.AbstractLifeCycle;
-import org.apache.jasper.servlet.JasperInitializer;
+//import org.apache.jasper.servlet.JasperInitializer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,13 +20,13 @@ import java.util.List;
  *
  */
 public class JspStarter extends AbstractLifeCycle implements ServletContextHandler.ServletContainerInitializerCaller {
-    JettyJasperInitializer sci;
+//    JettyJasperInitializer sci;
     ServletContextHandler context;
 
     public JspStarter (ServletContextHandler context) {
-        this.sci = new JettyJasperInitializer();
+//        this.sci = new JettyJasperInitializer();
         this.context = context;
-        this.context.setAttribute("org.apache.tomcat.JarScanner", new StandardJarScanner());
+//        this.context.setAttribute("org.apache.tomcat.JarScanner", new StandardJarScanner());
     }
 
     @Override

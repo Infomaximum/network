@@ -10,7 +10,7 @@ import com.infomaximum.network.transport.http.builder.HttpBuilderTransport;
 import com.infomaximum.network.transport.http.builder.connector.BuilderHttpConnector;
 import com.infomaximum.network.transport.http.builder.filter.BuilderFilter;
 import com.infomaximum.network.transport.http.jsp.JspStarter;
-import org.apache.jasper.servlet.JspServlet;
+//import org.apache.jasper.servlet.JspServlet;
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.HttpChannel;
@@ -98,7 +98,7 @@ public class HttpTransport extends Transport<Session> {
 
             context.setClassLoader(Thread.currentThread().getContextClassLoader());
             //TODO раскоментировать!!!
-            context.addServlet(new ServletHolder("jspServlet", new JspServlet()), "*.jsp");
+//            context.addServlet(new ServletHolder("jspServlet", new JspServlet()), "*.jsp");
 
             //Утснавливаем resourceBase
             URL urlResourceBase = this.getClass().getClassLoader().getResource(httpBuilderTransport.getJspPath());

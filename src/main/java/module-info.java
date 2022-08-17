@@ -8,8 +8,8 @@ module com.infomaximum.network {
     requires org.eclipse.jetty.servlet;
     requires org.eclipse.jetty.websocket.servlet;
     requires org.eclipse.jetty.websocket.jetty.server;
-    requires org.eclipse.jetty.apache.jsp;
-    requires org.mortbay.jasper.apachejsp;
+//    requires org.eclipse.jetty.apache.jsp;
+//    requires org.mortbay.jasper.apachejsp;
     requires spring.web;
     requires spring.webmvc;
     requires spring.context;
