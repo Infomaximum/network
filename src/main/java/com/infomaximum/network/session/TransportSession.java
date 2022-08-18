@@ -13,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.net.InetSocketAddress;
 
 public abstract class TransportSession implements TransportPacketHandler {
 
@@ -28,9 +29,13 @@ public abstract class TransportSession implements TransportPacketHandler {
         this.protocol = protocol;
         this.transport = transport;
         this.channel = channel;
-        this.requestQueue = new ExecuteRequest(this, protocol.uncaughtExceptionHandler);
+        this.requestQueue = new ExecuteRequest(this);
 
         this.session = new SessionImpl(this);
+    }
+
+    public Thread.UncaughtExceptionHandler getUncaughtExceptionHandler(){
+        return protocol.uncaughtExceptionHandler;
     }
 
     public abstract void completedPhaseHandshake(HandshakeData handshakeData);
@@ -75,9 +80,7 @@ public abstract class TransportSession implements TransportPacketHandler {
 
     public RemoteAddress buildRemoteAddress() {
         String endRemoteAddress = ((WebSocketSession) channel).getUpgradeRequest().getHeader("X-Real-IP");
-        log.error("ПОПРАВИТЬ!!!!! rawRemoteAddress (TransportSession)");
-//        String rawRemoteAddress = ((WebSocketSession) channel).getRemoteAddress().getAddress().toString().split("/")[1];
-        String rawRemoteAddress = "ПОПРАВИТЬ!!!!!";
+        String rawRemoteAddress = ((InetSocketAddress)((WebSocketSession) channel).getRemoteAddress()).getAddress().toString().split("/")[1];
         if (endRemoteAddress == null) {
             endRemoteAddress = rawRemoteAddress;
         }

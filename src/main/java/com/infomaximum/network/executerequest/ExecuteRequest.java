@@ -2,6 +2,7 @@ package com.infomaximum.network.executerequest;
 
 import com.infomaximum.network.packet.IPacket;
 import com.infomaximum.network.protocol.PacketHandler;
+import com.infomaximum.network.session.TransportSession;
 import com.infomaximum.network.transport.TransportPacketHandler;
 import com.infomaximum.network.utils.ExecutorUtil;
 import org.slf4j.Logger;
@@ -22,14 +23,11 @@ public class ExecuteRequest {
 
     private final TransportPacketHandler transportPacketHandler;
 
-    private final Thread.UncaughtExceptionHandler uncaughtExceptionHandler;
-
     private final ConcurrentLinkedQueue<String> queue;
     private final AtomicBoolean syncExecuted;
 
-    public ExecuteRequest(TransportPacketHandler transportPacketHandler, Thread.UncaughtExceptionHandler uncaughtExceptionHandler) {
+    public ExecuteRequest(TransportPacketHandler transportPacketHandler) {
         this.transportPacketHandler = transportPacketHandler;
-        this.uncaughtExceptionHandler = uncaughtExceptionHandler;
 
         this.queue = new ConcurrentLinkedQueue();
         this.syncExecuted = new AtomicBoolean(false);
@@ -63,7 +61,7 @@ public class ExecuteRequest {
                         }
                     }
                 } catch (Exception e) {
-                    uncaughtExceptionHandler.uncaughtException(Thread.currentThread(), e);
+                    ((TransportSession)transportPacketHandler).getUncaughtExceptionHandler().uncaughtException(Thread.currentThread(), e);
                 } finally {
                     syncExecuted.set(false);
                 }

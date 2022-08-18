@@ -5,6 +5,8 @@ import org.eclipse.jetty.websocket.api.annotations.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.net.InetSocketAddress;
+
 /**
  * Created by kris on 08.04.17.
  */
@@ -18,17 +20,19 @@ public class PacketWebSocketHandler {
 
         //Определяеи ip, проверяя загаловки возможно балансировщик добавит данные с реальным ip
         String remoteIpAddress = null;
-        if (session.getUpgradeRequest().getHeaders()!=null) remoteIpAddress = session.getUpgradeRequest().getHeader("X-Real-IP");
+        if (session.getUpgradeRequest().getHeaders() != null) {
+            remoteIpAddress = session.getUpgradeRequest().getHeader("X-Real-IP");
+        }
 
-        //        if (remoteIpAddress == null) remoteIpAddress = session.getRemoteAddress().getAddress().getHostAddress();
-        log.error("ПОПРАВИТЬ!!!!! rawRemoteAddress (PacketWebSocketHandler)");
-        String rawRemoteAddress = "ПОПРАВИТЬ!!!!!";
+        if (remoteIpAddress == null) {
+            remoteIpAddress = ((InetSocketAddress) session.getRemoteAddress()).getAddress().getHostAddress();
+        }
 
         HttpTransport.instance.fireConnect(session, remoteIpAddress);//Оповещаем о новом подключении
     }
 
     @OnWebSocketMessage
-    public void onMessage(Session session, String message){
+    public void onMessage(Session session, String message) {
         HttpTransport.instance.fireIncomingMessage(session, message);
     }
 
