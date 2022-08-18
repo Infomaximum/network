@@ -32,5 +32,5 @@ module com.infomaximum.network {
     exports com.infomaximum.network.mvc.anotation;
     exports com.infomaximum.network.protocol.standard.handler.handshake;
 
-    exports com.infomaximum.network.transport.http to org.eclipse.jetty.server;
+    exports com.infomaximum.network.transport.http to org.eclipse.jetty.server, org.eclipse.jetty.websocket.core.common;
 }
