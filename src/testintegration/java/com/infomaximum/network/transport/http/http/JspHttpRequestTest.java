@@ -6,10 +6,7 @@ import com.infomaximum.network.transport.http.SpringConfigurationMvc;
 import com.infomaximum.network.transport.http.builder.HttpBuilderTransport;
 import com.infomaximum.network.transport.http.builder.connector.BuilderHttpConnector;
 import com.infomaximum.network.transport.http.http.utils.TestContentUtils;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.springframework.util.Assert;
 
 import java.util.UUID;
@@ -19,6 +16,7 @@ import java.util.UUID;
  * <p>
  * Тест проверяющий, что на запрос приходит ответ
  */
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class JspHttpRequestTest {
 
     private static final int port = 8099;

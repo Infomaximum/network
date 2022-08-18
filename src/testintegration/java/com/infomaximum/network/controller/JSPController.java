@@ -18,10 +18,7 @@ public class JSPController {
 
     @RequestMapping(value={"", "/"}, method = RequestMethod.GET)
     public String index(final ModelMap model, @RequestParam("message") final String message) {
-        List<String> messages = new ArrayList<String>();
-        messages.add(message);
-
-        model.addAttribute("messages", messages);
+        model.addAttribute("message", message);
         return "index";
     }
 }
