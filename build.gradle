@@ -5,13 +5,13 @@ plugins {
     id ("de.jjohannes.extra-java-module-info") version "0.15"
     id "org.checkerframework" version "0.6.15" //https://github.com/kelloggm/checkerframework-gradle-plugin
 }
-apply from: 'https://raw.githubusercontent.com/Infomaximum/platform-java-module-info/0.0.7/com.infomaximum.platform-java-module-info.gradle'
+apply from: 'https://raw.githubusercontent.com/Infomaximum/platform-java-module-info/0.0.8/com.infomaximum.platform-java-module-info.gradle'
 if (project.hasProperty('ossrhUsername')) {
     apply from: 'publish.gradle'
 }
 
 group 'com.infomaximum'
-version '1.1.1f6'
+version '1.1.1f7'
 
 ext.moduleName = 'com.infomaximum.network'
 
@@ -67,7 +67,6 @@ repositories {
 
 dependencies {
     implementation 'org.eclipse.jetty:jetty-server:11.0.11'
-    implementation 'org.eclipse.jetty:jetty-servlet:11.0.11'
     implementation 'org.eclipse.jetty:jetty-webapp:11.0.11'
 
     implementation 'org.eclipse.jetty:apache-jsp:11.0.11'
