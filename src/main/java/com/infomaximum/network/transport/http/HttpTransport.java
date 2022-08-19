@@ -6,10 +6,12 @@ import com.infomaximum.network.struct.info.HttpConnectorInfo;
 import com.infomaximum.network.struct.info.TransportInfo;
 import com.infomaximum.network.transport.Transport;
 import com.infomaximum.network.transport.TypeTransport;
+import com.infomaximum.network.transport.http.builder.ConfigUploadFiles;
 import com.infomaximum.network.transport.http.builder.HttpBuilderTransport;
 import com.infomaximum.network.transport.http.builder.connector.BuilderHttpConnector;
 import com.infomaximum.network.transport.http.builder.filter.BuilderFilter;
 import com.infomaximum.network.transport.http.jsp.JspStarter;
+import jakarta.servlet.MultipartConfigElement;
 import org.apache.jasper.servlet.JspServlet;
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Handler;
@@ -59,14 +61,14 @@ public class HttpTransport extends Transport<Session> {
             throw new NetworkException("Not found connectors");
         }
         List<Connector> connectors = new ArrayList<>();
-        for (BuilderHttpConnector builderHttpConnector: httpBuilderTransport.getBuilderConnectors()) {
+        for (BuilderHttpConnector builderHttpConnector : httpBuilderTransport.getBuilderConnectors()) {
             connectorInfoSuppliers.add(builderHttpConnector.getInfoSupplier());
             Connector connector = builderHttpConnector.build(server);
             connectors.add(connector);
 
             //Возможно есть подписчики
-            if (httpBuilderTransport.getHttpChannelListeners()!=null) {
-                for (HttpChannel.Listener listener: httpBuilderTransport.getHttpChannelListeners()) {
+            if (httpBuilderTransport.getHttpChannelListeners() != null) {
+                for (HttpChannel.Listener listener : httpBuilderTransport.getHttpChannelListeners()) {
                     connector.addBean(listener);
                 }
             }
@@ -80,7 +82,11 @@ public class HttpTransport extends Transport<Session> {
 
         AnnotationConfigWebApplicationContext applicationContext = new AnnotationConfigWebApplicationContext();
         applicationContext.register(httpBuilderTransport.getClassWebMvcConfig());
-        context.addServlet(new ServletHolder("default", new DispatcherServlet(applicationContext)), "/");
+        ServletHolder mvcServletHolder = new ServletHolder("default", new DispatcherServlet(applicationContext));
+        if (httpBuilderTransport.getConfigUploadFiles() != null) {
+            mvcServletHolder.getRegistration().setMultipartConfig(toMultipartConfigElement(httpBuilderTransport.getConfigUploadFiles()));
+        }
+        context.addServlet(mvcServletHolder, "/");
 
         if (httpBuilderTransport.isSupportJsp()) {
             //Устанавливаем каталог для сборки jsp файлов
@@ -100,13 +106,14 @@ public class HttpTransport extends Transport<Session> {
 
             //Утснавливаем resourceBase
             URL urlResourceBase = this.getClass().getClassLoader().getResource(httpBuilderTransport.getJspPath());
-            if (urlResourceBase == null) throw new RuntimeException("Failed to find path: " + httpBuilderTransport.getJspPath());
-            context.setResourceBase( urlResourceBase.toExternalForm() );
+            if (urlResourceBase == null)
+                throw new RuntimeException("Failed to find path: " + httpBuilderTransport.getJspPath());
+            context.setResourceBase(urlResourceBase.toExternalForm());
         }
 
         //Возможно есть регистрируемые фильтры
-        if (httpBuilderTransport.getFilters()!=null) {
-            for (BuilderFilter builderFilter: httpBuilderTransport.getFilters()) {
+        if (httpBuilderTransport.getFilters() != null) {
+            for (BuilderFilter builderFilter : httpBuilderTransport.getFilters()) {
                 context.addFilter(builderFilter.filterClass, builderFilter.pathSpec, builderFilter.dispatches);
             }
         }
@@ -118,7 +125,9 @@ public class HttpTransport extends Transport<Session> {
         handlers.setHandlers(new Handler[]{ context, new DefaultHandler() });
         server.setHandler(handlers);
 
-        if (httpBuilderTransport.getErrorHandler()!=null) server.setErrorHandler(httpBuilderTransport.getErrorHandler());
+        if (httpBuilderTransport.getErrorHandler() != null) {
+            server.setErrorHandler(httpBuilderTransport.getErrorHandler());
+        }
 
         try {
             server.start();
@@ -155,5 +164,14 @@ public class HttpTransport extends Transport<Session> {
     public void destroy() throws Exception {
         server.stop();
         server.destroy();
+    }
+
+    private static MultipartConfigElement toMultipartConfigElement(ConfigUploadFiles configUploadFiles) {
+        return new MultipartConfigElement(
+                configUploadFiles.getLocation().toAbsolutePath().toString(),
+                configUploadFiles.getMaxFileSize(),
+                configUploadFiles.getMaxRequestSize(),
+                configUploadFiles.getFileSizeThreshold()
+        );
     }
 }

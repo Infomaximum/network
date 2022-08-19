@@ -23,6 +23,8 @@ public class HttpBuilderTransport extends BuilderTransport {
     private Set<BuilderFilter> filters;
     private Set<HttpChannel.Listener> httpChannelListeners;
 
+    private ConfigUploadFiles configUploadFiles;
+    
     public HttpBuilderTransport(Class classWebMvcConfig) {
         this.classWebMvcConfig = classWebMvcConfig;
     }
@@ -53,6 +55,11 @@ public class HttpBuilderTransport extends BuilderTransport {
         return this;
     }
 
+    public HttpBuilderTransport withConfigUploadFiles(ConfigUploadFiles config) {
+        this.configUploadFiles =config;
+        return this;
+    }   
+
     public HttpBuilderTransport addListener(HttpChannel.Listener listener){
         if (httpChannelListeners==null) {
             httpChannelListeners = new HashSet<>();
@@ -79,6 +86,11 @@ public class HttpBuilderTransport extends BuilderTransport {
     public Set<BuilderFilter> getFilters() {
         return filters;
     }
+
+    public ConfigUploadFiles getConfigUploadFiles() {
+        return configUploadFiles;
+    }
+
     public Set<HttpChannel.Listener> getHttpChannelListeners() {
         return httpChannelListeners;
     }
