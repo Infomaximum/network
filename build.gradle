@@ -12,7 +12,7 @@ if (project.hasProperty('ossrhUsername')) {
 }
 
 group 'com.infomaximum'
-version '1.1.2p1'
+version '1.1.2p2'
 
 ext.moduleName = 'com.infomaximum.network'
 
@@ -77,11 +77,11 @@ dependencies {
     api 'org.eclipse.jetty.websocket:websocket-jetty-api:11.0.11'
     implementation 'org.eclipse.jetty.websocket:websocket-servlet:11.0.11'
 
-    api 'org.springframework:spring-core:6.0.0-M5'
-    api 'org.springframework:spring-web:6.0.0-M5'
-    api 'org.springframework:spring-webmvc:6.0.0-M5'
-    implementation 'org.springframework:spring-context-support:6.0.0-M5'
-    implementation 'org.springframework:spring-messaging:6.0.0-M5'
+    api 'org.springframework:spring-core:6.0.0-M6'
+    api 'org.springframework:spring-web:6.0.0-M6'
+    api 'org.springframework:spring-webmvc:6.0.0-M6'
+    implementation 'org.springframework:spring-context-support:6.0.0-M6'
+    implementation 'org.springframework:spring-messaging:6.0.0-M6'
 
     implementation 'net.minidev:json-smart:2.4.8'
 
