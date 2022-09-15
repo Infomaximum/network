@@ -77,6 +77,18 @@ public class BuilderHttpsConnector extends BuilderHttpConnector {
             this.builderHttpsConnector.sslContextFactory = sslContextFactory;
         }
 
+        /**
+         * Особенность, по умолчанию создается ssl-фабрика без уязвимых протоколов, но в каких то ситуация нам необходима
+         * возможность подключения на небезопасных протоколах
+         * https://stackoverflow.com/questions/52565445/tlsv1-support-in-embedded-jetty-server
+         * @return
+         */
+        public BuilderSslContextFactory resetExcludeProtocolsAndCipherSuites() {
+            sslContextFactory.setExcludeCipherSuites();
+            sslContextFactory.setExcludeProtocols();
+            return this;
+        }
+
         public BuilderSslContextFactory setKeyStorePassword(String keyStorePassword) {
             builderHttpsConnector.sslContextFactory.setKeyStorePassword(keyStorePassword);
             return this;
