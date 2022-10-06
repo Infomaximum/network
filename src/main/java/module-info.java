@@ -1,7 +1,7 @@
 module com.infomaximum.network {
     requires org.slf4j;
     requires net.minidev.jsonsmart;
-    requires org.reflections.reflections;
+    requires org.reflections;
     requires org.eclipse.jetty.websocket.jetty.api;
     requires org.eclipse.jetty.websocket.jetty.common;
     requires org.eclipse.jetty.server;

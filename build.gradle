@@ -6,13 +6,13 @@ plugins {
     id ("de.jjohannes.extra-java-module-info") version "0.15"
     id "org.checkerframework" version "0.6.15" //https://github.com/kelloggm/checkerframework-gradle-plugin
 }
-apply from: 'https://raw.githubusercontent.com/Infomaximum/platform-java-module-info/0.0.8/com.infomaximum.platform-java-module-info.gradle'
+apply from: 'https://raw.githubusercontent.com/Infomaximum/platform-java-module-info/0.0.11/com.infomaximum.platform-java-module-info.gradle'
 if (project.hasProperty('ossrhUsername')) {
     apply from: 'publish.gradle'
 }
 
 group 'com.infomaximum'
-version '1.1.2p2'
+version '1.1.2p3'
 
 ext.moduleName = 'com.infomaximum.network'
 
@@ -87,7 +87,9 @@ dependencies {
 
     implementation('org.reflections:reflections:0.10.2') {
         exclude group: 'com.google.code.findbugs', module: 'jsr305'
+        exclude group: 'org.javassist', module: 'javassist'
     }
+    implementation 'org.javassist:javassist:3.29.2-GA'//Более новая зависимость с поддержкой java модулей
 
     implementation 'org.slf4j:slf4j-api:2.0.0-beta1'
 
