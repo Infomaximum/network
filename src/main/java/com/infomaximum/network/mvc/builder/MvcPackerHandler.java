@@ -20,6 +20,7 @@ import org.slf4j.LoggerFactory;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.concurrent.CompletableFuture;
 
@@ -46,7 +47,7 @@ public class MvcPackerHandler implements PacketHandler {
     }
 
     @Override
-    public CompletableFuture<IPacket> exec(Session session, IPacket packet) {
+    public CompletableFuture<IPacket[]> exec(Session session, IPacket packet) {
         TargetPacket requestPacket = (TargetPacket) packet;
 
         MvcController mvcController = controllers.get(requestPacket.controller);
@@ -94,7 +95,7 @@ public class MvcPackerHandler implements PacketHandler {
             } else if (result instanceof CompletableFuture) {
                 CompletableFuture<ResponseEntity> futureResponse = (CompletableFuture<ResponseEntity>) result;
                 return futureResponse.thenApply(
-                        responseEntity -> (IPacket) ResponsePacket.response(
+                        responseEntity -> ResponsePacket.response(
                                 (RequestPacket) packet,
                                 responseEntity.code,
                                 responseEntity.data

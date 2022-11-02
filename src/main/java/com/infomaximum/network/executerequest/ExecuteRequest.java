@@ -79,7 +79,7 @@ public class ExecuteRequest {
         try {
             IPacket request = transportPacketHandler.parse(message);
             PacketHandler packetHandler = transportPacketHandler.getPacketHandler();
-            CompletableFuture<IPacket> response = packetHandler.exec(transportPacketHandler.getSession(), request);
+            CompletableFuture<IPacket[]> response = packetHandler.exec(transportPacketHandler.getSession(), request);
             return sendResponse(response);
         } catch (Exception e) {
             log.error("Ошибка обработки входящего пакета, игнорим. packet: " + message, e);
@@ -88,10 +88,12 @@ public class ExecuteRequest {
     }
 
 
-    private CompletableFuture<Void> sendResponse(CompletableFuture<IPacket> response) {
-        return response.thenAccept(responsePacket -> {
-            if (responsePacket != null) {
-                transportPacketHandler.send(responsePacket);
+    private CompletableFuture<Void> sendResponse(CompletableFuture<IPacket[]> response) {
+        return response.thenAccept(responsePackets -> {
+            if (responsePackets != null) {
+                for(IPacket packet: responsePackets) {
+                    transportPacketHandler.send(packet);
+                }
             }
         });
     }

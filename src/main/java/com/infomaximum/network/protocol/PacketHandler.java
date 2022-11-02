@@ -11,7 +11,7 @@ import java.util.concurrent.CompletableFuture;
  */
 public interface PacketHandler {
 
-    CompletableFuture<IPacket> exec(Session session, IPacket packet);
+    CompletableFuture<IPacket[]> exec(Session session, IPacket packet);
 
     abstract class Builder {
 

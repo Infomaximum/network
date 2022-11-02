@@ -1,5 +1,6 @@
 package com.infomaximum.network.protocol.standard.packet;
 
+import com.infomaximum.network.packet.IPacket;
 import net.minidev.json.JSONObject;
 
 /**
@@ -36,7 +37,11 @@ public class ResponsePacket extends Packet implements IPacketId {
         jsonObject.put("code", code);
     }
 
-    public static ResponsePacket response(IPacketId request, int code, JSONObject data) {
+    public static ResponsePacket build(IPacketId request, int code, JSONObject data) {
         return new ResponsePacket(request.getId(), code, data);
+    }
+
+    public static IPacket[] response(IPacketId request, int code, JSONObject data) {
+        return new IPacket[]{ build(request, code, data) };
     }
 }

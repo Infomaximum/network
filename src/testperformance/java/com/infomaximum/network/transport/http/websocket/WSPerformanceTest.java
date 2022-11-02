@@ -49,9 +49,9 @@ public class WSPerformanceTest {
                                             public PacketHandler build(Thread.UncaughtExceptionHandler uncaughtExceptionHandler) {
                                                 return new PacketHandler() {
                                                     @Override
-                                                    public CompletableFuture<IPacket> exec(Session session, IPacket packet) {
+                                                    public CompletableFuture<IPacket[]> exec(Session session, IPacket packet) {
                                                         if (packet instanceof RequestPacket) {
-                                                            CompletableFuture<IPacket> completableFuture = new CompletableFuture<IPacket>();
+                                                            CompletableFuture<IPacket[]> completableFuture = new CompletableFuture<IPacket[]>();
                                                             completableFuture.complete(ResponsePacket.response(
                                                                     (RequestPacket) packet,
                                                                     ResponseEntity.RESPONSE_CODE_OK,
