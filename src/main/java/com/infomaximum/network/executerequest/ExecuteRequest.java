@@ -1,5 +1,6 @@
 package com.infomaximum.network.executerequest;
 
+import com.infomaximum.network.exception.ParsePacketNetworkException;
 import com.infomaximum.network.packet.IPacket;
 import com.infomaximum.network.protocol.PacketHandler;
 import com.infomaximum.network.session.TransportSession;
@@ -81,8 +82,12 @@ public class ExecuteRequest {
             PacketHandler packetHandler = transportPacketHandler.getPacketHandler();
             CompletableFuture<IPacket[]> response = packetHandler.exec(transportPacketHandler.getSession(), request);
             return sendResponse(response);
+        } catch (ParsePacketNetworkException e) {
+            log.error("Ошибка парсинга входящего пакета, игнорим. packet: " + message, e);
+            return CompletableFuture.completedFuture(null);
         } catch (Exception e) {
-            log.error("Ошибка обработки входящего пакета, игнорим. packet: " + message, e);
+            log.error("Ошибка обработки входящего пакета", e);
+            transportPacketHandler.getUncaughtExceptionHandler().uncaughtException(Thread.currentThread(), e);
             return CompletableFuture.completedFuture(null);
         }
     }

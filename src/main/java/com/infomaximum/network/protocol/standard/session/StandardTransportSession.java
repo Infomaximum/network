@@ -1,5 +1,6 @@
 package com.infomaximum.network.protocol.standard.session;
 
+import com.infomaximum.network.exception.ParsePacketNetworkException;
 import com.infomaximum.network.packet.IPacket;
 import com.infomaximum.network.protocol.PacketHandler;
 import com.infomaximum.network.protocol.standard.StandardProtocol;
@@ -11,6 +12,7 @@ import com.infomaximum.network.struct.HandshakeData;
 import com.infomaximum.network.transport.Transport;
 import net.minidev.json.JSONObject;
 import net.minidev.json.parser.JSONParser;
+import net.minidev.json.parser.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -62,9 +64,13 @@ public class StandardTransportSession extends TransportSession {
     }
 
     @Override
-    public IPacket parse(String message) throws Exception {
-        JSONObject incoming = (JSONObject) new JSONParser(JSONParser.DEFAULT_PERMISSIVE_MODE).parse(message);
-        return Packet.parse(incoming);
+    public IPacket parse(String message) throws ParsePacketNetworkException {
+        try {
+            JSONObject incoming = (JSONObject) new JSONParser(JSONParser.DEFAULT_PERMISSIVE_MODE).parse(message);
+            return Packet.parse(incoming);
+        } catch (ParseException e) {
+            throw new ParsePacketNetworkException(e);
+        }
     }
 
     @Override
