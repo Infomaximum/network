@@ -33,4 +33,5 @@ module com.infomaximum.network {
     exports com.infomaximum.network.protocol.standard.handler.handshake;
 
     exports com.infomaximum.network.transport.http;
+    exports com.infomaximum.network.event;
 }

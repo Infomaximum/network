@@ -1,5 +1,6 @@
 package com.infomaximum.network.session;
 
+import com.infomaximum.network.event.NetworkListener;
 import com.infomaximum.network.executerequest.ExecuteRequest;
 import com.infomaximum.network.packet.IPacket;
 import com.infomaximum.network.protocol.Protocol;
@@ -14,6 +15,10 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.util.List;
+import java.util.Set;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.CopyOnWriteArraySet;
 
 public abstract class TransportSession implements TransportPacketHandler {
 
@@ -24,6 +29,8 @@ public abstract class TransportSession implements TransportPacketHandler {
     protected final Object channel;
     protected final Session session;
     private final ExecuteRequest requestQueue;
+
+    private volatile List<NetworkListener> listeners;
 
     public TransportSession(Protocol protocol, Transport transport, Object channel) {
         this.protocol = protocol;
@@ -72,10 +79,31 @@ public abstract class TransportSession implements TransportPacketHandler {
     }
 
     public void destroyed() {
+        if (listeners!=null) {
+            for (NetworkListener listener: listeners) {
+                listener.onDisconnect(session);
+            }
+        }
         try {
             transport.close(channel);
         } catch (Throwable ignore) {
         }
+    }
+
+    public void addListener(NetworkListener listener) {
+        if (listeners==null) {
+            synchronized (this) {
+                if (listeners==null) {
+                    this.listeners = new CopyOnWriteArrayList<>();
+                }
+            }
+        }
+        listeners.add(listener);
+        listener.onConnect(session);
+    }
+
+    public void removeListener(NetworkListener listener) {
+        listeners.remove(listener);
     }
 
     public RemoteAddress buildRemoteAddress() {

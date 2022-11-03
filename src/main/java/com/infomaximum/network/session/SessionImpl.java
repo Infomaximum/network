@@ -3,6 +3,7 @@ package com.infomaximum.network.session;
 import com.infomaximum.network.struct.HandshakeData;
 import com.infomaximum.network.struct.SessionData;
 
+import java.util.Objects;
 import java.util.UUID;
 
 public class SessionImpl implements Session {
@@ -59,4 +60,16 @@ public class SessionImpl implements Session {
         return str.toString();
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        SessionImpl session = (SessionImpl) o;
+        return uuid.equals(session.uuid);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(uuid);
+    }
 }

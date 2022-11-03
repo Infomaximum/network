@@ -116,8 +116,7 @@ public class NetworkImpl implements Network, TransportListener {
     public void onDisconnect(Transport transport, Object channel, int statusCode, Throwable throwable) {
         TransportSession transportSession = transportSessions.remove(channel);
         if (transportSession != null) {
-            log.info("{} onDisconnect, {}", transportSession.getSession(), statusCode, throwable);
-
+            log.info("{} onDisconnect, code: {}, message: {}", transportSession.getSession(), statusCode, throwable.getMessage());
             transportSession.destroyed();
 
             //Оповещаем подписчиков

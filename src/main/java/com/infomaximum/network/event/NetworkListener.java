@@ -11,9 +11,7 @@ import com.infomaximum.network.session.Session;
  */
 public interface NetworkListener {
 
-	public void onConnect(Session session);
+	void onConnect(Session session);
 
-//	public void onHandshake(Session session);
-
-	public void onDisconnect(Session session);
+	void onDisconnect(Session session);
 }
