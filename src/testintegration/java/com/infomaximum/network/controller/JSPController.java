@@ -7,6 +7,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -18,7 +20,7 @@ public class JSPController {
 
     @RequestMapping(value={"", "/"}, method = RequestMethod.GET)
     public String index(final ModelMap model, @RequestParam("message") final String message) {
-        model.addAttribute("message", message);
+        model.addAttribute("messages", Collections.singleton(message) );
         return "index";
     }
 }

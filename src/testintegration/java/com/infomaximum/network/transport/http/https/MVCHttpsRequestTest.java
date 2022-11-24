@@ -36,6 +36,7 @@ public class MVCHttpsRequestTest extends TestHttpsRequest {
         initKeyStore();
         try (Network network = buildNetwork(new BuilderHttpsConnector(port)
                 .withSslContext(keyStorePath.toAbsolutePath().toString())
+                .resetExcludeProtocolsAndCipherSuites()
                 .setKeyStorePassword(PASSWORD)
                 .build())) {
             TestContentSslUtils.testContent(port, "/test/ping", "pong", "TLS", keystore);
