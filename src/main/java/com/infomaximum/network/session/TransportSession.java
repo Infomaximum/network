@@ -114,4 +114,9 @@ public abstract class TransportSession implements TransportPacketHandler {
         }
         return new RemoteAddress(rawRemoteAddress, endRemoteAddress);
     }
+
+    public String getXTraceId() {
+        String xTraceId = ((WebSocketSession) channel).getUpgradeRequest().getHeader("X-Trace-Id");
+        return xTraceId;
+    }
 }
