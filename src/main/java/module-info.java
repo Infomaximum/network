@@ -31,6 +31,8 @@ module com.infomaximum.network {
     exports com.infomaximum.network.transport.http.builder.filter;
     exports com.infomaximum.network.mvc.anotation;
     exports com.infomaximum.network.protocol.standard.handler.handshake;
+    exports com.infomaximum.network.protocol.standard;
+    exports com.infomaximum.network.mvc.builder;
 
     exports com.infomaximum.network.transport.http;
     exports com.infomaximum.network.event;

@@ -17,8 +17,8 @@ import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.HttpChannel;
 import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.handler.ContextHandlerCollection;
 import org.eclipse.jetty.server.handler.DefaultHandler;
-import org.eclipse.jetty.server.handler.HandlerCollection;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
@@ -108,7 +108,7 @@ public class HttpTransport extends Transport<Session> {
             URL urlResourceBase = this.getClass().getClassLoader().getResource(httpBuilderTransport.getJspPath());
             if (urlResourceBase == null)
                 throw new RuntimeException("Failed to find path: " + httpBuilderTransport.getJspPath());
-            context.setResourceBase(urlResourceBase.toExternalForm());
+            context.setResourceBase(urlResourceBase.toExternalForm());//jetty 12 migration to: context.setBaseResourceAsString(urlResourceBase.toExternalForm());
         }
 
         //Возможно есть регистрируемые фильтры
@@ -121,12 +121,12 @@ public class HttpTransport extends Transport<Session> {
         //Инициализирум контекс с вебсокетами
         JettyWebSocketServletContainerInitializer.configure(context, null);
 
-        HandlerCollection handlers = new HandlerCollection();
+        ContextHandlerCollection handlers = new ContextHandlerCollection();
         handlers.setHandlers(new Handler[]{ context, new DefaultHandler() });
         server.setHandler(handlers);
 
         if (httpBuilderTransport.getErrorHandler() != null) {
-            server.setErrorHandler(httpBuilderTransport.getErrorHandler());
+            server.setErrorHandler(httpBuilderTransport.getErrorHandler());//jetty 12 migration to: server.setErrorProcessor(httpBuilderTransport.getErrorProcessor());
         }
 
         try {

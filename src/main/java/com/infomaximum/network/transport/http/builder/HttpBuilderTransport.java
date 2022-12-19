@@ -14,10 +14,12 @@ import java.util.Set;
  */
 public class HttpBuilderTransport extends BuilderTransport {
 
+    public static final ConfigUploadFiles DEFAULT_CONFIG_UPLOAD_FILES = new ConfigUploadFiles.Builder().build();
+
     private Set<BuilderHttpConnector> builderConnectors;
 
     private Class classWebMvcConfig;
-    private ErrorHandler errorHandler;
+    private ErrorHandler errorHandler;//jetty 12 migration to Request.Processor errorProcessor
 
     private String jspPath;
     private Set<BuilderFilter> filters;
@@ -27,6 +29,7 @@ public class HttpBuilderTransport extends BuilderTransport {
     
     public HttpBuilderTransport(Class classWebMvcConfig) {
         this.classWebMvcConfig = classWebMvcConfig;
+        this.configUploadFiles = DEFAULT_CONFIG_UPLOAD_FILES;
     }
 
     public HttpBuilderTransport addConnector(BuilderHttpConnector builderConnector){
@@ -56,9 +59,9 @@ public class HttpBuilderTransport extends BuilderTransport {
     }
 
     public HttpBuilderTransport withConfigUploadFiles(ConfigUploadFiles config) {
-        this.configUploadFiles =config;
+        this.configUploadFiles = config;
         return this;
-    }   
+    }
 
     public HttpBuilderTransport addListener(HttpChannel.Listener listener){
         if (httpChannelListeners==null) {
@@ -74,7 +77,7 @@ public class HttpBuilderTransport extends BuilderTransport {
     public Class getClassWebMvcConfig() {
         return classWebMvcConfig;
     }
-    public ErrorHandler getErrorHandler() {
+    public ErrorHandler getErrorHandler() {//jetty 12 migration to: public  Request.Processor getErrorProcessor()
         return errorHandler;
     }
     public String getJspPath() {

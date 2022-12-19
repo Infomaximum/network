@@ -10,7 +10,7 @@ if (project.hasProperty('ossrhUsername')) {
 }
 
 group 'com.infomaximum'
-version '1.1.3'
+version '1.1.3p1'
 
 ext.moduleName = 'com.infomaximum.network'
 
@@ -64,16 +64,16 @@ repositories {
 }
 
 dependencies {
-    api 'org.eclipse.jetty:jetty-server:11.0.12'
-    implementation 'org.eclipse.jetty:jetty-webapp:11.0.12'
+    api 'org.eclipse.jetty:jetty-server:11.0.13'
+    implementation 'org.eclipse.jetty:jetty-webapp:11.0.13'
 
-    implementation 'org.eclipse.jetty:apache-jsp:11.0.12'
-    implementation 'jakarta.servlet.jsp.jstl:jakarta.servlet.jsp.jstl-api:3.0.0'
+    implementation 'org.eclipse.jetty:apache-jsp:11.0.13'
+    implementation 'jakarta.servlet.jsp:jakarta.servlet.jsp-api:3.1.0'
     implementation 'org.glassfish.web:jakarta.servlet.jsp.jstl:3.0.1'
 
-    implementation 'org.eclipse.jetty.websocket:websocket-jetty-server:11.0.12'
-    api 'org.eclipse.jetty.websocket:websocket-jetty-api:11.0.12'
-    implementation 'org.eclipse.jetty.websocket:websocket-servlet:11.0.12'
+    implementation 'org.eclipse.jetty.websocket:websocket-jetty-server:11.0.13'
+    api 'org.eclipse.jetty.websocket:websocket-jetty-api:11.0.13'
+    implementation 'org.eclipse.jetty.websocket:websocket-servlet:11.0.13'
 
     api 'org.springframework:spring-core:6.0.1'
     api 'org.springframework:spring-web:6.0.1'
@@ -97,7 +97,7 @@ dependencies {
     testImplementation 'ch.qos.logback:logback-classic:1.3.0-beta0'
 
     testintegrationImplementation 'org.springframework:spring-test:6.0.1'
-    testintegrationImplementation 'org.eclipse.jetty.websocket:websocket-jetty-client:11.0.12'
+    testintegrationImplementation 'org.eclipse.jetty.websocket:websocket-jetty-client:11.0.13'
 }
 
 task testintegration(type: Test, description: 'Integration test', group: 'Verification') {
