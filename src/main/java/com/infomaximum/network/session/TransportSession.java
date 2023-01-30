@@ -14,6 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.util.List;
 import java.util.Set;
@@ -107,8 +108,18 @@ public abstract class TransportSession implements TransportPacketHandler {
     }
 
     public RemoteAddress buildRemoteAddress() {
-        String endRemoteAddress = ((WebSocketSession) channel).getUpgradeRequest().getHeader("X-Real-IP");
-        String rawRemoteAddress = ((InetSocketAddress)((WebSocketSession) channel).getRemoteAddress()).getAddress().toString().split("/")[1];
+        WebSocketSession webSocketSession = (WebSocketSession) channel;
+        String endRemoteAddress = webSocketSession.getUpgradeRequest().getHeader("X-Real-IP");
+
+        InetSocketAddress remoteAddress = (InetSocketAddress)webSocketSession.getRemoteAddress();
+        String rawRemoteAddress = "unknown";
+        if (remoteAddress != null) {
+            InetAddress address = remoteAddress.getAddress();
+            if (address != null) {
+                rawRemoteAddress = address.toString().split("/")[1];
+            }
+        }
+
         if (endRemoteAddress == null) {
             endRemoteAddress = rawRemoteAddress;
         }
