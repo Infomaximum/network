@@ -21,6 +21,7 @@ public class HttpBuilderTransport extends BuilderTransport {
     private Class classWebMvcConfig;
     private ErrorHandler errorHandler;//jetty 12 migration to Request.Processor errorProcessor
 
+    private Set<String> compressResponseMimeTypes;
     private Set<BuilderFilter> filters;
     private Set<HttpChannel.Listener> httpChannelListeners;
 
@@ -29,6 +30,12 @@ public class HttpBuilderTransport extends BuilderTransport {
     public HttpBuilderTransport(Class classWebMvcConfig) {
         this.classWebMvcConfig = classWebMvcConfig;
         this.configUploadFiles = DEFAULT_CONFIG_UPLOAD_FILES;
+
+        addCompressResponseMimeType("text/html");
+        addCompressResponseMimeType("application/x-font-ttf");
+        addCompressResponseMimeType("text/css");
+        addCompressResponseMimeType("application/javascript");
+        addCompressResponseMimeType("application/json");
     }
 
     public HttpBuilderTransport addConnector(BuilderHttpConnector builderConnector){
@@ -41,6 +48,14 @@ public class HttpBuilderTransport extends BuilderTransport {
 
     public HttpBuilderTransport withErrorHandler(ErrorHandler errorHandler) {
         this.errorHandler = errorHandler;
+        return this;
+    }
+
+    public HttpBuilderTransport addCompressResponseMimeType(String mimeType){
+        if (compressResponseMimeTypes == null) {
+            compressResponseMimeTypes = new HashSet<>();
+        }
+        compressResponseMimeTypes.add(mimeType);
         return this;
     }
 
@@ -74,6 +89,11 @@ public class HttpBuilderTransport extends BuilderTransport {
     public ErrorHandler getErrorHandler() {//jetty 12 migration to: public  Request.Processor getErrorProcessor()
         return errorHandler;
     }
+
+    public Set<String> getCompressResponseMimeTypes() {
+        return compressResponseMimeTypes;
+    }
+
     public Set<BuilderFilter> getFilters() {
         return filters;
     }

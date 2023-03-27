@@ -17,6 +17,7 @@ import org.eclipse.jetty.server.HttpChannel;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.ContextHandlerCollection;
 import org.eclipse.jetty.server.handler.DefaultHandler;
+import org.eclipse.jetty.server.handler.gzip.GzipHandler;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
@@ -73,10 +74,10 @@ public class HttpTransport extends Transport<Session> {
         }
         server.setConnectors(connectors.toArray(new Connector[connectors.size()]));
 
-        ServletContextHandler context = new ServletContextHandler();
-        context.setContextPath("/");
+        ServletContextHandler servletContext = new ServletContextHandler();
+        servletContext.setContextPath("/");
 
-        context.addServlet(new ServletHolder(WebSocketServletConfiguration.class), "/ws");
+        servletContext.addServlet(new ServletHolder(WebSocketServletConfiguration.class), "/ws");
 
         AnnotationConfigWebApplicationContext applicationContext = new AnnotationConfigWebApplicationContext();
         applicationContext.register(httpBuilderTransport.getClassWebMvcConfig());
@@ -84,17 +85,28 @@ public class HttpTransport extends Transport<Session> {
         if (httpBuilderTransport.getConfigUploadFiles() != null) {
             mvcServletHolder.getRegistration().setMultipartConfig(toMultipartConfigElement(httpBuilderTransport.getConfigUploadFiles()));
         }
-        context.addServlet(mvcServletHolder, "/");
+        servletContext.addServlet(mvcServletHolder, "/");
 
         //Возможно есть регистрируемые фильтры
         if (httpBuilderTransport.getFilters() != null) {
             for (BuilderFilter builderFilter : httpBuilderTransport.getFilters()) {
-                context.addFilter(builderFilter.filterClass, builderFilter.pathSpec, builderFilter.dispatches);
+                servletContext.addFilter(builderFilter.filterClass, builderFilter.pathSpec, builderFilter.dispatches);
             }
         }
 
         //Инициализирум контекс с вебсокетами
-        JettyWebSocketServletContainerInitializer.configure(context, null);
+        JettyWebSocketServletContainerInitializer.configure(servletContext, null);
+
+        Handler context = servletContext;
+
+        //Добавляем хедлер упаковки ресурсов контекста
+        if (httpBuilderTransport.getCompressResponseMimeTypes() != null) {
+            GzipHandler gzipHandlerContext = new GzipHandler();
+            gzipHandlerContext.setIncludedMimeTypes(httpBuilderTransport.getCompressResponseMimeTypes().toArray(String[]::new));
+            gzipHandlerContext.setMinGzipSize(1024);
+            gzipHandlerContext.setHandler(servletContext);
+            context = gzipHandlerContext;
+        }
 
         ContextHandlerCollection handlers = new ContextHandlerCollection();
         handlers.setHandlers(new Handler[]{ context, new DefaultHandler() });
