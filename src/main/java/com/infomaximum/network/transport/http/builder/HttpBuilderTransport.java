@@ -21,7 +21,6 @@ public class HttpBuilderTransport extends BuilderTransport {
     private Class classWebMvcConfig;
     private ErrorHandler errorHandler;//jetty 12 migration to Request.Processor errorProcessor
 
-    private String jspPath;
     private Set<BuilderFilter> filters;
     private Set<HttpChannel.Listener> httpChannelListeners;
 
@@ -42,11 +41,6 @@ public class HttpBuilderTransport extends BuilderTransport {
 
     public HttpBuilderTransport withErrorHandler(ErrorHandler errorHandler) {
         this.errorHandler = errorHandler;
-        return this;
-    }
-
-    public HttpBuilderTransport withJspPath(String value) {
-        this.jspPath=value;
         return this;
     }
 
@@ -79,12 +73,6 @@ public class HttpBuilderTransport extends BuilderTransport {
     }
     public ErrorHandler getErrorHandler() {//jetty 12 migration to: public  Request.Processor getErrorProcessor()
         return errorHandler;
-    }
-    public String getJspPath() {
-        return jspPath;
-    }
-    public boolean isSupportJsp(){
-        return (jspPath!=null);
     }
     public Set<BuilderFilter> getFilters() {
         return filters;

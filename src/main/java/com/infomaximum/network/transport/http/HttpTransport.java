@@ -10,9 +10,7 @@ import com.infomaximum.network.transport.http.builder.ConfigUploadFiles;
 import com.infomaximum.network.transport.http.builder.HttpBuilderTransport;
 import com.infomaximum.network.transport.http.builder.connector.BuilderHttpConnector;
 import com.infomaximum.network.transport.http.builder.filter.BuilderFilter;
-import com.infomaximum.network.transport.http.jsp.JspStarter;
 import jakarta.servlet.MultipartConfigElement;
-import org.apache.jasper.servlet.JspServlet;
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.HttpChannel;
@@ -87,29 +85,6 @@ public class HttpTransport extends Transport<Session> {
             mvcServletHolder.getRegistration().setMultipartConfig(toMultipartConfigElement(httpBuilderTransport.getConfigUploadFiles()));
         }
         context.addServlet(mvcServletHolder, "/");
-
-        if (httpBuilderTransport.isSupportJsp()) {
-            //Устанавливаем каталог для сборки jsp файлов
-            Path scratchDirectory;
-            try {
-                scratchDirectory = Files.createTempDirectory(null);
-            } catch (IOException e) {
-                throw new NetworkException(e);
-            }
-            scratchDirectory.toFile().deleteOnExit();
-            context.setAttribute("javax.servlet.context.tempdir", scratchDirectory.toFile());
-
-            context.addBean(new JspStarter(context));
-
-            context.setClassLoader(Thread.currentThread().getContextClassLoader());
-            context.addServlet(new ServletHolder("jspServlet", new JspServlet()), "*.jsp");
-
-            //Утснавливаем resourceBase
-            URL urlResourceBase = this.getClass().getClassLoader().getResource(httpBuilderTransport.getJspPath());
-            if (urlResourceBase == null)
-                throw new RuntimeException("Failed to find path: " + httpBuilderTransport.getJspPath());
-            context.setResourceBase(urlResourceBase.toExternalForm());//jetty 12 migration to: context.setBaseResourceAsString(urlResourceBase.toExternalForm());
-        }
 
         //Возможно есть регистрируемые фильтры
         if (httpBuilderTransport.getFilters() != null) {
