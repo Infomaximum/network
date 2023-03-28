@@ -10,6 +10,7 @@ import com.infomaximum.network.transport.http.builder.ConfigUploadFiles;
 import com.infomaximum.network.transport.http.builder.HttpBuilderTransport;
 import com.infomaximum.network.transport.http.builder.connector.BuilderHttpConnector;
 import com.infomaximum.network.transport.http.builder.filter.BuilderFilter;
+import jakarta.servlet.DispatcherType;
 import jakarta.servlet.MultipartConfigElement;
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Handler;
@@ -18,6 +19,8 @@ import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.ContextHandlerCollection;
 import org.eclipse.jetty.server.handler.DefaultHandler;
 import org.eclipse.jetty.server.handler.gzip.GzipHandler;
+import org.eclipse.jetty.servlet.FilterHolder;
+import org.eclipse.jetty.servlets.CrossOriginFilter;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
@@ -33,6 +36,7 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.function.Supplier;
 
@@ -97,8 +101,14 @@ public class HttpTransport extends Transport<Session> {
         //Инициализирум контекс с вебсокетами
         JettyWebSocketServletContainerInitializer.configure(servletContext, null);
 
-        Handler context = servletContext;
+        if (httpBuilderTransport.getCORS() != null) {
+            FilterHolder cors = servletContext.addFilter(CrossOriginFilter.class,"/*", EnumSet.of(DispatcherType.REQUEST, DispatcherType.ASYNC));
+            cors.setInitParameter(CrossOriginFilter.ALLOWED_ORIGINS_PARAM, httpBuilderTransport.getCORS());
+            cors.setInitParameter(CrossOriginFilter.ALLOWED_METHODS_PARAM, "GET,POST,OPTIONS");
+            cors.setInitParameter(CrossOriginFilter.ALLOWED_HEADERS_PARAM, "Authorization,Content-Type,Accept,Origin,User-Agent,DNT,Cache-Control,X-Mx-ReqToken,Access-Control-Allow-Origin");
+        }
 
+        Handler context = servletContext;
         //Добавляем хедлер упаковки ресурсов контекста
         if (httpBuilderTransport.getCompressResponseMimeTypes() != null) {
             GzipHandler gzipHandlerContext = new GzipHandler();

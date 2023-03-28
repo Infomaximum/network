@@ -12,6 +12,7 @@ module com.infomaximum.network {
     requires spring.webmvc;
     requires spring.context;
     requires spring.core;
+    requires org.eclipse.jetty.servlets;
 
     exports com.infomaximum.network.protocol.standard.session;
     exports com.infomaximum.network.mvc;

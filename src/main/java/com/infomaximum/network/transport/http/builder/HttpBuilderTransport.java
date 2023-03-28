@@ -23,6 +23,7 @@ public class HttpBuilderTransport extends BuilderTransport {
 
     private Set<String> compressResponseMimeTypes;
     private Set<BuilderFilter> filters;
+    private String cors;
     private Set<HttpChannel.Listener> httpChannelListeners;
 
     private ConfigUploadFiles configUploadFiles;
@@ -67,6 +68,16 @@ public class HttpBuilderTransport extends BuilderTransport {
         return this;
     }
 
+    /**
+     * Set support enable/disable Cross-Origin Resource Sharing (CORS)
+     * @param value
+     * @return
+     */
+    public HttpBuilderTransport setCORS(String value){
+        this.cors = value;
+        return this;
+    }
+
     public HttpBuilderTransport withConfigUploadFiles(ConfigUploadFiles config) {
         this.configUploadFiles = config;
         return this;
@@ -96,6 +107,10 @@ public class HttpBuilderTransport extends BuilderTransport {
 
     public Set<BuilderFilter> getFilters() {
         return filters;
+    }
+
+    public String getCORS() {
+        return cors;
     }
 
     public ConfigUploadFiles getConfigUploadFiles() {
