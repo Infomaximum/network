@@ -6,12 +6,10 @@ import com.infomaximum.network.struct.info.HttpConnectorInfo;
 import com.infomaximum.network.struct.info.TransportInfo;
 import com.infomaximum.network.transport.Transport;
 import com.infomaximum.network.transport.TypeTransport;
-import com.infomaximum.network.transport.http.builder.ConfigUploadFiles;
 import com.infomaximum.network.transport.http.builder.HttpBuilderTransport;
 import com.infomaximum.network.transport.http.builder.connector.BuilderHttpConnector;
 import com.infomaximum.network.transport.http.builder.filter.BuilderFilter;
 import jakarta.servlet.DispatcherType;
-import jakarta.servlet.MultipartConfigElement;
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.HttpChannel;
@@ -28,25 +26,12 @@ import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.server.config.JettyWebSocketServletContainerInitializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
-import org.springframework.web.servlet.DispatcherServlet;
-
 import java.io.IOException;
-import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.function.Supplier;
 
-/**
- * Created with IntelliJ IDEA.
- * User: Admin
- * Date: 11.09.13
- * Time: 20:14
- * To change this template use File | Settings | File Templates.
- */
 public class HttpTransport extends Transport<Session> {
 
     private final static Logger log = LoggerFactory.getLogger(HttpTransport.class);
@@ -82,14 +67,7 @@ public class HttpTransport extends Transport<Session> {
         servletContext.setContextPath("/");
 
         servletContext.addServlet(new ServletHolder(WebSocketServletConfiguration.class), "/ws");
-
-        AnnotationConfigWebApplicationContext applicationContext = new AnnotationConfigWebApplicationContext();
-        applicationContext.register(httpBuilderTransport.getClassWebMvcConfig());
-        ServletHolder mvcServletHolder = new ServletHolder("default", new DispatcherServlet(applicationContext));
-        if (httpBuilderTransport.getConfigUploadFiles() != null) {
-            mvcServletHolder.getRegistration().setMultipartConfig(toMultipartConfigElement(httpBuilderTransport.getConfigUploadFiles()));
-        }
-        servletContext.addServlet(mvcServletHolder, "/");
+        servletContext.addServlet(httpBuilderTransport.getServletHolder(), "/");
 
         //Возможно есть регистрируемые фильтры
         if (httpBuilderTransport.getFilters() != null) {
@@ -161,14 +139,5 @@ public class HttpTransport extends Transport<Session> {
     public void destroy() throws Exception {
         server.stop();
         server.destroy();
-    }
-
-    private static MultipartConfigElement toMultipartConfigElement(ConfigUploadFiles configUploadFiles) {
-        return new MultipartConfigElement(
-                configUploadFiles.getLocation().toAbsolutePath().toString(),
-                configUploadFiles.getMaxFileSize(),
-                configUploadFiles.getMaxRequestSize(),
-                configUploadFiles.getFileSizeThreshold()
-        );
     }
 }
