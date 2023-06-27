@@ -50,7 +50,7 @@ public class HttpBuilderTransport extends BuilderTransport {
     }
 
     public HttpBuilderTransport addConnector(BuilderHttpConnector builderConnector){
-        if (builderConnectors==null) {
+        if (builderConnectors == null) {
             builderConnectors = new HashSet<>();
         }
         builderConnectors.add(builderConnector);

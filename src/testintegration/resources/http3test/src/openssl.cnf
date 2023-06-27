@@ -1,0 +1,5 @@
+[req]
+req_extensions=v3.req
+
+[v3.req]
+subjectAltName=DNS:localhost
