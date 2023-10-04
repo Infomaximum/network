@@ -35,6 +35,7 @@ public class BuilderHttpConnector {
 
     public Connector build(Server server) throws NetworkException {
         HttpConfiguration httpConfiguration = new HttpConfiguration();
+        httpConfiguration.setSendServerVersion(false);
         if (requestHeaderSize != null) {
             httpConfiguration.setRequestHeaderSize(requestHeaderSize);
         }

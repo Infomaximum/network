@@ -6,16 +6,14 @@ import com.infomaximum.network.struct.info.HttpsConnectorInfo;
 import com.infomaximum.network.transport.http.SpringConfigurationMvc;
 import com.infomaximum.network.transport.http.builder.HttpBuilderTransport;
 import com.infomaximum.network.transport.http.builder.connector.BuilderHttpConnector;
-import com.infomaximum.network.transport.http.builder.connector.BuilderHttpsConnector;
+import com.infomaximum.network.transport.http.builder.connector.BuilderJHttpsConnector;
 import com.infomaximum.network.transport.http.http.utils.TestContentSslUtils;
-import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.net.ssl.*;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Objects;
@@ -34,7 +32,7 @@ public class MVCHttpsRequestTest extends TestHttpsRequest {
     @Test
     public void testMvcController() throws Exception {
         initKeyStore();
-        try (Network network = buildNetwork(new BuilderHttpsConnector(port)
+        try (Network network = buildNetwork(new BuilderJHttpsConnector(port)
                 .withSslContext(keyStorePath.toAbsolutePath().toString())
                 .resetExcludeProtocolsAndCipherSuites()
                 .setKeyStorePassword(PASSWORD)
@@ -47,7 +45,7 @@ public class MVCHttpsRequestTest extends TestHttpsRequest {
     //@Test( expected = SSLHandshakeException.class)
     public void testFailBecauseExcludeProtocol() throws Exception {
         initKeyStore();
-        try (Network network = buildNetwork(new BuilderHttpsConnector(port)
+        try (Network network = buildNetwork(new BuilderJHttpsConnector(port)
                 .withSslContext(keyStorePath.toAbsolutePath().toString())
                 .setKeyStorePassword(PASSWORD)
                 .setExcludeProtocols("SSLv2Hello", "TLSv1.2")
@@ -64,7 +62,7 @@ public class MVCHttpsRequestTest extends TestHttpsRequest {
     @Test
     public void testExcludeCipherSuites() throws Exception {
         initKeyStore();
-        try (Network network = buildNetwork(new BuilderHttpsConnector(port)
+        try (Network network = buildNetwork(new BuilderJHttpsConnector(port)
                 .withSslContext(keyStorePath.toAbsolutePath().toString())
                 .setKeyStorePassword(PASSWORD)
                 .setExcludeCipherSuites("TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA384", "TLS_DHE_DSS_WITH_AES_256_CBC_SHA256")
@@ -79,7 +77,7 @@ public class MVCHttpsRequestTest extends TestHttpsRequest {
     @Test
     public void testAppendExcludeCipherSuitesAndProtocols() throws Exception {
         initKeyStore();
-        try (Network network = buildNetwork(new BuilderHttpsConnector(port)
+        try (Network network = buildNetwork(new BuilderJHttpsConnector(port)
                 .withSslContext(keyStorePath.toAbsolutePath().toString())
                 .setKeyStorePassword(PASSWORD)
                 .setExcludeCipherSuites("TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA384", "TLS_DHE_DSS_WITH_AES_256_CBC_SHA256")
@@ -105,7 +103,7 @@ public class MVCHttpsRequestTest extends TestHttpsRequest {
         Path clientKeyStorePath = Paths.get(Objects.requireNonNull(this.getClass().getClassLoader().getResource("httpstest/client.p12")).toURI());
         Path serverAndClientTrustStorePath = Paths.get(Objects.requireNonNull(this.getClass().getClassLoader().getResource("httpstest/ca_truststore")).toURI());
 
-        try (Network network = buildNetwork(new BuilderHttpsConnector(port)
+        try (Network network = buildNetwork(new BuilderJHttpsConnector(port)
                 .withSslContext(serverKeyStorePath.toAbsolutePath().toString())
                 .setKeyStorePassword(PASSWORD)
                 .setTrustStorePath(serverAndClientTrustStorePath.toAbsolutePath().toString())
@@ -122,7 +120,7 @@ public class MVCHttpsRequestTest extends TestHttpsRequest {
         Path clientTrustStorePath = Paths.get(Objects.requireNonNull(this.getClass().getClassLoader().getResource("httpstest/ca_truststore")).toURI());
         Path serverTrustStorePath = Paths.get(Objects.requireNonNull(this.getClass().getClassLoader().getResource("httpstest/un_truststore")).toURI());
 
-        try (Network network = buildNetwork(new BuilderHttpsConnector(port)
+        try (Network network = buildNetwork(new BuilderJHttpsConnector(port)
                 .withSslContext(serverKeyStorePath.toAbsolutePath().toString())
                 .setKeyStorePassword(PASSWORD)
                 .setTrustStorePath(serverTrustStorePath.toAbsolutePath().toString())
@@ -140,7 +138,7 @@ public class MVCHttpsRequestTest extends TestHttpsRequest {
         Path clientTrustStorePath = Paths.get(Objects.requireNonNull(this.getClass().getClassLoader().getResource("httpstest/un_truststore")).toURI());
         Path serverTrustStorePath = Paths.get(Objects.requireNonNull(this.getClass().getClassLoader().getResource("httpstest/ca_truststore")).toURI());
 
-        try (Network network = buildNetwork(new BuilderHttpsConnector(port)
+        try (Network network = buildNetwork(new BuilderJHttpsConnector(port)
                 .withSslContext(serverKeyStorePath.toAbsolutePath().toString())
                 .setKeyStorePassword(PASSWORD)
                 .setTrustStorePath(serverTrustStorePath.toAbsolutePath().toString())
@@ -159,7 +157,7 @@ public class MVCHttpsRequestTest extends TestHttpsRequest {
 
         Path crlPath = Paths.get(Objects.requireNonNull(this.getClass().getClassLoader().getResource("httpstest/client_revoked.crl")).toURI());
 
-        try (Network network = buildNetwork(new BuilderHttpsConnector(port)
+        try (Network network = buildNetwork(new BuilderJHttpsConnector(port)
                 .withSslContext(serverKeyStorePath.toAbsolutePath().toString())
                 .setKeyStorePassword(PASSWORD)
                 .setTrustStorePath(serverAndClientTrustStorePath.toAbsolutePath().toString())

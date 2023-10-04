@@ -1,23 +1,23 @@
 package com.infomaximum.network.transport.http.builder.connector;
 
+import com.infomaximum.network.exception.NetworkException;
 import com.infomaximum.network.struct.info.HttpConnectorInfo;
 import com.infomaximum.network.struct.info.HttpsConnectorInfo;
-import com.infomaximum.network.utils.CertificateUtils;
+import org.eclipse.jetty.server.*;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.security.KeyStore;
-import java.security.KeyStoreException;
 import java.util.function.Supplier;
 
-public class BuilderHttpsConnector extends AbstractBuilderHttpsConnector {
+public class BuilderJHttpsConnector extends AbstractBuilderHttpsConnector {
 
-    private final static Logger log = LoggerFactory.getLogger(BuilderHttpsConnector.class);
+    private final static Logger log = LoggerFactory.getLogger(BuilderJHttpsConnector.class);
 
     private SslContextFactory.Server sslContextFactory;
 
-    public BuilderHttpsConnector(int port) {
+    public BuilderJHttpsConnector(int port) {
         super(port);
     }
 
@@ -26,8 +26,13 @@ public class BuilderHttpsConnector extends AbstractBuilderHttpsConnector {
         return sslContextFactory;
     }
 
-    public BuilderSslContextFactory withSslContext(byte[] certChain, byte[] privateKey) {
-        return new BuilderSslContextFactory(this, certChain, privateKey);
+    /**
+     * Support format: p12
+     * @param keyStorePath
+     * @return
+     */
+    public BuilderSslContextFactory withSslContext(String keyStorePath) {
+        return new BuilderSslContextFactory(this, keyStorePath);
     }
 
     public Supplier<? extends HttpConnectorInfo> getInfoSupplier() {
@@ -36,16 +41,14 @@ public class BuilderHttpsConnector extends AbstractBuilderHttpsConnector {
 
     public class BuilderSslContextFactory {
 
-        private final BuilderHttpsConnector builderJHttpsConnector;
+        private final BuilderJHttpsConnector builderJHttpsConnector;
         private boolean validatePeerCerts = false;
 
-        private BuilderSslContextFactory(BuilderHttpsConnector builderJHttpsConnector, byte[] certChain, byte[] privateKey) {
+        private BuilderSslContextFactory(BuilderJHttpsConnector builderJHttpsConnector, String keyStorePath) {
             this.builderJHttpsConnector = builderJHttpsConnector;
 
             SslContextFactory.Server sslContextFactory = new SslContextFactory.Server();
-
-            KeyStore keyStore = CertificateUtils.buildKeyStore(certChain, privateKey);
-            sslContextFactory.setKeyStore(keyStore);
+            sslContextFactory.setKeyStorePath(keyStorePath);
 
             this.builderJHttpsConnector.sslContextFactory = sslContextFactory;
         }
@@ -59,6 +62,38 @@ public class BuilderHttpsConnector extends AbstractBuilderHttpsConnector {
         public BuilderSslContextFactory resetExcludeProtocolsAndCipherSuites() {
             sslContextFactory.setExcludeCipherSuites();
             sslContextFactory.setExcludeProtocols();
+            return this;
+        }
+
+        public BuilderSslContextFactory setKeyStorePassword(String keyStorePassword) {
+            builderJHttpsConnector.sslContextFactory.setKeyStorePassword(keyStorePassword);
+            return this;
+        }
+
+        public BuilderSslContextFactory setTrustStore(KeyStore keyStore) {
+            SslContextFactory.Server sslContextFactory = builderJHttpsConnector.sslContextFactory;
+
+            sslContextFactory.setTrustStore(keyStore);
+            sslContextFactory.setWantClientAuth(true);
+            return this;
+        }
+
+        public BuilderSslContextFactory setTrustStorePassword(String trustStorePassword) {
+            builderJHttpsConnector.sslContextFactory.setTrustStorePassword(trustStorePassword);
+            return this;
+        }
+
+        public BuilderSslContextFactory setTrustStorePath(String keyStore) {
+            SslContextFactory.Server sslContextFactory = builderJHttpsConnector.sslContextFactory;
+
+            sslContextFactory.setTrustStorePath(keyStore);
+            sslContextFactory.setWantClientAuth(true);
+            return this;
+        }
+
+        public BuilderSslContextFactory setCrlPath(String crlPath) {
+            builderJHttpsConnector.sslContextFactory.setCrlPath(crlPath);
+            validatePeerCerts = true;
             return this;
         }
 
@@ -108,7 +143,7 @@ public class BuilderHttpsConnector extends AbstractBuilderHttpsConnector {
             return builderJHttpsConnector.sslContextFactory.getExcludeCipherSuites();
         }
 
-        public BuilderHttpsConnector build() {
+        public BuilderJHttpsConnector build() {
             builderJHttpsConnector.sslContextFactory.setValidatePeerCerts(validatePeerCerts);
             return builderJHttpsConnector;
         }
