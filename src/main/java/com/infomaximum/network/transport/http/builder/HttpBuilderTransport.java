@@ -43,8 +43,9 @@ public class HttpBuilderTransport extends BuilderTransport {
         this.servletHolder = servletHolder;
 
         addCompressResponseMimeType("text/html");
-        addCompressResponseMimeType("application/x-font-ttf");
         addCompressResponseMimeType("text/css");
+        addCompressResponseMimeType("text/javascript");
+        addCompressResponseMimeType("application/x-font-ttf");
         addCompressResponseMimeType("application/javascript");
         addCompressResponseMimeType("application/json");
     }

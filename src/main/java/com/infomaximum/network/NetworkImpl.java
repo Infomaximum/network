@@ -22,8 +22,6 @@ public class NetworkImpl implements Network, TransportListener {
 
     private final static Logger log = LoggerFactory.getLogger(NetworkImpl.class);
 
-    public volatile static NetworkImpl instance = null;
-
     private final Class<? extends RequestPacket> extensionRequestPacket;
 
     private final List<Transport> transports;
@@ -59,9 +57,6 @@ public class NetworkImpl implements Network, TransportListener {
         } else {
             this.uncaughtExceptionHandler = uncaughtExceptionHandler;
         }
-
-        if (instance != null) throw new RuntimeException("Network is not singleton");
-        instance = this;
     }
 
     public void registerTransport(Transport transport) {
@@ -151,6 +146,5 @@ public class NetworkImpl implements Network, TransportListener {
                 log.error("Error destroy connect", e);
             }
         }
-        instance = null;
     }
 }
