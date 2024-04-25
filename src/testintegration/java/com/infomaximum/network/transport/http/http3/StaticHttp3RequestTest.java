@@ -77,7 +77,7 @@ public class StaticHttp3RequestTest {
         HTTP3Client client = new HTTP3Client();
 
         QuicConfiguration quicConfig = client.getQuicConfiguration();
-        quicConfig.setVerifyPeerCertificates(false);
+//        quicConfig.setVerifyPeerCertificates(false);
 
         HTTP3Configuration h3Config = client.getHTTP3Configuration();
 

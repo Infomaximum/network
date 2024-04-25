@@ -10,7 +10,7 @@ if (project.hasProperty('ossrhUsername')) {
 }
 
 group 'com.infomaximum'
-version '1.1.3p10'
+version '1.1.3p11'
 
 ext.moduleName = 'com.infomaximum.network'
 
@@ -69,20 +69,20 @@ repositories {
 }
 
 dependencies {
-    api 'org.eclipse.jetty:jetty-server:11.0.15'
-    implementation 'org.eclipse.jetty.http3:http3-server:11.0.15'
-    implementation 'org.eclipse.jetty:jetty-webapp:11.0.15'
-    implementation 'org.eclipse.jetty:jetty-servlets:11.0.15'
+    api 'org.eclipse.jetty:jetty-server:11.0.17'
+    implementation 'org.eclipse.jetty.http3:http3-server:11.0.17'
+    implementation 'org.eclipse.jetty:jetty-webapp:11.0.17'
+    implementation 'org.eclipse.jetty:jetty-servlets:11.0.17'
 
-    implementation 'org.eclipse.jetty.websocket:websocket-jetty-server:11.0.15'
-    api 'org.eclipse.jetty.websocket:websocket-jetty-api:11.0.15'
-    implementation 'org.eclipse.jetty.websocket:websocket-servlet:11.0.15'
+    implementation 'org.eclipse.jetty.websocket:websocket-jetty-server:11.0.17'
+    api 'org.eclipse.jetty.websocket:websocket-jetty-api:11.0.17'
+    implementation 'org.eclipse.jetty.websocket:websocket-servlet:11.0.17'
 
-    api 'org.springframework:spring-core:6.0.10'
-    api 'org.springframework:spring-web:6.0.10'
-    api 'org.springframework:spring-webmvc:6.0.10'
-    implementation 'org.springframework:spring-context-support:6.0.10'
-    implementation 'org.springframework:spring-messaging:6.0.10'
+    api 'org.springframework:spring-core:6.0.19'
+    api 'org.springframework:spring-web:6.0.19'
+    api 'org.springframework:spring-webmvc:6.0.19'
+    implementation 'org.springframework:spring-context-support:6.0.19'
+    implementation 'org.springframework:spring-messaging:6.0.19'
 
     implementation 'com.infomaximum:json-smart:2.4.8'
 
@@ -93,15 +93,15 @@ dependencies {
     }
     implementation 'org.javassist:javassist:3.29.2-GA'//Более новая зависимость с поддержкой java модулей
 
-    implementation 'org.slf4j:slf4j-api:2.0.7'
+    implementation 'org.slf4j:slf4j-api:2.0.9'
 
-    testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.9.3'
-    testImplementation 'ch.qos.logback:logback-core:1.4.8'
-    testImplementation 'ch.qos.logback:logback-classic:1.4.8'
+    testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.10.0'
+    testImplementation 'ch.qos.logback:logback-core:1.4.11'
+    testImplementation 'ch.qos.logback:logback-classic:1.4.11'
 
-    testintegrationImplementation 'org.springframework:spring-test:6.0.10'
-    testintegrationImplementation 'org.eclipse.jetty.websocket:websocket-jetty-client:11.0.15'
-    testintegrationImplementation 'org.eclipse.jetty.http3:http3-client:11.0.15'
+    testintegrationImplementation 'org.springframework:spring-test:6.0.19'
+    testintegrationImplementation 'org.eclipse.jetty.websocket:websocket-jetty-client:11.0.17'
+    testintegrationImplementation 'org.eclipse.jetty.http3:http3-client:11.0.17'
 }
 
 task testintegration(type: Test, description: 'Integration test', group: 'Verification') {
