@@ -78,11 +78,11 @@ dependencies {
     api 'org.eclipse.jetty.websocket:websocket-jetty-api:11.0.17'
     implementation 'org.eclipse.jetty.websocket:websocket-servlet:11.0.17'
 
-    api 'org.springframework:spring-core:6.0.13'
-    api 'org.springframework:spring-web:6.0.13'
-    api 'org.springframework:spring-webmvc:6.0.13'
-    implementation 'org.springframework:spring-context-support:6.0.13'
-    implementation 'org.springframework:spring-messaging:6.0.13'
+    api 'org.springframework:spring-core:6.0.19'
+    api 'org.springframework:spring-web:6.0.19'
+    api 'org.springframework:spring-webmvc:6.0.19'
+    implementation 'org.springframework:spring-context-support:6.0.19'
+    implementation 'org.springframework:spring-messaging:6.0.19'
 
     implementation 'com.infomaximum:json-smart:2.4.8'
 
@@ -99,7 +99,7 @@ dependencies {
     testImplementation 'ch.qos.logback:logback-core:1.4.11'
     testImplementation 'ch.qos.logback:logback-classic:1.4.11'
 
-    testintegrationImplementation 'org.springframework:spring-test:6.0.13'
+    testintegrationImplementation 'org.springframework:spring-test:6.0.19'
     testintegrationImplementation 'org.eclipse.jetty.websocket:websocket-jetty-client:11.0.17'
     testintegrationImplementation 'org.eclipse.jetty.http3:http3-client:11.0.17'
 }
