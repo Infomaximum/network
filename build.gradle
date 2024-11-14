@@ -10,7 +10,7 @@ if (project.hasProperty('ossrhUsername')) {
 }
 
 group 'com.infomaximum'
-version '1.2.0'
+version '1.2.1'
 
 ext.moduleName = 'com.infomaximum.network'
 
@@ -73,6 +73,9 @@ dependencies {
     implementation 'org.eclipse.jetty.http3:jetty-http3-server:12.0.15'
     implementation 'org.eclipse.jetty.ee10:jetty-ee10-webapp:12.0.15'
     implementation 'org.eclipse.jetty.ee10:jetty-ee10-servlets:12.0.15'
+
+    api 'jakarta.servlet:jakarta.servlet-api:6.0.0'//Необхадима как транзитивная зависимость для platform
+    api 'org.eclipse.jetty.ee10:jetty-ee10-servlet:12.0.15'//Необхадима как транзитивная зависимость для platform
 
     implementation 'org.eclipse.jetty.websocket:jetty-websocket-jetty-server:12.0.15'
     implementation 'org.eclipse.jetty.ee10.websocket:jetty-ee10-websocket-jetty-server:12.0.15'

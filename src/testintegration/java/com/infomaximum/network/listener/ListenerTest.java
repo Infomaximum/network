@@ -94,10 +94,10 @@ public class ListenerTest {
 
 
             Assertions.assertNotNull(listener.onBeforeHandling);
+            Assertions.assertNotNull(listener.onResponseBegin);
             Assertions.assertNotNull(listener.onResponseWrite);
             Assertions.assertNotEquals(0, listener.getOnResponseWriteSize());
             Assertions.assertNotNull(listener.onComplete);
-
         }
     }
 
@@ -118,6 +118,7 @@ public class ListenerTest {
             }
 
             Assertions.assertNotNull(listener.onBeforeHandling);
+            Assertions.assertNotNull(listener.onResponseBegin);
             Assertions.assertNotNull(listener.onResponseWrite);
             Assertions.assertNotNull(listener.onComplete);
 
@@ -142,6 +143,7 @@ public class ListenerTest {
 
 
             Assertions.assertNotNull(listener.onBeforeHandling);
+            Assertions.assertNotNull(listener.onResponseBegin);
             Assertions.assertNotNull(listener.onResponseWrite);
             //Assertions.assertNotEquals(0, listener.getOnResponseWriteSize()); В случае вебсокетного соединения посчитать не получается
             Assertions.assertNotNull(listener.onComplete);
@@ -160,6 +162,7 @@ public class ListenerTest {
     static class TestHttpChannelListener implements HttpChannelListener {
 
         private volatile Request onBeforeHandling;
+        private volatile Request onResponseBegin;
 
         private volatile Request onResponseWrite;
         private volatile List<Integer> onResponseWritePart;
@@ -172,6 +175,14 @@ public class ListenerTest {
                 throw new IllegalArgumentException();
             }
             onBeforeHandling = request;
+        }
+
+        @Override
+        public void onResponseBegin(Request request, int status, HttpFields headers) {
+            if (onResponseBegin != null) {
+                throw new IllegalArgumentException();
+            }
+            onResponseBegin = request;
         }
 
         @Override
@@ -202,6 +213,7 @@ public class ListenerTest {
 
         public void reset() {
             onBeforeHandling = null;
+            onResponseBegin = null;
 
             onResponseWrite = null;
             onResponseWritePart = null;
