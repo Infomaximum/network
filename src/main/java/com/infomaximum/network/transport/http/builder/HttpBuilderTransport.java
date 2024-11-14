@@ -1,12 +1,12 @@
 package com.infomaximum.network.transport.http.builder;
 
 import com.infomaximum.network.builder.BuilderTransport;
+import com.infomaximum.network.event.HttpChannelListener;
 import com.infomaximum.network.transport.http.builder.connector.BuilderHttpConnector;
 import com.infomaximum.network.transport.http.builder.filter.BuilderFilter;
 import jakarta.servlet.MultipartConfigElement;
-import org.eclipse.jetty.server.HttpChannel;
+import org.eclipse.jetty.ee10.servlet.ServletHolder;
 import org.eclipse.jetty.server.handler.ErrorHandler;
-import org.eclipse.jetty.servlet.ServletHolder;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 import org.springframework.web.servlet.DispatcherServlet;
 
@@ -29,7 +29,7 @@ public class HttpBuilderTransport extends BuilderTransport {
     private Set<String> compressResponseMimeTypes;
     private Set<BuilderFilter> filters;
     private String cors;
-    private Set<HttpChannel.Listener> httpChannelListeners;
+    private Set<HttpChannelListener> httpChannelListeners;
 
     public HttpBuilderTransport(Class classWebMvcConfig) {
         this(classWebMvcConfig, DEFAULT_CONFIG_UPLOAD_FILES);
@@ -89,7 +89,7 @@ public class HttpBuilderTransport extends BuilderTransport {
         return this;
     }
 
-    public HttpBuilderTransport addListener(HttpChannel.Listener listener){
+    public HttpBuilderTransport addListener(HttpChannelListener listener){
         if (httpChannelListeners==null) {
             httpChannelListeners = new HashSet<>();
         }
@@ -119,7 +119,7 @@ public class HttpBuilderTransport extends BuilderTransport {
         return cors;
     }
 
-    public Set<HttpChannel.Listener> getHttpChannelListeners() {
+    public Set<HttpChannelListener> getHttpChannelListeners() {
         return httpChannelListeners;
     }
 

@@ -1,19 +1,14 @@
 module com.infomaximum.network {
-    requires org.slf4j;
     requires net.minidev.jsonsmart;
     requires org.reflections;
-    requires org.eclipse.jetty.websocket.jetty.api;
-    requires org.eclipse.jetty.websocket.jetty.common;
-    requires org.eclipse.jetty.server;
-    requires org.eclipse.jetty.servlet;
-    requires org.eclipse.jetty.websocket.servlet;
-    requires org.eclipse.jetty.websocket.jetty.server;
     requires spring.web;
     requires spring.webmvc;
     requires spring.context;
     requires spring.core;
-    requires org.eclipse.jetty.servlets;
     requires org.eclipse.jetty.http3.server;
+    requires org.eclipse.jetty.ee10.websocket.jetty.server;
+    requires org.eclipse.jetty.websocket.common;
+    requires org.eclipse.jetty.ee10.servlets;
 
     exports com.infomaximum.network.protocol.standard.session;
     exports com.infomaximum.network.mvc;

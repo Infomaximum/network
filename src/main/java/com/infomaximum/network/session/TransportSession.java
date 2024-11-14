@@ -111,7 +111,7 @@ public abstract class TransportSession implements TransportPacketHandler {
         WebSocketSession webSocketSession = (WebSocketSession) channel;
         String endRemoteAddress = webSocketSession.getUpgradeRequest().getHeader("X-Real-IP");
 
-        InetSocketAddress remoteAddress = (InetSocketAddress)webSocketSession.getRemoteAddress();
+        InetSocketAddress remoteAddress = (InetSocketAddress)webSocketSession.getRemoteSocketAddress();
         String rawRemoteAddress = "unknown";
         if (remoteAddress != null) {
             InetAddress address = remoteAddress.getAddress();

@@ -7,6 +7,7 @@ import com.infomaximum.network.utils.TempKeyStore;
 import org.eclipse.jetty.http3.server.HTTP3ServerConnectionFactory;
 import org.eclipse.jetty.http3.server.HTTP3ServerConnector;
 import org.eclipse.jetty.http3.server.RawHTTP3ServerConnectionFactory;
+import org.eclipse.jetty.quic.server.ServerQuicConfiguration;
 import org.eclipse.jetty.server.*;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 
@@ -19,6 +20,7 @@ import java.io.OutputStream;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.security.*;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
@@ -53,33 +55,47 @@ public class BuilderHttp3Connector extends BuilderHttpConnector {
     @Override
     public Connector build(Server server) throws NetworkException {
 
-        HttpConfiguration httpConfig = new HttpConfiguration();
-        httpConfig.setSendServerVersion(false);
-        httpConfig.addCustomizer(new SecureRequestCustomizer());
-        if (requestHeaderSize != null) {
-            httpConfig.setRequestHeaderSize(requestHeaderSize);
-        }
-        if (responseHeaderSize != null) {
-            httpConfig.setResponseHeaderSize(responseHeaderSize);
-        }
-        HTTP3ServerConnectionFactory http3ConnectionFactory = new HTTP3ServerConnectionFactory(httpConfig);
+        //Не реализованно
 
 
         if (keyStore == null && tempKeyStore == null) {
             throw new RuntimeException("Not set ssl context");
         }
 
+
         SslContextFactory.Server sslContextFactory = tempKeyStore.sslContextFactory;
+//        sslContextFactory.setKeyStorePath("/path/to/keystore");
+//        sslContextFactory.setKeyStorePassword("secret");
+
+        ServerQuicConfiguration quicConfiguration = new ServerQuicConfiguration(sslContextFactory, Paths.get("/tmp/"));
+
+
+//        HttpConfiguration httpConfig = new HttpConfiguration();
+//        httpConfig.setSendServerVersion(false);
+//        httpConfig.addCustomizer(new SecureRequestCustomizer());
+//        if (requestHeaderSize != null) {
+//            httpConfig.setRequestHeaderSize(requestHeaderSize);
+//        }
+//        if (responseHeaderSize != null) {
+//            httpConfig.setResponseHeaderSize(responseHeaderSize);
+//        }
+        HTTP3ServerConnectionFactory http3ConnectionFactory = new HTTP3ServerConnectionFactory(quicConfiguration);
+
+
+
+
+//        SslContextFactory.Server sslContextFactory = tempKeyStore.sslContextFactory;
         //Как jetty поддержит незашированные приватные ключи перейти на этот механизм - а старый код подчистить
 //        SslContextFactory.Server sslContextFactory = new SslContextFactory.Server();
 //        sslContextFactory.setKeyStore(keyStore);
 
 
-        HTTP3ServerConnector connector = new HTTP3ServerConnector(server, sslContextFactory, http3ConnectionFactory);
-        connector.setPort(port);
-        connector.setHost(host);
-
-        return connector;
+//        HTTP3ServerConnector connector = new HTTP3ServerConnector(server, sslContextFactory, http3ConnectionFactory);
+//        connector.setPort(port);
+//        connector.setHost(host);
+//
+//        return connector;
+        return null;
     }
 
     public Supplier<? extends HttpConnectorInfo> getInfoSupplier() {

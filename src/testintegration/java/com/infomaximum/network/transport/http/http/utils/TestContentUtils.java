@@ -22,6 +22,15 @@ public class TestContentUtils {
         return (String) body.body();
     }
 
+    public static byte[] getContentBytes(int port, String path) throws IOException, InterruptedException {
+        HttpClient client = HttpClient.newBuilder().build();
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create("http://localhost:" + port + path))
+                .build();
+        HttpResponse body = client.send(request, HttpResponse.BodyHandlers.ofByteArray());
+        return (byte[]) body.body();
+    }
+
     public static int getStatusCode(int port, String path) throws IOException, InterruptedException {
         HttpClient client = HttpClient.newBuilder().build();
         HttpRequest request = HttpRequest.newBuilder()

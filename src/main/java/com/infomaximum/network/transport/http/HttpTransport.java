@@ -9,21 +9,22 @@ import com.infomaximum.network.transport.TypeTransport;
 import com.infomaximum.network.transport.http.builder.HttpBuilderTransport;
 import com.infomaximum.network.transport.http.builder.connector.BuilderHttpConnector;
 import com.infomaximum.network.transport.http.builder.filter.BuilderFilter;
+import com.infomaximum.network.transport.http.handler.HandlerListeners;
 import jakarta.servlet.DispatcherType;
+import org.eclipse.jetty.ee10.servlet.FilterHolder;
+import org.eclipse.jetty.ee10.servlet.ServletHolder;
+import org.eclipse.jetty.ee10.servlets.CrossOriginFilter;
+import org.eclipse.jetty.ee10.websocket.server.config.JettyWebSocketServletContainerInitializer;
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Handler;
-import org.eclipse.jetty.server.HttpChannel;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.ContextHandlerCollection;
 import org.eclipse.jetty.server.handler.DefaultHandler;
 import org.eclipse.jetty.server.handler.gzip.GzipHandler;
-import org.eclipse.jetty.servlet.FilterHolder;
-import org.eclipse.jetty.servlets.CrossOriginFilter;
-import org.eclipse.jetty.servlet.ServletContextHandler;
-import org.eclipse.jetty.servlet.ServletHolder;
+import org.eclipse.jetty.ee10.servlet.ServletContextHandler;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
+import org.eclipse.jetty.websocket.api.Callback;
 import org.eclipse.jetty.websocket.api.Session;
-import org.eclipse.jetty.websocket.server.config.JettyWebSocketServletContainerInitializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.io.IOException;
@@ -41,7 +42,7 @@ public class HttpTransport extends Transport<Session> {
     private final Server server;
     private final List<Supplier<? extends HttpConnectorInfo>> connectorInfoSuppliers;
 
-    public HttpTransport(final HttpBuilderTransport httpBuilderTransport) throws NetworkException {
+    public HttpTransport(final HttpBuilderTransport httpBuilderTransport, Thread.UncaughtExceptionHandler uncaughtExceptionHandler) throws NetworkException {
         server = new Server(new QueuedThreadPool(10000));
         connectorInfoSuppliers = new ArrayList<>();
 
@@ -53,13 +54,6 @@ public class HttpTransport extends Transport<Session> {
             connectorInfoSuppliers.add(builderHttpConnector.getInfoSupplier());
             Connector connector = builderHttpConnector.build(server);
             connectors.add(connector);
-
-            //Возможно есть подписчики
-            if (httpBuilderTransport.getHttpChannelListeners() != null) {
-                for (HttpChannel.Listener listener : httpBuilderTransport.getHttpChannelListeners()) {
-                    connector.addBean(listener);
-                }
-            }
         }
         server.setConnectors(connectors.toArray(new Connector[connectors.size()]));
 
@@ -87,13 +81,21 @@ public class HttpTransport extends Transport<Session> {
         }
 
         Handler context = servletContext;
-        //Добавляем хедлер упаковки ресурсов контекста
+
+        //Добавляем хендлер упаковки ресурсов контекста
         if (httpBuilderTransport.getCompressResponseMimeTypes() != null) {
             GzipHandler gzipHandlerContext = new GzipHandler();
             gzipHandlerContext.setIncludedMimeTypes(httpBuilderTransport.getCompressResponseMimeTypes().toArray(String[]::new));
             gzipHandlerContext.setMinGzipSize(1024);
-            gzipHandlerContext.setHandler(servletContext);
+            gzipHandlerContext.setHandler(context);
             context = gzipHandlerContext;
+        }
+
+        //Добавляем хендлер - для подписчиков
+        if (httpBuilderTransport.getHttpChannelListeners() != null) {
+            context = new HandlerListeners(
+                    httpBuilderTransport.getHttpChannelListeners(), uncaughtExceptionHandler, context
+            );
         }
 
         ContextHandlerCollection handlers = new ContextHandlerCollection();
@@ -120,7 +122,7 @@ public class HttpTransport extends Transport<Session> {
 
     @Override
     public void send(Session session, IPacket packet) throws IOException {
-        session.getRemote().sendString(packet.serialize());
+        session.sendText(packet.serialize(), Callback.NOOP);//TODO !!!! стоит обратть внимание - в 12 версии появился колбек надо на него реагировать - кидать ошибку и т.п.
     }
 
     @Override

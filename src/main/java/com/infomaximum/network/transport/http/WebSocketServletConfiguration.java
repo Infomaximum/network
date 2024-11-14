@@ -1,7 +1,7 @@
 package com.infomaximum.network.transport.http;
 
 import com.infomaximum.network.protocol.ProtocolUtils;
-import org.eclipse.jetty.websocket.server.*;
+import org.eclipse.jetty.ee10.websocket.server.*;
 
 /**
  * Created by kris on 08.04.17.

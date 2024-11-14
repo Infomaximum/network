@@ -3,14 +3,14 @@ plugins {
     id 'java-library'
     id 'maven-publish'
     id 'signing'
-    id "org.checkerframework" version "0.6.15" //https://github.com/kelloggm/checkerframework-gradle-plugin
+    id "org.checkerframework" version "0.6.46" //https://github.com/kelloggm/checkerframework-gradle-plugin
 }
 if (project.hasProperty('ossrhUsername')) {
     apply from: 'publish.gradle'
 }
 
 group 'com.infomaximum'
-version '1.1.3p13'
+version '1.2.0'
 
 ext.moduleName = 'com.infomaximum.network'
 
@@ -69,39 +69,41 @@ repositories {
 }
 
 dependencies {
-    api 'org.eclipse.jetty:jetty-server:11.0.24'
-    implementation 'org.eclipse.jetty.http3:http3-server:11.0.24'
-    implementation 'org.eclipse.jetty:jetty-webapp:11.0.24'
-    implementation 'org.eclipse.jetty:jetty-servlets:11.0.24'
+    api 'org.eclipse.jetty:jetty-server:12.0.15'
+    implementation 'org.eclipse.jetty.http3:jetty-http3-server:12.0.15'
+    implementation 'org.eclipse.jetty.ee10:jetty-ee10-webapp:12.0.15'
+    implementation 'org.eclipse.jetty.ee10:jetty-ee10-servlets:12.0.15'
 
-    implementation 'org.eclipse.jetty.websocket:websocket-jetty-server:11.0.24'
-    api 'org.eclipse.jetty.websocket:websocket-jetty-api:11.0.24'
-    implementation 'org.eclipse.jetty.websocket:websocket-servlet:11.0.24'
+    implementation 'org.eclipse.jetty.websocket:jetty-websocket-jetty-server:12.0.15'
+    implementation 'org.eclipse.jetty.ee10.websocket:jetty-ee10-websocket-jetty-server:12.0.15'
+    api 'org.eclipse.jetty.websocket:jetty-websocket-jetty-api:12.0.15'
+    implementation 'org.eclipse.jetty.ee10.websocket:jetty-ee10-websocket-servlet:12.0.15'
 
-    api 'org.springframework:spring-core:6.0.23'
-    api 'org.springframework:spring-web:6.0.23'
-    api 'org.springframework:spring-webmvc:6.0.23'
-    implementation 'org.springframework:spring-context-support:6.0.23'
-    implementation 'org.springframework:spring-messaging:6.0.23'
+    api 'org.springframework:spring-core:6.1.14'
+    api 'org.springframework:spring-web:6.1.14'
+    api 'org.springframework:spring-webmvc:6.1.14'
+    implementation 'org.springframework:spring-context-support:6.1.14'
+    implementation 'org.springframework:spring-messaging:6.1.14'
 
-    implementation 'com.infomaximum:json-smart:2.4.8'
+    implementation 'com.infomaximum:json-smart:2.5.1'
 
     implementation('org.reflections:reflections:0.10.2') {
         exclude group: 'com.google.code.findbugs', module: 'jsr305'
         exclude group: 'org.javassist', module: 'javassist'
         exclude group: 'org.slf4j', module: 'slf4j-api'
     }
-    implementation 'org.javassist:javassist:3.29.2-GA'//Более новая зависимость с поддержкой java модулей
+    implementation 'org.javassist:javassist:3.30.2-GA'//Более новая зависимость с поддержкой java модулей
 
-    implementation 'org.slf4j:slf4j-api:2.0.9'
+    implementation 'org.slf4j:slf4j-api:2.0.16'
 
-    testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.10.0'
-    testImplementation 'ch.qos.logback:logback-core:1.4.11'
-    testImplementation 'ch.qos.logback:logback-classic:1.4.11'
+    testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.11.3'
+    testImplementation 'ch.qos.logback:logback-core:1.5.12'
+    testImplementation 'ch.qos.logback:logback-classic:1.5.12'
 
-    testintegrationImplementation 'org.springframework:spring-test:6.0.23'
-    testintegrationImplementation 'org.eclipse.jetty.websocket:websocket-jetty-client:11.0.24'
-    testintegrationImplementation 'org.eclipse.jetty.http3:http3-client:11.0.24'
+    testintegrationImplementation 'org.springframework:spring-test:6.1.14'
+    testintegrationImplementation 'org.eclipse.jetty.websocket:jetty-websocket-jetty-client:12.0.15'
+    testintegrationImplementation 'org.eclipse.jetty.ee10.websocket:jetty-ee10-websocket-jakarta-server:12.0.15'
+    testintegrationImplementation 'org.eclipse.jetty.http3:jetty-http3-client:12.0.15'
 }
 
 task testintegration(type: Test, description: 'Integration test', group: 'Verification') {

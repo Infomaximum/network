@@ -2,8 +2,8 @@ package com.infomaximum.network.transport.coretest.websocket;
 
 import com.infomaximum.network.protocol.standard.StandardProtocol;
 import com.infomaximum.network.protocol.standard.packet.RequestPacket;
+import org.eclipse.jetty.websocket.api.Callback;
 import org.eclipse.jetty.websocket.api.Session;
-import org.eclipse.jetty.websocket.api.WebSocketAdapter;
 import org.eclipse.jetty.websocket.client.ClientUpgradeRequest;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
 import org.junit.jupiter.api.Assertions;
@@ -22,44 +22,53 @@ public class CoreWSBadRequestTest {
 
     public static void test(int port) throws Exception {
 
+        //Калбек ответа
+        CompletableFuture<Boolean> responseFuture = new CompletableFuture<Boolean>();
+
         WebSocketClient client = new WebSocketClient();
         client.start();
+
+        ClientEndPoint clientEndPoint = new ClientEndPoint(responseFuture);
+        URI serverURI = URI.create("ws://localhost:"  + port + "/ws");
 
         ClientUpgradeRequest upgradeRequest = new ClientUpgradeRequest();
         upgradeRequest.setSubProtocols(StandardProtocol.NAME);
 
-        //Калбек ответа
-        CompletableFuture<Boolean> responseFuture = new CompletableFuture<Boolean>();
-
-        Future<Session> fut = client.connect(new WebSocketAdapter(){
-            @Override
-            public void onWebSocketText(String message){
-                super.onWebSocketText(message);
-                responseFuture.completeExceptionally(new Exception("Пришел пакет хотя соединение должно было разорваться"));
-            }
-
-            @Override
-            public void onWebSocketClose(int statusCode, String reason){
-                super.onWebSocketClose(statusCode, reason);
-                responseFuture.complete(true);//Все хорошо, соединение разорвалось
-            }
-
-            @Override
-            public void onWebSocketError(Throwable cause){
-                super.onWebSocketError(cause);
-                Assertions.assertTrue(true);
-            }
-        }, new URI("ws://localhost:"  + port + "/ws"), upgradeRequest);
+        Future<Session> fut = client.connect(clientEndPoint, serverURI, upgradeRequest);
 
         //Ожидаем подключения
         Session session = fut.get();
 
         //Отправляем совоеобразный пакет пинга
-        session.getRemote().sendString(new RequestPacket(1, "бла бла", "ping", null).serialize());
+        session.sendText(new RequestPacket(1, "бла бла", "ping", null).serialize(), Callback.NOOP);
 
         //Ждем разрыва соединения
         responseFuture.get(1, TimeUnit.MINUTES);
 
         session.close();//Закрываем соединение
+    }
+
+    public static class ClientEndPoint implements Session.Listener  {
+
+        private final CompletableFuture<Boolean> responseFuture;
+
+        public ClientEndPoint(CompletableFuture<Boolean> responseFuture) {
+            this.responseFuture=responseFuture;
+        }
+
+        @Override
+        public void onWebSocketText(String message) {
+            responseFuture.completeExceptionally(new Exception("Пришел пакет хотя соединение должно было разорваться"));
+        }
+
+        @Override
+        public void onWebSocketClose(int statusCode, String reason) {
+            responseFuture.complete(true);//Все хорошо, соединение разорвалось
+        }
+
+        @Override
+        public void onWebSocketError(Throwable cause) {
+            Assertions.assertTrue(true);
+        }
     }
 }

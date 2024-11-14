@@ -79,7 +79,7 @@ public class BuilderNetwork {
             for (BuilderTransport builderTransport : builderTransports) {
                 Transport transport;
                 if (builderTransport instanceof HttpBuilderTransport) {
-                    transport = new HttpTransport((HttpBuilderTransport) builderTransport);
+                    transport = new HttpTransport((HttpBuilderTransport) builderTransport, uncaughtExceptionHandler);
                 } else {
                     throw new RuntimeException("Nothing type builder transport: " + builderTransport);
                 }

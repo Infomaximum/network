@@ -15,7 +15,7 @@ public class PacketWebSocketHandler {
 
     private final static Logger log = LoggerFactory.getLogger(PacketWebSocketHandler.class);
 
-    @OnWebSocketConnect
+    @OnWebSocketOpen
     public void afterConnectionEstablished(Session session) throws Exception {
 
         //Определяеи ip, проверяя загаловки возможно балансировщик добавит данные с реальным ip
@@ -25,7 +25,7 @@ public class PacketWebSocketHandler {
         }
 
         if (remoteIpAddress == null) {
-            remoteIpAddress = ((InetSocketAddress) session.getRemoteAddress()).getAddress().getHostAddress();
+            remoteIpAddress = ((InetSocketAddress) session.getRemoteSocketAddress()).getAddress().getHostAddress();
         }
 
         HttpTransport.instance.fireConnect(session, remoteIpAddress);//Оповещаем о новом подключении
