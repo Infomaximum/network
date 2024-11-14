@@ -5,10 +5,12 @@ module com.infomaximum.network {
     requires spring.webmvc;
     requires spring.context;
     requires spring.core;
+    requires org.eclipse.jetty.server;
     requires org.eclipse.jetty.http3.server;
-    requires org.eclipse.jetty.ee10.websocket.jetty.server;
-    requires org.eclipse.jetty.websocket.common;
     requires org.eclipse.jetty.ee10.servlets;
+    requires org.eclipse.jetty.ee10.websocket.jetty.server;
+    requires org.eclipse.jetty.websocket.api;
+    requires org.eclipse.jetty.websocket.common;
 
     exports com.infomaximum.network.protocol.standard.session;
     exports com.infomaximum.network.mvc;
