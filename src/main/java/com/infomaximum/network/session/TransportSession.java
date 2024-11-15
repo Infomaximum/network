@@ -6,9 +6,9 @@ import com.infomaximum.network.packet.IPacket;
 import com.infomaximum.network.protocol.Protocol;
 import com.infomaximum.network.struct.HandshakeData;
 import com.infomaximum.network.struct.RemoteAddress;
+import com.infomaximum.network.struct.UpgradeRequest;
 import com.infomaximum.network.transport.Transport;
 import com.infomaximum.network.transport.TransportPacketHandler;
-import org.eclipse.jetty.websocket.api.UpgradeRequest;
 import org.eclipse.jetty.websocket.common.WebSocketSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,9 +17,7 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.CopyOnWriteArraySet;
 
 public abstract class TransportSession implements TransportPacketHandler {
 
@@ -28,15 +26,17 @@ public abstract class TransportSession implements TransportPacketHandler {
     protected final Protocol protocol;
     protected final Transport transport;
     protected final Object channel;
+    private final UpgradeRequest upgradeRequest;
     protected final Session session;
     private final ExecuteRequest requestQueue;
 
     private volatile List<NetworkListener> listeners;
 
-    public TransportSession(Protocol protocol, Transport transport, Object channel) {
+    public TransportSession(Protocol protocol, Transport transport, Object channel, UpgradeRequest upgradeRequest) {
         this.protocol = protocol;
         this.transport = transport;
         this.channel = channel;
+        this.upgradeRequest = upgradeRequest;
         this.requestQueue = new ExecuteRequest(this);
 
         this.session = new SessionImpl(this);
@@ -56,7 +56,7 @@ public abstract class TransportSession implements TransportPacketHandler {
     }
 
     public UpgradeRequest getUpgradeRequest() {
-        return ((WebSocketSession) channel).getUpgradeRequest();
+        return upgradeRequest;
     }
 
     public void incomingMessage(String message) {

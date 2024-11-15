@@ -9,6 +9,7 @@ import com.infomaximum.network.protocol.standard.packet.ResponsePacket;
 import com.infomaximum.network.session.SessionImpl;
 import com.infomaximum.network.session.TransportSession;
 import com.infomaximum.network.struct.HandshakeData;
+import com.infomaximum.network.struct.UpgradeRequest;
 import com.infomaximum.network.transport.Transport;
 import net.minidev.json.JSONObject;
 import net.minidev.json.parser.JSONParser;
@@ -45,16 +46,16 @@ public class StandardTransportSession extends TransportSession {
     public StandardTransportSession(
             StandardProtocol protocol,
             final Transport transport,
-            final Object channel
+            final Object channel,
+            UpgradeRequest upgradeRequest
     ) {
-        super(protocol, transport, channel);
+        super(protocol, transport, channel, upgradeRequest);
 
         //Проверяем наличие фазы рукопожатия
         if (protocol.handshake != null) {
             phaseHandshake = true;
         } else {
             phaseHandshake = false;
-//			network.onHandshake(session);
         }
     }
 
@@ -77,7 +78,6 @@ public class StandardTransportSession extends TransportSession {
     public void completedPhaseHandshake(HandshakeData handshakeData) {
         phaseHandshake = false;
         ((SessionImpl) session).initHandshakeData(handshakeData);
-//		network.onHandshake(session);
     }
 
     @Override

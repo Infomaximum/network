@@ -1,12 +1,13 @@
 package com.infomaximum.network.transport;
 
 import com.infomaximum.network.packet.IPacket;
+import com.infomaximum.network.struct.UpgradeRequest;
 import com.infomaximum.network.struct.info.TransportInfo;
 
 import java.io.IOException;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
-import java.util.concurrent.Future;
+
 
 /**
  * Created by kris on 26.08.16.
@@ -29,9 +30,9 @@ public abstract class Transport<Channel> {
 
     public abstract TypeTransport getType();
 
-    public void fireConnect(Channel channel, String remoteIpAddress) {
+    public void fireConnect(Channel channel, UpgradeRequest upgradeRequest) {
         for (TransportListener transportListener: this.listeners) {
-            transportListener.onConnect(this, channel, remoteIpAddress);
+            transportListener.onConnect(this, channel, upgradeRequest);
         }
     }
 

@@ -5,6 +5,7 @@ import com.infomaximum.network.protocol.Protocol;
 import com.infomaximum.network.protocol.standard.handler.handshake.Handshake;
 import com.infomaximum.network.protocol.standard.session.StandardTransportSession;
 import com.infomaximum.network.session.Session;
+import com.infomaximum.network.struct.UpgradeRequest;
 import com.infomaximum.network.transport.Transport;
 
 public class StandardProtocol extends Protocol {
@@ -32,9 +33,9 @@ public class StandardProtocol extends Protocol {
     }
 
     @Override
-    public StandardTransportSession onConnect(Transport transport, Object channel) throws Exception {
+    public StandardTransportSession onConnect(Transport transport, Object channel, UpgradeRequest upgradeRequest) {
 
-        StandardTransportSession transportSession = new StandardTransportSession(this, transport, channel);
+        StandardTransportSession transportSession = new StandardTransportSession(this, transport, channel, upgradeRequest);
 
         //Начинаем фазу рукопожатия
         if (handshake == null) {

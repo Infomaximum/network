@@ -5,6 +5,7 @@ module com.infomaximum.network {
     requires spring.webmvc;
     requires spring.context;
     requires spring.core;
+    requires jakarta.servlet;
     requires org.eclipse.jetty.server;
     requires org.eclipse.jetty.http3.server;
     requires org.eclipse.jetty.ee10.servlets;

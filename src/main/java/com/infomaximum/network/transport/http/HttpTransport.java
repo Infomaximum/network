@@ -10,15 +10,13 @@ import com.infomaximum.network.transport.http.builder.HttpBuilderTransport;
 import com.infomaximum.network.transport.http.builder.connector.BuilderHttpConnector;
 import com.infomaximum.network.transport.http.builder.filter.BuilderFilter;
 import com.infomaximum.network.transport.http.handler.HandlerListeners;
-import jakarta.servlet.DispatcherType;
-import org.eclipse.jetty.ee10.servlet.FilterHolder;
 import org.eclipse.jetty.ee10.servlet.ServletHolder;
-import org.eclipse.jetty.ee10.servlets.CrossOriginFilter;
 import org.eclipse.jetty.ee10.websocket.server.config.JettyWebSocketServletContainerInitializer;
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.ContextHandlerCollection;
+import org.eclipse.jetty.server.handler.CrossOriginHandler;
 import org.eclipse.jetty.server.handler.DefaultHandler;
 import org.eclipse.jetty.server.handler.gzip.GzipHandler;
 import org.eclipse.jetty.ee10.servlet.ServletContextHandler;
@@ -29,15 +27,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.EnumSet;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Supplier;
 
 public class HttpTransport extends Transport<Session> {
 
     private final static Logger log = LoggerFactory.getLogger(HttpTransport.class);
-
-    public static HttpTransport instance;
 
     private final Server server;
     private final List<Supplier<? extends HttpConnectorInfo>> connectorInfoSuppliers;
@@ -60,7 +56,7 @@ public class HttpTransport extends Transport<Session> {
         ServletContextHandler servletContext = new ServletContextHandler();
         servletContext.setContextPath("/");
 
-        servletContext.addServlet(new ServletHolder(WebSocketServletConfiguration.class), "/ws");
+        servletContext.addServlet(new ServletHolder(new WebSocketServletConfiguration(this)), "/ws");
         servletContext.addServlet(httpBuilderTransport.getServletHolder(), "/");
 
         //Возможно есть регистрируемые фильтры
@@ -73,14 +69,18 @@ public class HttpTransport extends Transport<Session> {
         //Инициализирум контекс с вебсокетами
         JettyWebSocketServletContainerInitializer.configure(servletContext, null);
 
-        if (httpBuilderTransport.getCORS() != null) {
-            FilterHolder cors = servletContext.addFilter(CrossOriginFilter.class,"/*", EnumSet.of(DispatcherType.REQUEST, DispatcherType.ASYNC));
-            cors.setInitParameter(CrossOriginFilter.ALLOWED_ORIGINS_PARAM, httpBuilderTransport.getCORS());
-            cors.setInitParameter(CrossOriginFilter.ALLOWED_METHODS_PARAM, "GET,POST,OPTIONS");
-            cors.setInitParameter(CrossOriginFilter.ALLOWED_HEADERS_PARAM, "Authorization,Content-Type,Accept,Origin,User-Agent,DNT,Cache-Control,X-Mx-ReqToken,Access-Control-Allow-Origin");
-        }
-
         Handler context = servletContext;
+
+        if (httpBuilderTransport.getCORS() != null) {
+            CrossOriginHandler crossOriginHandler = new CrossOriginHandler();
+
+            crossOriginHandler.setAllowedOriginPatterns(Set.of(httpBuilderTransport.getCORS()));
+            crossOriginHandler.setAllowedMethods(Set.of("GET", "POST", "OPTIONS"));
+            crossOriginHandler.setAllowedHeaders(Set.of("Authorization","Content-Type","Accept","Origin","User-Agent","DNT","Cache-Control","X-Mx-ReqToken","Access-Control-Allow-Origin", "X-Request-Id", "X-Trace-Id"));
+
+            crossOriginHandler.setHandler(context);
+            context = crossOriginHandler;
+        }
 
         //Добавляем хендлер упаковки ресурсов контекста
         if (httpBuilderTransport.getCompressResponseMimeTypes() != null) {
@@ -103,7 +103,7 @@ public class HttpTransport extends Transport<Session> {
         server.setHandler(handlers);
 
         if (httpBuilderTransport.getErrorHandler() != null) {
-            server.setErrorHandler(httpBuilderTransport.getErrorHandler());//jetty 12 migration to: server.setErrorProcessor(httpBuilderTransport.getErrorProcessor());
+            server.setErrorHandler(httpBuilderTransport.getErrorHandler());
         }
 
         try {
@@ -111,8 +111,6 @@ public class HttpTransport extends Transport<Session> {
         } catch (Exception e) {
             throw new NetworkException(e);
         }
-
-        instance = this;
     }
 
     @Override

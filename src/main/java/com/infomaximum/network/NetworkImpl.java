@@ -5,6 +5,7 @@ import com.infomaximum.network.protocol.Protocol;
 import com.infomaximum.network.protocol.ProtocolUtils;
 import com.infomaximum.network.protocol.standard.packet.RequestPacket;
 import com.infomaximum.network.session.TransportSession;
+import com.infomaximum.network.struct.UpgradeRequest;
 import com.infomaximum.network.struct.info.NetworkInfo;
 import com.infomaximum.network.transport.Transport;
 import com.infomaximum.network.transport.TransportListener;
@@ -68,7 +69,7 @@ public class NetworkImpl implements Network, TransportListener {
     }
 
     @Override
-    public void onConnect(Transport transport, Object channel, String remoteIpAddress) {
+    public void onConnect(Transport transport, Object channel, UpgradeRequest upgradeRequest) {
         try {
             String nameProtocol = ProtocolUtils.getWebSocketProtocol((WebSocketSession) channel);
             Protocol protocol = null;
@@ -85,10 +86,10 @@ public class NetworkImpl implements Network, TransportListener {
             TransportSession transportSession = transportSessions.get(channel);
             if (transportSession != null) return;//Странное это дело...
 
-            transportSession = protocol.onConnect(transport, channel);
+            transportSession = protocol.onConnect(transport, channel, upgradeRequest);
             transportSessions.put(channel, transportSession);
 
-            log.info("{} onConnect, ip: {}", transportSession.getSession(), remoteIpAddress);
+            log.info("{} onConnect, ip: {}", transportSession.getSession(), upgradeRequest.getRemoteAddress().endRemoteAddress());
 
             //Оповещаем подписчиков о новом подключении
             for (NetworkListener listener : listeners) {
