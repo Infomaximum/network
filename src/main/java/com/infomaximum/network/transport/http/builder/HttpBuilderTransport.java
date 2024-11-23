@@ -6,7 +6,7 @@ import com.infomaximum.network.transport.http.builder.connector.BuilderHttpConne
 import com.infomaximum.network.transport.http.builder.filter.BuilderFilter;
 import jakarta.servlet.MultipartConfigElement;
 import org.eclipse.jetty.ee10.servlet.ServletHolder;
-import org.eclipse.jetty.server.handler.ErrorHandler;
+import com.infomaximum.network.struct.ErrorHandler;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 import org.springframework.web.servlet.DispatcherServlet;
 
@@ -24,7 +24,7 @@ public class HttpBuilderTransport extends BuilderTransport {
 
     private final ServletHolder servletHolder;
 
-    private ErrorHandler errorHandler;//jetty 12 migration to Request.Processor errorProcessor
+    private ErrorHandler errorHandler;
 
     private Set<String> compressResponseMimeTypes;
     private Set<BuilderFilter> filters;

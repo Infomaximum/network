@@ -37,4 +37,9 @@ public class TestController {
 
 		return new HttpEntity<byte[]>(content, header);
 	}
+
+	@RequestMapping(value = "/testException")
+	public HttpEntity<byte[]> testException(@RequestParam("message") String message) {
+		throw new RuntimeException(message);
+	}
 }

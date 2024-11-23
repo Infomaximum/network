@@ -10,6 +10,7 @@ import com.infomaximum.network.transport.http.builder.HttpBuilderTransport;
 import com.infomaximum.network.transport.http.builder.connector.BuilderHttpConnector;
 import com.infomaximum.network.transport.http.builder.filter.BuilderFilter;
 import com.infomaximum.network.transport.http.handler.HandlerListeners;
+import com.infomaximum.network.transport.http.handler.HttpErrorHandler;
 import org.eclipse.jetty.ee10.servlet.ServletHolder;
 import org.eclipse.jetty.ee10.websocket.server.config.JettyWebSocketServletContainerInitializer;
 import org.eclipse.jetty.server.Connector;
@@ -103,7 +104,8 @@ public class HttpTransport extends Transport<Session> {
         server.setHandler(handlers);
 
         if (httpBuilderTransport.getErrorHandler() != null) {
-            server.setErrorHandler(httpBuilderTransport.getErrorHandler());
+            HttpErrorHandler httpErrorHandler = new HttpErrorHandler(httpBuilderTransport.getErrorHandler(), uncaughtExceptionHandler);
+            server.setErrorHandler(httpErrorHandler);
         }
 
         try {
