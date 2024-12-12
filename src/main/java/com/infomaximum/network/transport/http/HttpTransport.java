@@ -30,6 +30,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.Executors;
 import java.util.function.Supplier;
 
 public class HttpTransport extends Transport<Session> {
@@ -40,7 +41,10 @@ public class HttpTransport extends Transport<Session> {
     private final List<Supplier<? extends HttpConnectorInfo>> connectorInfoSuppliers;
 
     public HttpTransport(final HttpBuilderTransport httpBuilderTransport, Thread.UncaughtExceptionHandler uncaughtExceptionHandler) throws NetworkException {
-        server = new Server(new QueuedThreadPool(10000));
+        QueuedThreadPool threadPool = new QueuedThreadPool();
+        threadPool.setVirtualThreadsExecutor(Executors.newVirtualThreadPerTaskExecutor());
+
+        server = new Server(threadPool);
         connectorInfoSuppliers = new ArrayList<>();
 
         if (httpBuilderTransport.getBuilderConnectors() == null || httpBuilderTransport.getBuilderConnectors().isEmpty()) {

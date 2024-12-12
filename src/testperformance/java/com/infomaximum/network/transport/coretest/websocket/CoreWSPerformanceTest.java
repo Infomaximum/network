@@ -11,6 +11,7 @@ import jakarta.websocket.EndpointConfig;
 import jakarta.websocket.MessageHandler;
 import net.minidev.json.JSONObject;
 import net.minidev.json.parser.JSONParser;
+import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.websocket.api.Callback;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.client.ClientUpgradeRequest;
@@ -20,6 +21,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.net.URI;
+import java.nio.ByteBuffer;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.*;
@@ -34,8 +37,16 @@ public class CoreWSPerformanceTest {
     private final static Logger log = LoggerFactory.getLogger(CoreWSPerformanceTest.class);
 
     public static void test(Network network, int port) throws Exception {
-        WebSocketClient client = new WebSocketClient();
-        client.setConnectTimeout(30L*1000L);
+        int threads = 10000;
+        Duration timeout = Duration.ofMinutes(5);
+
+        HttpClient httpClient = new HttpClient();
+        httpClient.setMaxRequestsQueuedPerDestination(threads);
+        httpClient.setConnectTimeout(timeout.toMillis());
+        httpClient.setIdleTimeout(timeout.toMillis());
+        WebSocketClient client = new WebSocketClient(httpClient);
+        client.setConnectTimeout(timeout.toMillis());
+        client.setIdleTimeout(timeout);
         client.start();
 
         ClientUpgradeRequest upgradeRequest = new ClientUpgradeRequest();
@@ -43,9 +54,7 @@ public class CoreWSPerformanceTest {
 
         URI serverURI = URI.create("ws://localhost:"  + port + "/ws");
 
-        ExecutorService executors = Executors.newCachedThreadPool();
-
-        int threads = 100;
+        ExecutorService executors = Executors.newVirtualThreadPerTaskExecutor();
 
         AtomicInteger countConnected = new AtomicInteger();
         AtomicBoolean fullConnect = new AtomicBoolean(false);
@@ -64,35 +73,35 @@ public class CoreWSPerformanceTest {
                         Future<Session> fut = client.connect(clientEndPoint, serverURI, upgradeRequest);
 
                         Session session = fut.get();
-                        countConnected.incrementAndGet();
-                        log.info("connected: " + countConnected.get());
+                        int nowCountConnected = countConnected.incrementAndGet();
+                        if (nowCountConnected%100 == 0) {
+                            log.info("connected: " + nowCountConnected);
+                        }
 
-
-                        //TODO в это месте есть возможный баг, порой все зависает
                         //Теперь ждем что-бы все подключились
                         while (true) {
                             if (fullConnect.get() || countConnected.get() == threads) {
-//                                log.debug("is Full!!!!");
                                 fullConnect.set(true);
                                 break;
                             } else {
-                                Thread.sleep(1000L);
+                                Thread.sleep(100L);
                             }
                         }
 
 
-                        //Отправляем совоеобразный пакет пинга
+                        //Отправляем своеобразный пакет пинга
                         RequestPacket requestPacket1 = new RequestPacket(1, "support", "ping", null);
-                        session.sendText(requestPacket1.serialize(), Callback.NOOP);
+                        session.sendText(requestPacket1.serialize(), Callback.from(() -> {}, responseFuture::completeExceptionally));
 
-                        ResponsePacket responsePacket1 = responseFuture.get(1, TimeUnit.MINUTES);
+                        ResponsePacket responsePacket1 = responseFuture.get(5, TimeUnit.MINUTES);
                         Assertions.assertEquals(requestPacket1.getId(), responsePacket1.getId());
-
-                        Thread.sleep(1000L);
 
                         session.close();//Закрываем соединение
 
-                        log.info("disconnect: " + countConnected.decrementAndGet());
+                        nowCountConnected = countConnected.decrementAndGet();
+                        if (nowCountConnected%100 == 0) {
+                            log.info("disconnect: " + nowCountConnected);
+                        }
 
                         return true;
                     } catch (Exception e) {
@@ -106,7 +115,7 @@ public class CoreWSPerformanceTest {
             executors.execute(futureTask);
         }
 
-        //Ожидем завершения всех потоков
+        //Ожидаем завершения всех потоков
         int countSuccess=0;
         for (FutureTask<Boolean> futureTask: taskList) {
             if (futureTask.get()) countSuccess++;
@@ -128,6 +137,7 @@ public class CoreWSPerformanceTest {
                 ResponsePacket responsePacket = (ResponsePacket) (Packet.parse((JSONObject) new JSONParser(JSONParser.DEFAULT_PERMISSIVE_MODE).parse(message)));
                 responseFuture.complete(responsePacket);
             } catch (Exception e) {
+                responseFuture.completeExceptionally(e);
                 Assertions.fail();
             }
         }
@@ -135,7 +145,7 @@ public class CoreWSPerformanceTest {
         @Override
         public void onWebSocketClose(int statusCode, String reason) {
             if (!responseFuture.isDone()) {
-                responseFuture.completeExceptionally(new Exception("Соединение закрыто"));
+                responseFuture.completeExceptionally(new Exception("Соединение закрыто, code: " + statusCode + ", reason: " + reason));
             }
         }
 
