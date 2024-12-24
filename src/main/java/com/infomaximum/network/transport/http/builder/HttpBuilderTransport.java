@@ -28,7 +28,7 @@ public class HttpBuilderTransport extends BuilderTransport {
 
     private Set<String> compressResponseMimeTypes;
     private Set<BuilderFilter> filters;
-    private String cors;
+    private String[] cors;
     private Set<HttpChannelListener> httpChannelListeners;
 
     public HttpBuilderTransport(Class classWebMvcConfig) {
@@ -84,7 +84,7 @@ public class HttpBuilderTransport extends BuilderTransport {
      * @param value
      * @return
      */
-    public HttpBuilderTransport setCORS(String value){
+    public HttpBuilderTransport setCORS(String[] value){
         this.cors = value;
         return this;
     }
@@ -115,7 +115,7 @@ public class HttpBuilderTransport extends BuilderTransport {
         return filters;
     }
 
-    public String getCORS() {
+    public String[] getCORS() {
         return cors;
     }
 
