@@ -34,6 +34,15 @@ public class BuilderHttpConnector {
     }
 
     public Connector build(Server server) throws NetworkException {
+        ServerConnector connector = new ServerConnector(
+                server, new HttpConnectionFactory(createHttpConfiguration())
+        );
+        connector.setPort(port);
+        connector.setHost(host);
+        return connector;
+    }
+
+    protected HttpConfiguration createHttpConfiguration(){
         HttpConfiguration httpConfiguration = new HttpConfiguration();
         httpConfiguration.setSendServerVersion(false);
         if (requestHeaderSize != null) {
@@ -42,13 +51,7 @@ public class BuilderHttpConnector {
         if (responseHeaderSize != null) {
             httpConfiguration.setResponseHeaderSize(responseHeaderSize);
         }
-
-        ServerConnector connector = new ServerConnector(
-                server, new HttpConnectionFactory(httpConfiguration)
-        );
-        connector.setPort(port);
-        connector.setHost(host);
-        return connector;
+        return httpConfiguration;
     }
 
     public Supplier<? extends HttpConnectorInfo> getInfoSupplier() {

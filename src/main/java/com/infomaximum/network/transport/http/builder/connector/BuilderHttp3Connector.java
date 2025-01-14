@@ -70,15 +70,7 @@ public class BuilderHttp3Connector extends BuilderHttpConnector {
         ServerQuicConfiguration quicConfiguration = new ServerQuicConfiguration(sslContextFactory, Paths.get("/tmp/"));
 
 
-//        HttpConfiguration httpConfig = new HttpConfiguration();
-//        httpConfig.setSendServerVersion(false);
-//        httpConfig.addCustomizer(new SecureRequestCustomizer());
-//        if (requestHeaderSize != null) {
-//            httpConfig.setRequestHeaderSize(requestHeaderSize);
-//        }
-//        if (responseHeaderSize != null) {
-//            httpConfig.setResponseHeaderSize(responseHeaderSize);
-//        }
+//        HttpConfiguration httpConfig = createHttpConfiguration();
         HTTP3ServerConnectionFactory http3ConnectionFactory = new HTTP3ServerConnectionFactory(quicConfiguration);
 
 
