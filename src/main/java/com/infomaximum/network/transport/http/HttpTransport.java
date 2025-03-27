@@ -67,7 +67,11 @@ public class HttpTransport extends Transport<Session> {
         //Возможно есть регистрируемые фильтры
         if (httpBuilderTransport.getFilters() != null) {
             for (BuilderFilter builderFilter : httpBuilderTransport.getFilters()) {
-                servletContext.addFilter(builderFilter.filterClass, builderFilter.pathSpec, builderFilter.dispatches);
+                if (builderFilter.isInstance()) {
+                    servletContext.addFilter(builderFilter.filter, builderFilter.pathSpec, builderFilter.dispatches);
+                } else {
+                    servletContext.addFilter(builderFilter.filterClass, builderFilter.pathSpec, builderFilter.dispatches);
+                }
             }
         }
 
