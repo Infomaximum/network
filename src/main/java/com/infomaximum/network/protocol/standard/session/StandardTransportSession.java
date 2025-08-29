@@ -22,12 +22,6 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 
-/**
- * Created with IntelliJ IDEA.
- * User: Admin
- * Date: 17.09.13
- * Time: 22:44
- */
 public class StandardTransportSession extends TransportSession {
 
     public final static long DEFAULT_REQUEST_TIMEOUT = 3L * 60L * 1000L;//Таймаут
@@ -93,12 +87,11 @@ public class StandardTransportSession extends TransportSession {
         destroyed();
     }
 
+    @Override
+    public String getXTraceId() {
+        throw new UnsupportedOperationException("Not implemented");
+    }
 
-    /**
-     * Возврощаем обработчика пакетов
-     *
-     * @return
-     */
     public PacketHandler getPacketHandler() {
         StandardProtocol standardProtocol = (StandardProtocol) protocol;
         if (phaseHandshake) {
