@@ -50,6 +50,8 @@ public abstract class TransportSession implements TransportPacketHandler {
 
     public abstract void failPhaseHandshake(IPacket responsePacket);
 
+    public abstract String getXTraceId();
+
     @Override
     public Session getSession() {
         return session;
@@ -124,10 +126,5 @@ public abstract class TransportSession implements TransportPacketHandler {
             endRemoteAddress = rawRemoteAddress;
         }
         return new RemoteAddress(rawRemoteAddress, endRemoteAddress);
-    }
-
-    public String getXTraceId() {
-        String xTraceId = ((WebSocketSession) channel).getUpgradeRequest().getHeader("X-Trace-Id");
-        return xTraceId;
     }
 }
