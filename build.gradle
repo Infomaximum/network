@@ -9,7 +9,7 @@ plugins {
 apply from: "${rootProject.projectDir}/gradle/publish-mavencentral.gradle"
 
 group 'com.infomaximum'
-version '1.2.23'
+version '1.2.24'
 ext.moduleName = 'com.infomaximum.network'
 
 java {
